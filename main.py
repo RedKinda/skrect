@@ -1,9 +1,17 @@
 import game
-
+import re
 
 class FancyDrawer:
     def __init__(self):
         raise NotImplemented
+
+    def color_text(self, text):
+        re_red = re.compile("<red>(?P<red>.*)</red>")
+        re_blue = re.compile("<blue>(?P<blue>.*)</blue>")
+        re_white = re.compile("<white>(?P<white>.*)</white>")
+        re_green = re.compile("<green>(?P<green>.*)</green>")
+
+
 
 
 class ClassicDrawer:
@@ -11,18 +19,20 @@ class ClassicDrawer:
         state = game.game_state
         print("="*50)
         print("Time: " + str(state.time))
+        print(state.location.description)
         if len(state.active_messages) > 0:
             print("--Messages")
             print("\n".join(state.active_messages))
         print("--Actions in " + state.location.name)
         ind = 0
-        for action in state.actions:
-            if ind == state.highlighted_action:
-                prefix = "-> "
-            else:
-                prefix = "   "
-            print("{0}{1}: {2}".format(prefix, ind+1, str(action)))
-            ind += 1
+        for action in state.visible_actions:
+            if action.enabled and action.visible:
+                if ind == state.highlighted_action:
+                    prefix = "-> "
+                else:
+                    prefix = "   "
+                print("{0}{1}: {2}".format(prefix, ind+1, action.print()))
+                ind += 1
 
     def __enter__(self):
         return self
@@ -94,6 +104,10 @@ with drawer() as drawer:
                 break
             elif inp in translator:
                 translator[inp]()
+            elif len(inp) > 1:
+                game.game_state.execute_action_by_string(inp)
+            elif inp.isdigit():
+                game.game_state.execute_action(int(inp)-1)
             drawer.draw()
 
 
@@ -121,3 +135,4 @@ with FullscreenWindow() as window:
                 color = random.choice([red, green, on_blue, yellow])
                 a[row, column:column+len(s)] = [color(s)]
             window.render_to_terminal(a)'''
+
