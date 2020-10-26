@@ -175,11 +175,14 @@ class Location(Interactable):
     def add_object(self, object):
         self.objects.append(object)
 
-    def add_neighbor(self, neighbor, onedirectional=False, timecost=None, alignment=Alignment.NEUTRAL):
+    def add_neighbor(self, neighbor, onedirectional=False, timecost=None, alignment=Alignment.NEUTRAL,
+                     travel_text=None):
         self.neighbors.add(neighbor)
         timecost = timecost if timecost else datetime.timedelta(minutes=5)
 
-        @self.action(name="Travel to " + neighbor.name, time_cost=timecost,
+        if travel_text is None:
+            travel_text = "Travel to " + neighbor.name
+        @self.action(name=travel_text, time_cost=timecost,
                      alignment=alignment, description=neighbor.desc_when_nearby)
         def travel():
             self.when_leaving(neighbor)
@@ -221,6 +224,88 @@ class Action:
     def execute(self):
         self.callback()
         return self.timecost
+
+
+class Situation(Action):
+    def __init__(self, name, callback, dialogue, response="You are waiting", closable=True, timecost=datetime.timedelta(seconds=0)):
+        super().__init__(name, callback, time_cost=timecost)
+        self.response = response
+        self.dialogue = dialogue
+        self.closable = closable
+        self.subsituations = []
+        if closable:
+            @self.situation("Goodbye!", closable=False)
+            def close():
+                self.dialogue.exit()
+
+    def situation(self, name=None, **kwargs):
+        def decorator(f):
+            if isinstance(f, Situation):
+                raise TypeError("This is already a Situation")
+            tergetname = f.__name__ if not name else name
+            sit = Situation(tergetname, f, self.dialogue, **kwargs)
+            self.subsituations.append(sit)
+            return sit
+        return decorator
+
+    def execute(self):
+        timecost = super().execute()
+        self.dialogue.update_situation(self)
+        return timecost
+
+
+    def get_actions(self):
+        return self.subsituations
+
+
+class Dialogue(Location):
+    def __init__(self, description):
+        Location.__init__(self, description=description)
+        def empty():
+            pass
+        self.active_situation = Situation(None, empty, self)
+        self.last_location = None
+        self.local_situations = []
+
+    def set_starting_situation(self, situation: Situation):
+        self.active_situation = situation
+
+    def get_actions(self):
+        ac = self.active_situation.get_actions()
+        for a in self.local_situations:
+            ac.append(a)
+        self.local_situations = []
+        return ac
+
+    def update_situation(self, situation):
+        self.active_situation = situation
+        game_state.show_message(situation.response)
+
+    def when_entering(self, from_location):
+        game_state.location = self
+        self.last_location = from_location
+
+    def start(self):
+        self.when_entering(game_state.location)
+        return self.active_situation
+
+    def exit(self):
+        game_state.location = self.last_location
+        #self.last_location.when_entering(self)
+
+    def situation(self, name=None, **kwargs):
+        def decorator(f):
+            if isinstance(f, Situation):
+                raise TypeError("This is already a Situation")
+            tergetname = f.__name__ if not name else name
+            sit = Situation(tergetname, f, self, **kwargs)
+            self.local_situations.append(sit)
+            return sit
+        return decorator
+
+
+
+
 
 
 #decorators

@@ -53,6 +53,28 @@ class Phone(game.Location):
             self.original_location.when_entering(self)
             self.original_location = None
 
+        @self.action("Call pope")
+        def call():
+            self.popecall()
+
+    def popecall(self):
+        dialogue = game.Dialogue("You are calling with the Pope!!!!")
+        startsit = dialogue.start()
+
+        @startsit.situation("'What's up my homieeeeee'", response="Pope: Yoooo wassup buddy")
+        def homiegreet():
+            @homiegreet.situation("'Hey mate, thanks for saying homosexual marriage is good, absolute pog moment'",
+                                  response="Pope: You're sooooo welcome mate I'm glad ur happy bro")
+            def nicepope():
+                ascension()
+
+        def ascension():
+            game.game_state.show_message("Pope allowed you to ascend!")
+            @dialogue.situation("Ascend!", response="You ascended above all mortality cuz Pope is ur bro")
+            def ascend():
+                game.game_state.show_message("You ascended!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+
     def when_entering(self, from_location):
         game.game_state.location = self
         self.original_location = from_location

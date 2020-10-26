@@ -1,8 +1,27 @@
 import game
 import re
+import random
 
 class FancyDrawer:
     def __init__(self):
+        with FullscreenWindow() as window:
+            with generator() as input_generator:
+                msg = red(on_blue(bold('Press escape to exit')))
+                a = FSArray(window.height, window.width)
+                a[0:1, 0:msg.width] = [msg]
+                window.render_to_terminal(a)
+                for c in input_generator:
+                    if c == '<ESC>':
+                        break
+                    elif c == '<SPACE>':
+                        a = FSArray(window.height, window.width)
+                    else:
+                        s = repr(c)
+                        row = random.choice(range(window.height))
+                        column = random.choice(range(window.width - len(s)))
+                        color = random.choice([red, green, on_blue, yellow])
+                        a[row, column:column + len(s)] = [color(s)]
+                    window.render_to_terminal(a)
         raise NotImplemented
 
     def color_text(self, text):
@@ -79,6 +98,7 @@ try:  # Fancy curtsies drawer
         pass
     generator = Input
     drawer = FancyDrawer
+
 except:  # Fallback to simple drawing for dumb terminals
     print("Warning! Using the uglier version of interface, use smart terminal for the nice version")
     generator = ClassicInput
