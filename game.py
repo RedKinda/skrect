@@ -28,6 +28,7 @@ class Glasses:
         else:
             return True
 
+
 class Interactable:
     def __init__(self):
         self._actions = set()
@@ -74,13 +75,12 @@ class Interactable:
             raise TypeError("Must be Action or the name of an action as a string")
 
 
-
-
 class GameState(Interactable):
     def __init__(self, location):
         super().__init__()
         self.location = location
         self.visible_actions = []
+        self.possible_actions = []
         self.time = datetime.datetime(2864, 8, 6, 8, 0, 0)
         self.highlighted_action = 0
         self.active_messages = []
@@ -88,30 +88,37 @@ class GameState(Interactable):
         self.glasses = Glasses()
 
     def refresh(self):
-        self.visible_actions = self.location.get_actions()
+        self.possible_actions = self.location.get_actions()
+        self.visible_actions = []
         for ac in self.get_actions():
             if ac.enabled:
-                self.visible_actions.append(ac)
+                self.possible_actions.append(ac)
         ind = 0
-        while ind < len(self.visible_actions):
-            if not self.glasses.is_action_visible(self.visible_actions[ind]):
-                self.visible_actions.pop(ind)
-            else:
+        for action in self.possible_actions:
+            if (not self.glasses.is_action_visible(action)) or (not action.visible):
                 ind += 1
+            else:
+                self.visible_actions.append(action)
         self.highlighted_action = 0
         self.active_messages = self.pending_messages
         self.pending_messages = []
 
-    def execute_action(self, number: int):
-        timecost = self.visible_actions[number].execute()
+    def execute_action_from_list(self, number: int):
+        if number >= len(self.visible_actions):
+            return False
+        self.execute_action(self.possible_actions.index(self.visible_actions[number]))
+
+    def execute_action(self, number: int, ):
+        timecost = self.possible_actions[number].execute()
         self.time += timecost
         self.refresh()
+        return True
 
     def execute_action_by_string(self, input_string):
         executed = False
-        for action in range(len(self.visible_actions)):
-            if self.visible_actions[action].enabled:
-                if self.visible_actions[action].name.lower() == input_string:
+        for action in range(len(self.possible_actions)):
+            if self.possible_actions[action].enabled:
+                if self.possible_actions[action].name.lower() == input_string:
                     self.execute_action(action)
                     executed = True
                     break
@@ -227,14 +234,15 @@ class Action:
 
 
 class Situation(Action):
-    def __init__(self, name, callback, dialogue, response="You are waiting", closable=True, timecost=datetime.timedelta(seconds=0)):
+    def __init__(self, name, callback, dialogue, timecost=datetime.timedelta(seconds=0), **kwargs):
         super().__init__(name, callback, time_cost=timecost)
-        self.response = response
+        self.response = kwargs.get("response", "You are waiting")
         self.dialogue = dialogue
-        self.closable = closable
+        self.closable = kwargs.get("closable", True)
         self.subsituations = []
-        if closable:
-            @self.situation("Goodbye!", closable=False)
+        self.priority = kwargs.get("priority", 50)
+        if self.closable:
+            @self.situation("Goodbye!", closable=False, priority=100)
             def close():
                 self.dialogue.exit()
 

@@ -1,0 +1,2 @@
+curtsies~=0.3.4
+windows-curses~=2.1.0

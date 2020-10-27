@@ -1,5 +1,6 @@
-import game
 import datetime
+
+import game
 
 
 class Bedroom(game.Location):

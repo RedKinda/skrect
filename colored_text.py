@@ -1,5 +1,7 @@
 from curtsies.fmtfuncs import *
+
 from game import Alignment
+
 
 def blank(string):
     return black("*"*len(string))
@@ -73,5 +75,7 @@ class ColorString:
                     midresult = translate_green_filter[style](midresult)
             result += midresult
         return result
+
+
 
 print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))
