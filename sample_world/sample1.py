@@ -30,6 +30,8 @@ class Bedroom(game.Location):
 
 
 
+
+
 class Bathroom(game.Location):
     def __init__(self):
         super().__init__(description="Bathroom with a few moist windows",
@@ -64,10 +66,12 @@ class Phone(game.Location):
 
         @startsit.situation("'What's up my homieeeeee'", response="Pope: Yoooo wassup buddy")
         def homiegreet():
+            ascension()
             @homiegreet.situation("'Hey mate, thanks for saying homosexual marriage is good, absolute pog moment'",
                                   response="Pope: You're sooooo welcome mate I'm glad ur happy bro")
             def nicepope():
                 ascension()
+
 
         def ascension():
             game.game_state.show_message("Pope allowed you to ascend!")

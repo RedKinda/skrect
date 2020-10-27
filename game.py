@@ -15,6 +15,8 @@ class Alignment:
     INDEPENDENT = "blue"
     HIVEMIND = "green"
 
+def show_message(message):
+    game_state.show_message(message)
 
 class Glasses:
     def __init__(self):
