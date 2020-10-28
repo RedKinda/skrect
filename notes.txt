@@ -1,0 +1,1 @@
+Player stats can be found in game.game_state.player_stats. It is an empty dict and should be initialized at the beginning

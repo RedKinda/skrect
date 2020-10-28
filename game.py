@@ -4,7 +4,7 @@ game_state = None
 
 def game_init(starting_location, callback):
     global game_state
-    game_state = GameState(starting_location)
+    game_state = GameState(starting_location, )
     callback()
     game_state.refresh()
 
@@ -17,18 +17,6 @@ class Alignment:
 
 def show_message(message):
     game_state.show_message(message)
-
-class Glasses:
-    def __init__(self):
-        self.type = Alignment.GOVERNMENT
-
-    def is_action_visible(self, action):
-        if self.type == Alignment.GOVERNMENT:
-            if action.alignment in [Alignment.GOVERNMENT, Alignment.NEUTRAL]:
-                return True
-            return False
-        else:
-            return True
 
 
 class Interactable:
@@ -87,6 +75,7 @@ class GameState(Interactable):
         self.highlighted_action = 0
         self.active_messages = []
         self.pending_messages = []
+        self.player_stats = {}
         self.glasses = Glasses()
 
     def refresh(self):
@@ -101,6 +90,7 @@ class GameState(Interactable):
                 ind += 1
             else:
                 self.visible_actions.append(action)
+        self.visible_actions.sort(key=lambda action: action.priority)
         self.highlighted_action = 0
         self.active_messages = self.pending_messages
         self.pending_messages = []
@@ -108,11 +98,13 @@ class GameState(Interactable):
     def execute_action_from_list(self, number: int):
         if number >= len(self.visible_actions):
             return False
-        self.execute_action(self.possible_actions.index(self.visible_actions[number]))
+        self._execute_action(self.possible_actions.index(self.visible_actions[number]))
 
-    def execute_action(self, number: int, ):
-        timecost = self.possible_actions[number].execute()
+    def _execute_action(self, number: int, ):
+        action = self.possible_actions[number]
+        timecost = action.execute()
         self.time += timecost
+        self.location.after_action(action)
         self.refresh()
         return True
 
@@ -121,13 +113,13 @@ class GameState(Interactable):
         for action in range(len(self.possible_actions)):
             if self.possible_actions[action].enabled:
                 if self.possible_actions[action].name.lower() == input_string:
-                    self.execute_action(action)
+                    self._execute_action(action)
                     executed = True
                     break
         return executed
 
     def input_enter(self):
-        self.execute_action(self.highlighted_action)
+        self.execute_action_from_list(self.highlighted_action)
 
     def input_up(self):
         self.arrow_change(-1)
@@ -142,6 +134,19 @@ class GameState(Interactable):
         self.pending_messages.append(message)
 
 
+class Glasses:
+    def __init__(self):
+        self.type = Alignment.GOVERNMENT
+
+    def is_action_visible(self, action):
+        if self.type == Alignment.GOVERNMENT:
+            if action.alignment in [Alignment.GOVERNMENT, Alignment.NEUTRAL]:
+                return True
+            return False
+        else:
+            return True
+
+
 class Object(Interactable):
     def __init__(self, name, location=None):
         super().__init__()
@@ -152,6 +157,13 @@ class Object(Interactable):
         '''for key in self.__dict__:
             if isinstance(self.__dict__[key], Action):
                 self.actions.append(self.__dict__[key])'''
+
+    def move(self, destination):
+        if not isinstance(destination, Location):
+            raise TypeError("Destination must be location")
+        self.location.objects.remove(self)
+        destination.objects.append(self)
+        self.location = destination
 
 
 class NPC(Object):
@@ -169,6 +181,14 @@ class Location(Interactable):
         self.desc_when_nearby = kwargs.get("desc_when_nearby", None)
         self.neighbors = set()
         self.objects = []
+
+    def after_action(self, action_executed):
+        '''
+        This can be ovverriden as it is called any time an action was executed
+        :param action_executed: Action that was executed
+        :return:
+        '''
+        pass
 
     def when_entering(self, from_location):
         '''
@@ -209,6 +229,21 @@ class Location(Interactable):
             ac.append(local_action)
         return ac
 
+    def get_object(self, name):
+        for obj in self.objects:
+            if obj.name == name:
+                return obj
+        return None
+
+    def object(self, name=None):
+        def decorator(f):
+            if isinstance(f, Object):
+                raise TypeError("Func is already Object")
+            tergetname = f.__name__ if not name else name
+            return Object(tergetname, self)
+
+        return decorator
+
 
 class Action:
     def __init__(self, name, callback, **kwargs):
@@ -219,6 +254,7 @@ class Action:
         self.visible = kwargs.get("visible", True)
         self.alignment = kwargs.get("alignment", Alignment.NEUTRAL)
         self.description = kwargs.get("description", None)
+        self.priority = kwargs.get("priority", 50)
 
     def __str__(self):
         s = "{0} - {1}".format(self.name, str(self.timecost))
@@ -237,12 +273,11 @@ class Action:
 
 class Situation(Action):
     def __init__(self, name, callback, dialogue, timecost=datetime.timedelta(seconds=0), **kwargs):
-        super().__init__(name, callback, time_cost=timecost)
+        super().__init__(name, callback, time_cost=timecost, **kwargs)
         self.response = kwargs.get("response", "You are waiting")
         self.dialogue = dialogue
         self.closable = kwargs.get("closable", True)
         self.subsituations = []
-        self.priority = kwargs.get("priority", 50)
         if self.closable:
             @self.situation("Goodbye!", closable=False, priority=100)
             def close():

@@ -1,7 +1,10 @@
-from curtsies.fmtfuncs import *
+#from curtsies.fmtfuncs import *
 
 from game import Alignment
 
+
+#Colored text is not implemented yet
+raise NotImplemented
 
 def blank(string):
     return black("*"*len(string))

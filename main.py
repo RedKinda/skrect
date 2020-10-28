@@ -16,7 +16,11 @@ class FancyDrawer:
         self.screen.keypad(True)
         curses.curs_set(0)
 
+        lines, columns = self.screen.getmaxyx()
+        self.new_size(lines, columns)
+
         self.message_win = curses.newwin(curses.LINES-1, curses.COLS-1, 0, 0)
+
         return self
 
     def __exit__(self, type, value, tb):
@@ -31,6 +35,14 @@ class FancyDrawer:
     def __iter__(self):
         return self
 
+    def new_size(self, lines, columns):
+        self.win_info = curses.newwin(4, columns - 1, 0, 0)
+        self.win_main = curses.newwin((lines - 4) // 2, columns - 1, 4, 0)
+        self.win_idksemmozespisat = curses.newwin((lines - 4) // 2, (columns - 1) * 2 // 5,
+                                                  4 + (lines - 4) // 2, 0)
+        self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1) * 3 // 5,
+                                            4 + (lines - 4) // 2, (columns - 1) * 2 // 5)
+
     def draw(self):
         #for message in game.game_state.active_messages:
         #    self.message_win.addstr(message + "\n")
@@ -41,6 +53,10 @@ class FancyDrawer:
 
     def get_screen(self):
         return self.screen
+
+    def draw_info(self):
+        self.win_info.move(0, 0)
+        #self.win_info.addstr("="*self.win_info.)
 
     def classic_draw(self):
         state = game.game_state
@@ -100,9 +116,9 @@ class FancyInput:
             return 10
         elif c in translator:
             return c
-        else:
+        elif c < 256:
             self.buffer += chr(c)
-            return ""
+        return ""
 
 
 class ClassicDrawer:
@@ -203,7 +219,7 @@ with drawer() as drawer:
             elif len(inp) > 1:
                 game.game_state.execute_action_by_string(inp)
             elif inp.isdigit():
-                game.game_state.execute_action(int(inp)-1)
+                game.game_state.execute_action_from_list(int(inp)-1)
             drawer.draw()
 
 
