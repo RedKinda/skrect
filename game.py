@@ -86,7 +86,7 @@ class GameState(Interactable):
                 self.possible_actions.append(ac)
         ind = 0
         for action in self.possible_actions:
-            if (not self.glasses.is_action_visible(action)) or (not action.visible):
+            if (not self.glasses.is_action_visible(action)) or not action.visible or not action.enabled:
                 ind += 1
             else:
                 self.visible_actions.append(action)
@@ -257,7 +257,9 @@ class Action:
         self.priority = kwargs.get("priority", 50)
 
     def __str__(self):
-        s = "{0} - {1}".format(self.name, str(self.timecost))
+        s = "{0}".format(self.name,)
+        if self.timecost != datetime.timedelta(seconds=0):
+            s += " - {0}".format(str(self.timecost))
         if self.description is not None:
             s += " - {0}".format(self.description)
         return s
@@ -269,6 +271,12 @@ class Action:
     def execute(self):
         self.callback()
         return self.timecost
+
+    def disable(self):
+        self.enabled = False
+
+    def enable(self):
+        self.enabled = True
 
 
 class Situation(Action):
