@@ -2,6 +2,7 @@ import datetime
 
 game_state = None
 
+
 def game_init(starting_location, callback):
     global game_state
     game_state = GameState(starting_location, )
@@ -14,6 +15,16 @@ class Alignment:
     NEUTRAL = "white"
     INDEPENDENT = "blue"
     HIVEMIND = "green"
+
+
+class EnergyCost:
+    NONE = 0
+    MENTAL = 1
+    TRAVEL = 2
+    LIGHT = 3
+    MEDIUM = 4
+    HEAVY = 5
+
 
 def show_message(message):
     game_state.show_message(message)
@@ -211,8 +222,8 @@ class Location(Interactable):
 
         if travel_text is None:
             travel_text = "Travel to " + neighbor.name
-        @self.action(name=travel_text, time_cost=timecost,
-                     alignment=alignment, description=neighbor.desc_when_nearby)
+
+        @self.action(name=travel_text, time_cost=timecost, alignment=alignment, description=neighbor.desc_when_nearby)
         def travel():
             self.when_leaving(neighbor)
             neighbor.when_entering(self)
@@ -255,6 +266,7 @@ class Action:
         self.alignment = kwargs.get("alignment", Alignment.NEUTRAL)
         self.description = kwargs.get("description", None)
         self.priority = kwargs.get("priority", 50)
+        self.energycost = kwargs.get("energycost", EnergyCost.MENTAL)
 
     def __str__(self):
         s = "{0}".format(self.name,)
@@ -270,6 +282,8 @@ class Action:
 
     def execute(self):
         self.callback()
+        cost = self.energycost * self.timecost.total_seconds()
+        show_message("You would lose {0} points of energy".format(cost))
         return self.timecost
 
     def disable(self):
@@ -282,12 +296,12 @@ class Action:
 class Situation(Action):
     def __init__(self, name, callback, dialogue, timecost=datetime.timedelta(seconds=0), **kwargs):
         super().__init__(name, callback, time_cost=timecost, **kwargs)
-        self.response = kwargs.get("response", "You are waiting")
+        self.response = kwargs.get("response", "You are waiting.")
         self.dialogue = dialogue
         self.closable = kwargs.get("closable", True)
         self.subsituations = []
         if self.closable:
-            @self.situation("Goodbye!", closable=False, priority=100)
+            @self.situation("Goodbye!", closable=False, priority=100, response="")
             def close():
                 self.dialogue.exit()
 
@@ -306,17 +320,16 @@ class Situation(Action):
         self.dialogue.update_situation(self)
         return timecost
 
-
     def get_actions(self):
         return self.subsituations
 
 
 class Dialogue(Location):
-    def __init__(self, description):
+    def __init__(self, description, **kwargs):
         Location.__init__(self, description=description)
         def empty():
             pass
-        self.active_situation = Situation(None, empty, self)
+        self.active_situation = Situation(None, empty, self, **kwargs)
         self.last_location = None
         self.local_situations = []
 

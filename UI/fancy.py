@@ -1,6 +1,15 @@
 import curses
 import game
 import time
+import UI.colored_text
+import logging
+
+logging.basicConfig(level=logging.INFO, filename="logs/aaa.log")
+
+keylog = logging.getLogger("keylogger")
+keylog.addHandler(logging.FileHandler("logs/keylog.log"))
+drawlog = logging.getLogger("drawlog")
+drawlog.addHandler(logging.FileHandler("logs/drawlog.log"))
 
 
 class FancyDrawer:
@@ -14,6 +23,8 @@ class FancyDrawer:
         self.screen = curses.initscr()
         curses.cbreak()
         curses.noecho()
+        curses.start_color()
+        curses.use_default_colors()
         self.screen.keypad(True)
         curses.curs_set(0)
 
@@ -36,6 +47,25 @@ class FancyDrawer:
     def __iter__(self):
         return self
 
+    @staticmethod
+    def write_text(window, text):
+        drawlog.info(str(text))
+        if isinstance(text, list):
+            for element in text:
+                FancyDrawer.write_text(window, element)
+        elif isinstance(text, str):
+            window.addstr(text)
+            #drawlog.info(text)
+        elif isinstance(text, UI.colored_text.ColorString):
+            #drawlog.info("Colored: " + str(text))
+            filter = game.game_state.glasses.type
+            for chunk in text:
+                #drawlog.info("TEXT, COLOR: " + str(chunk))
+                curses.init_pair(1, chunk[1], -1)
+                window.addstr(chunk[0], curses.color_pair(1))
+        else:
+            raise TypeError("Whoopsie doopsie this must be a string or ColorString")
+
     def new_size(self, lines, columns):
         self.win_info =             curses.newwin(4, columns - 1, 0, 0)
         self.win_main =             curses.newwin((lines - 4) // 2, columns - 1, 4, 0)
@@ -43,12 +73,8 @@ class FancyDrawer:
         self.win_actionmenu =       curses.newwin((lines - 4) // 2, (columns - 1) * 3 // 5, 4 + (lines - 4) // 2, (columns - 1) * 2 // 5)
 
     def draw(self, input_buffer):
-        #for message in game.game_state.active_messages:
-        #    self.message_win.addstr(message + "\n")
-        #self.classic_draw()
-        #self.message_win.move(0, 0)
-        #self.message_win.refresh()
         try:
+            self.screen.move(0, 0)
             self.draw_info()
             self.draw_main()
             self.draw_actions(input_buffer)
@@ -65,7 +91,7 @@ class FancyDrawer:
         lines, columns = self.screen.getmaxyx()
         lines, columns = 4, columns - 1
         self.win_info.move(0, 0)
-        self.win_info.addstr("="*(columns-1))
+        self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
         time = str(game.game_state.time)
         money = "Money: [    ]"
         energy = "Energy: 0[          ]1"
@@ -74,16 +100,13 @@ class FancyDrawer:
         infection = "???: 0[          ]1"
         tab = " "*(max((columns - len(time) - len(money) - len(energy) - len(willpower)) // 10, 1))
 
-        #print("|" + tab*3 + money + tab + energy + tab + willpower + "|\n")
         for s in [tab*3, time, tab, money, tab*2, energy, tab, willpower, "\n"]:
-            self.win_info.addstr(s)
+            self.write_text(self.win_info, s)
 
         for s in [tab*6, " "*27, exhaustion, tab, " "*6, infection, "\n"]:
-            self.win_info.addstr(s)
+            self.write_text(self.win_info, s)
 
-        #self.win_info.addstr(tab*3 + money + tab + energy + tab + willpower + "\n")
-
-        self.win_info.addstr("="*(columns-1))
+        self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
 
         self.win_info.clrtobot()
         self.win_info.refresh()
@@ -93,9 +116,9 @@ class FancyDrawer:
         self.win_main.move(0, 0)
         desc = game.game_state.location.description
         space = " "*((columns - 5 - len(desc)) // 2)
-        self.win_main.addstr("\n" + space + desc + space + "\n\n")
+        self.write_text(self.win_main, "\n" + space + desc + space + "\n\n")
         if len(game.game_state.active_messages) > 0:
-            self.win_main.addstr(" " + "\n ".join(game.game_state.active_messages) + "\n")
+            self.write_text(self.win_main, " " + "\n ".join(game.game_state.active_messages) + "\n")
         self.win_main.clrtobot()
         self.win_main.refresh()
 
@@ -104,11 +127,11 @@ class FancyDrawer:
         lines, columns = self.screen.getmaxyx()
         lines, columns = (lines - 4) // 2, (columns - 1) * 3 // 5
 
-        self.win_actionmenu.addstr("=" * (columns) + "\n")
+        self.write_text(self.win_actionmenu, "=" * (columns) + "\n")
         try:
-            self.win_actionmenu.addstr("Action menu" + " "*(columns-12-len(buffer)) + buffer + "\n")
+            self.write_text(self.win_actionmenu, "Action menu" + " "*(columns-12-len(buffer)) + buffer + "\n")
         except:
-            buffer = ""
+            pass
         #self.win_actionmenu.addstr("="*20 + "\nAction menu")
 
         ind = 0
@@ -117,7 +140,7 @@ class FancyDrawer:
                 prefix = " -> "
             else:
                 prefix = "   "
-            self.win_actionmenu.addstr("{0}{1}: {2}".format(prefix, ind + 1, ac.print()) + "\n")
+            self.write_text(self.win_actionmenu, "{0}{1}: {2}".format(prefix, ind + 1, ac.print()) + "\n")
             ind += 1
 
 
@@ -129,14 +152,10 @@ class FancyDrawer:
         lines, columns = self.screen.getmaxyx()
         lines, columns = (lines - 4) // 2, (columns - 1) * 2 // 5
 
-        self.win_idksemmozespisat.addstr("="*(columns))
+        self.write_text(self.win_idksemmozespisat, "="*(columns))
 
         line = "|\n".join([" "*(columns-2) for i in range(lines-1)])
-        self.win_idksemmozespisat.addstr(line)
-        #   self.win_idksemmozespisat.addstr("\n" + " "*(columns-2) + "|")
-        #for l in range(lines-2):
-        #    self.win_idksemmozespisat.addstr(" "*(columns-2) + "|\n")
-        #self.win_idksemmozespisat.addstr("="*(columns-2) + "|\n")
+        self.write_text(self.win_idksemmozespisat, line)
         self.win_idksemmozespisat.clrtobot()
         self.win_idksemmozespisat.refresh()
 
@@ -194,7 +213,7 @@ class FancyInput:
         elif chr(c).isdigit():
             self.delay = 0.1
             return chr(c)
-        elif c == curses.KEY_BACKSPACE:
+        elif c == curses.KEY_BACKSPACE or c == ord("\b"):
             self.delay = 0
             if len(self.buffer) > 0:
                 self.buffer = self.buffer[0:-1]

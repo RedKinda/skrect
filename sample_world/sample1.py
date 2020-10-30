@@ -49,6 +49,7 @@ class Bathroom(game.Location):
 class Phone(game.Location):
     def __init__(self):
         super().__init__(name="Phone", description="You are looking at your phone")
+
         self.original_location = None
 
         @self.action("close", time_cost=datetime.timedelta(seconds=5))
@@ -56,8 +57,10 @@ class Phone(game.Location):
             self.original_location.when_entering(self)
             self.original_location = None
 
+        self.times_called_pope = 0
         @self.action("Call pope")
         def call():
+            self.times_called_pope += 1
             self.popecall()
 
     def popecall(self):

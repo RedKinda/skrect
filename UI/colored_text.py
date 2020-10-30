@@ -1,10 +1,11 @@
 #from curtsies.fmtfuncs import *
 
 from game import Alignment
+import game
 import curses
 
-#Colored text is not implemented yet
-blank = None
+
+blank = -1
 
 translate_style = {
     "bold": curses.A_BOLD,
@@ -50,44 +51,69 @@ class ColorString:
         self.style_chunks = []
         for arg in args:
             if isinstance(arg, str):
-                arg = (str, "white")
+                arg = (arg, "white")
             self.text_chunks.append(arg[0])
-            self.style_chunks.append(arg[1].split(" "))
+            self.style_chunks.append(arg[1])
+        #print(self.text_chunks, self.style_chunks)
 
     def __str__(self):
         return " ".join(self.text_chunks)
 
     def __iter__(self):
         self.ind = 0
+        filter = game.game_state.glasses.type
+        if filter == Alignment.GOVERNMENT:
+            self.translator = translate_red_filter
+        elif filter == Alignment.INDEPENDENT:
+            self.translator = translate_color
+        elif filter == Alignment.HIVEMIND:
+            self.translator = translate_green_filter
+        else:
+            raise TypeError("Invalid filter type")
         return self
 
     def __next__(self):
         if self.ind < len(self.text_chunks):
-            tup = (self.text_chunks[self.ind], self.style_chunks[self.ind])
+            tup = (self.text_chunks[self.ind], self.translator[self.style_chunks[self.ind]])
             self.ind += 1
             return tup
         else:
             raise StopIteration
 
-    def glassed(self, filter_color):
+    def __add__(self, other):
+        new = ColorString()
+        for ch in self:
+            new.text_chunks.append(ch[0])
+            new.style_chunks.append(ch[1])
+        if isinstance(other, ColorString):
+            for ch in other:
+                new.text_chunks.append(ch[0])
+                new.style_chunks.append(ch[1])
+        elif isinstance(other, str):
+            new.text_chunks.append(other)
+            new.style_chunks.append("white")
+        else:
+            raise TypeError("operator '+' can only be used on strings and ColorStrings")
+
+'''    def glassed(self, filter_color):
         newchunks = []
         for chunk_ind in range(len(self.text_chunks)):
             midstyle = None
-            for style in self.style_chunks[chunk_ind]:
-                if style in translate_style:
-                    midstyle |= translate_style[style]
-                elif filter_color is Alignment.GOVERNMENT:
-                    midstyle |= translate_red_filter[style]
-                elif filter_color is Alignment.INDEPENDENT:
-                    midstyle |= translate_color[style]
-                elif filter_color is Alignment.HIVEMIND:
-                    midstyle |= translate_green_filter[style]
+            if self.style_chunks[chunk_ind] in translate_style:
+                midstyle = translate_style[self.style_chunks[chunk_ind]]
+            elif filter_color is Alignment.GOVERNMENT:
+                midstyle = translate_red_filter[self.style_chunks[chunk_ind]]
+            elif filter_color is Alignment.INDEPENDENT:
+                midstyle = translate_color[self.style_chunks[chunk_ind]]
+            elif filter_color is Alignment.HIVEMIND:
+                midstyle = translate_green_filter[self.style_chunks[chunk_ind]]
+            newchunks.append(midstyle)
 
         result = ColorString()
         result.text_chunks = [c for c in self.text_chunks]
         result.style_chunks = [s for s in newchunks]
-        return result
+        return result'''
 
 
 
-print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))
+#print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))
