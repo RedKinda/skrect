@@ -4,12 +4,18 @@ import time
 import UI.colored_text
 import logging
 
-logging.basicConfig(level=logging.INFO, filename="logs/aaa.log")
+LOG_DRAWING = False
 
-keylog = logging.getLogger("keylogger")
-keylog.addHandler(logging.FileHandler("logs/keylog.log"))
-drawlog = logging.getLogger("drawlog")
-drawlog.addHandler(logging.FileHandler("logs/drawlog.log"))
+
+if LOG_DRAWING:
+    import os
+    try: os.mkdir("logs")
+    except: pass
+    logging.basicConfig(level=logging.INFO, filename="logs/aaa.log")
+    keylog = logging.getLogger("keylogger")
+    keylog.addHandler(logging.FileHandler("logs/keylog.log"))
+    drawlog = logging.getLogger("drawlog")
+    drawlog.addHandler(logging.FileHandler("logs/drawlog.log"))
 
 
 class FancyDrawer:
@@ -49,7 +55,7 @@ class FancyDrawer:
 
     @staticmethod
     def write_text(window, text):
-        drawlog.info(str(text))
+        if LOG_DRAWING: drawlog.info(str(text))
         if isinstance(text, list):
             for element in text:
                 FancyDrawer.write_text(window, element)
@@ -207,6 +213,7 @@ class FancyInput:
         time.sleep(self.delay)
         curses.flushinp()
         c = self.screen.getch()
+        if LOG_DRAWING: keylog.info(str(c))
         if c == 27:
             self.delay = 0
             return "ESCAPE"
