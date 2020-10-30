@@ -59,7 +59,7 @@ class Class(game.Location):
             pass
 
         self.dave = self.get_object("dave")
-        self.distance = datetime.timedelta(minutes=5)
+        self.distance = datetime.timedelta(minutes=1)
         self.horatio_speech = datetime.timedelta(minutes=1)
 
         @dave.action(name="Talk to Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.")
@@ -70,7 +70,7 @@ class Class(game.Location):
 
             @startsit.situation("'H...'", response = "Horatio: Come to pry on the most stunning man in the galaxy?")
             def conversation_begin():
-                
+
                 @conversation_begin.situation("I was just wondering...", response = "Horatio: Wondering whether you could observe me for just a bit longer? Of course you can, you are my best friend! In the same way a dog is a man's best friend, that is.\nFriendship with Horatio increased!")
                 def observe_Horatio():
                     pass
@@ -94,7 +94,7 @@ class Class(game.Location):
             game.game_state.show_message("WARNING: SOMETHING MAY HAPPEN TO THE SADNESS VALUE IF YOU PRESS \"GOODBYE\" NOW. DO NOT DO IT! IT IS NOT A FEATURE.")
             last_visit = game.game_state.time
             last_visit = last_visit.replace(hour=0, minute=0, second=0)
-            
+
             #this should not be exitable
             lesson = game.Dialogue("Attending a lesson.")
             startsit = lesson.start()
@@ -130,10 +130,10 @@ class Class(game.Location):
                         game.game_state.show_message("The teacher does not appear happy with you. You should be more careful.")
                     self.reload(game.game_state.time)
                     lesson.exit()
-                    
-            
+
+
     def reload(self, new_time):
-        
+
         attend = self.get_action("Attend")
         escape = self.get_action("Travel to Hall")
         dave = self.dave
@@ -155,10 +155,10 @@ class Class(game.Location):
             escape.enabled = True
         elif new_time.hour < 15:
             game.game_state.show_message("You are late. The class is in progress.")
-            
+
             days_missed = resolve_sadness()
             holder.sadness += 1
-            
+
             if days_missed > 0:
                 game.game_state.show_message("You should be careful. If you skip school too much, your parents will know.")
 
@@ -175,28 +175,25 @@ class Class(game.Location):
             dave.move(void)
             attend.enabled = False
             escape.enabled = True
-               
+
     def when_entering(self, from_location):
         game.game_state.location = self
         game.game_state.show_message("You enter the class.")
         new_time = game.game_state.time + self.distance
         self.reload(new_time)
-        
-        
+
+holder = Holder()
+
+hall = Hall()
+clss = Class()
+void = Void()
+hall.add_neighbor(clss, timecost=clss.distance)
+
+def visit_init():
+    global last_visit
+    last_visit = game.game_state.time
+    last_visit -= datetime.timedelta(days = 1)
+    last_visit = last_visit.replace(hour=0, minute=0, second=0)
+
 def run():
-    global void, hall, holder
-
-    holder = Holder()
-    
-    hall = Hall()
-    clss = Class()
-    void = Void()
-    hall.add_neighbor(clss, timecost=clss.distance)
-
-    def visit_init():
-        global last_visit
-        last_visit = game.game_state.time
-        last_visit -= datetime.timedelta(days = 1)
-        last_visit = last_visit.replace(hour=0, minute=0, second=0)
-
-    game.game_init(hall,visit_init)
+    game.game_init(hall, visit_init)

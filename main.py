@@ -4,9 +4,9 @@ import time
 import game
 
 
-from sample_world.sample1 import run
-#from redacted.home import run
+#from sample_world.sample1 import run
 #from redacted.shop import run
+from redacted.streets.mainroad import run
 run()
 
 
@@ -74,4 +74,3 @@ with FullscreenWindow() as window:
                 color = random.choice([red, green, on_blue, yellow])
                 a[row, column:column+len(s)] = [color(s)]
             window.render_to_terminal(a)'''
-
