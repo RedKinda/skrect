@@ -21,7 +21,7 @@ class Mainroom(game.Location):
         self.items = {'instant noodles':ShopItem(name='instant noodles', cost=5, amount=1),
         'instant soup':ShopItem(name='instant soup', cost=20, amount=3),
         'bread':ShopItem(name='bread', cost=8, amount=1)}
-        self.in_stock = {self.items['instant noodles']:1, self.items['instant soup']:69, self.items['bread']:1}
+        self.in_stock = {self.items['instant noodles']:420, self.items['instant soup']:69, self.items['bread']:1}
 
 
         @self.object('shelves')
@@ -78,8 +78,8 @@ class Mainroom(game.Location):
                 break
         if not in_cart:
             self.cart_contents.append(CartItem(item))
+            self.get_object('shelves').get_action('remove ' + item.name).enabled = True
         self.in_stock[item] += -amount
-        self.get_object('shelves').get_action('remove ' + item.name).enabled = True
 
         if self.in_stock[item]:
             self.get_object('shelves').get_action(item.name).enabled = True
