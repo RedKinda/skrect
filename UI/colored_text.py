@@ -52,7 +52,7 @@ class ColorString:
         for arg in args:
             if isinstance(arg, str):
                 arg = (arg, "white")
-            self.text_chunks.append(arg[0])
+            self.text_chunks.append(str(arg[0]))
             self.style_chunks.append(arg[1])
         #print(self.text_chunks, self.style_chunks)
 
@@ -61,20 +61,11 @@ class ColorString:
 
     def __iter__(self):
         self.ind = 0
-        filter = game.game_state.glasses.type
-        if filter == Alignment.GOVERNMENT:
-            self.translator = translate_red_filter
-        elif filter == Alignment.INDEPENDENT:
-            self.translator = translate_color
-        elif filter == Alignment.HIVEMIND:
-            self.translator = translate_green_filter
-        else:
-            raise TypeError("Invalid filter type")
         return self
 
     def __next__(self):
         if self.ind < len(self.text_chunks):
-            tup = (self.text_chunks[self.ind], self.translator[self.style_chunks[self.ind]])
+            tup = (self.text_chunks[self.ind], self.style_chunks[self.ind])
             self.ind += 1
             return tup
         else:
@@ -94,6 +85,27 @@ class ColorString:
             new.style_chunks.append("white")
         else:
             raise TypeError("operator '+' can only be used on strings and ColorStrings")
+        return new
+
+    def glassed(self, filter=None):
+        if filter is None:
+            filter = game.game_state.glasses.type if game.game_state else Alignment.INDEPENDENT
+        if filter == Alignment.GOVERNMENT:
+            translator = translate_red_filter
+        elif filter == Alignment.INDEPENDENT:
+            translator = translate_color
+        elif filter == Alignment.HIVEMIND:
+            translator = translate_green_filter
+        else:
+            raise TypeError("Invalid filter type")
+
+        new = ColorString()
+        for i in range(len(self.text_chunks)):
+            tup = (self.text_chunks[i], self.style_chunks[i])
+            new.text_chunks.append(tup[0])
+            new.style_chunks.append(translator[tup[1]])
+
+        return new
 
 '''    def glassed(self, filter_color):
         newchunks = []
@@ -115,5 +127,6 @@ class ColorString:
         return result'''
 
 
-
+a = ColorString(" ") + ColorString(("Something brrr", "red")) + "\n"
+print(str(a))
 #print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))

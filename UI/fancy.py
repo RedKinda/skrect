@@ -2,20 +2,20 @@ import curses
 import game
 import time
 import UI.colored_text
+from UI.colored_text import ColorString
 import logging
 
-LOG_DRAWING = False
+LOG_DRAWING = True
 
 
-if LOG_DRAWING:
-    import os
-    try: os.mkdir("logs")
-    except: pass
-    logging.basicConfig(level=logging.INFO, filename="logs/aaa.log")
-    keylog = logging.getLogger("keylogger")
-    keylog.addHandler(logging.FileHandler("logs/keylog.log"))
-    drawlog = logging.getLogger("drawlog")
-    drawlog.addHandler(logging.FileHandler("logs/drawlog.log"))
+import os
+try: os.mkdir("logs")
+except: pass
+logging.basicConfig(level=logging.INFO if LOG_DRAWING else logging.WARNING, filename="logs/aaa.log")
+keylog = logging.getLogger("keylogger")
+keylog.addHandler(logging.FileHandler("logs/keylog.log"))
+drawlog = logging.getLogger("drawlog")
+drawlog.addHandler(logging.FileHandler("logs/drawlog.log"))
 
 
 class FancyDrawer:
@@ -60,12 +60,13 @@ class FancyDrawer:
             for element in text:
                 FancyDrawer.write_text(window, element)
         elif isinstance(text, str):
-            window.addstr(text)
+            FancyDrawer.write_text(window, ColorString(text))
+            #window.addstr(text)
             #drawlog.info(text)
         elif isinstance(text, UI.colored_text.ColorString):
             #drawlog.info("Colored: " + str(text))
             filter = game.game_state.glasses.type
-            for chunk in text:
+            for chunk in text.glassed():
                 #drawlog.info("TEXT, COLOR: " + str(chunk))
                 curses.init_pair(1, chunk[1], -1)
                 window.addstr(chunk[0], curses.color_pair(1))
@@ -124,7 +125,9 @@ class FancyDrawer:
         space = " "*((columns - 5 - len(desc)) // 2)
         self.write_text(self.win_main, "\n" + space + desc + space + "\n\n")
         if len(game.game_state.active_messages) > 0:
-            self.write_text(self.win_main, " " + "\n ".join(game.game_state.active_messages) + "\n")
+            drawlog.info("Active message: " + str(game.game_state.active_messages))
+            for ind in range(len(game.game_state.active_messages)):
+                self.write_text(self.win_main, ColorString(" ") + game.game_state.active_messages[ind] + "\n")
         self.win_main.clrtobot()
         self.win_main.refresh()
 
@@ -166,6 +169,7 @@ class FancyDrawer:
         self.win_idksemmozespisat.refresh()
 
     def classic_draw(self, buffer):
+        raise NotImplemented
         state = game.game_state
         self.message_win.addstr("=" * 50 + "\n")
         self.message_win.addstr("Time: " + str(state.time)+ "\n")

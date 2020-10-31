@@ -1,5 +1,6 @@
 import datetime
 
+
 game_state = None
 
 
@@ -16,7 +17,7 @@ class Alignment:
     INDEPENDENT = "blue"
     HIVEMIND = "green"
 
-
+from UI.colored_text import ColorString
 class EnergyCost:
     NONE = 0
     MENTAL = 1
@@ -283,7 +284,8 @@ class Action:
     def execute(self):
         self.callback()
         cost = self.energycost * self.timecost.total_seconds()
-        show_message("You would lose {0} points of energy".format(cost))
+        msg = ColorString(("You would lose "), (cost, "yellow"), (" points of energy"))
+        show_message(msg)
         return self.timecost
 
     def disable(self):
