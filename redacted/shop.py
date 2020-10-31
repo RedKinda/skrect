@@ -60,7 +60,7 @@ class Mainroom(game.Location):
         @self.action(name='checkout', description='Purchase the contents of your shopping cart', priority=31)
         def checkout():
             total_cost = 0
-            for thing in cart_contents:
+            for thing in self.cart_contents:
                 total_cost += thing.item.cost*thing.amount
             game.show_message('Your total is {}c. Money and items not yet supported.'.format(total_cost))
 
@@ -118,18 +118,16 @@ class Office(game.Location):
         def manager():
             pass
 
-        @manager.action('apply', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30))
+        @manager.action('apply', description='Apply for a job as a cashier', timecost=datetime.timedelta(minutes=30))
         def apply():
             self.job=True
             manager.get_action('apply').enabled = False
 
+main = Mainroom()
+office = Office()
+main.add_neighbor(office, timecost=datetime.timedelta(minutes=2))
 
 def run():
-    main = Mainroom()
-    office = Office()
-
-    main.add_neighbor(office, timecost=datetime.timedelta(minutes=2))
-
     def callback():
         pass
 
