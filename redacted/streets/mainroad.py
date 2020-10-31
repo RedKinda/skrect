@@ -18,10 +18,11 @@ class Street(game.Location):
 
         self.encounter_meme = self.get_object("meme")
         self.encounter_meme.infected = 0
+        self.encounter_meme.contents = self.meme_randomize()
         
         @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
         def exameme():
-            game.game_state.show_message("The note reads: According to all known laws of aviation, there is no way a bee should be able to fly. It's wings are too small to lift it's fat body off the ground and some more false reasons.")
+            game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
             if self.encounter_meme.infected == 0:
                 self.encounter_meme.infected = 1
                 #infection increases slightly
@@ -47,14 +48,18 @@ class Street(game.Location):
                 #infection decreases slightly
                 game.game_state.show_message("INFECTION --")
                 self.encounter_meme.move(void)
-                
+
+    def meme_randomize(self):
+        return random.choice(("Bee", "ä", "The note reads:", "This is a lie", "Get stick bugged lol"))
 
     def sleep_reset(self):
         events = ("none",)*5+("meme",)+("maybe",)*4
         event = random.choice(events)
         self.encounter_meme.move(void)
         if event == "meme":
+            self.encounter_meme.infected = 0
             self.encounter_meme.move(self)
+            self.encounter_meme.contents = self.meme_randomize()
 
 class MainRoad(Street):
     def __init__(self, name='Main road'):
