@@ -2,6 +2,7 @@ import curses
 import traceback
 import time
 import game
+import UI.sound
 
 
 #from sample_world.sample1 import run
@@ -24,7 +25,8 @@ try:  # Fancy curtsies drawer
     with drawer() as dr:
         with generator(dr.get_screen(), {}) as gen:
             dr.draw(gen.buffer)
-    print("Pants work!")
+    UI.sound.play_forever()
+    print("Pants work! Starting fancy terminal...")
 except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
     print("You can safely ignore the following error:")
@@ -48,7 +50,8 @@ with drawer() as drawer:
             elif inp.isdigit():
                 game.game_state.execute_action_from_list(int(inp)-1)
             drawer.draw(input_generator.buffer)
-
+print("Exiting...")
+UI.sound.player.stop()
 
 
 

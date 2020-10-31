@@ -3,9 +3,10 @@
 from game import Alignment
 import game
 import curses
+import time
 
 
-blank = -1
+blank = "BLANK OWO"
 
 translate_style = {
     "bold": curses.A_BOLD,
@@ -44,6 +45,13 @@ translate_green_filter = {
     "white": curses.COLOR_GREEN
 }
 
+
+def translate(text, style, translator):
+    color = translator[style]
+    if color == blank:
+        return (" "*len(text), curses.COLOR_WHITE)
+    else:
+        return (text, color)
 
 class ColorString:
     def __init__(self, *args):
@@ -87,6 +95,9 @@ class ColorString:
             raise TypeError("operator '+' can only be used on strings and ColorStrings")
         return new
 
+    def __len__(self):
+        return len(" ".join(self.text_chunks))
+
     def glassed(self, filter=None):
         if filter is None:
             filter = game.game_state.glasses.type if game.game_state else Alignment.INDEPENDENT
@@ -101,10 +112,9 @@ class ColorString:
 
         new = ColorString()
         for i in range(len(self.text_chunks)):
-            tup = (self.text_chunks[i], self.style_chunks[i])
+            tup = translate(self.text_chunks[i], self.style_chunks[i], translator)
             new.text_chunks.append(tup[0])
-            new.style_chunks.append(translator[tup[1]])
-
+            new.style_chunks.append(tup[1])
         return new
 
 '''    def glassed(self, filter_color):
@@ -128,5 +138,5 @@ class ColorString:
 
 
 a = ColorString(" ") + ColorString(("Something brrr", "red")) + "\n"
-print(str(a))
+#print(str(a))
 #print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))

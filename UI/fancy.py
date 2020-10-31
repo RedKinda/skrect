@@ -4,11 +4,10 @@ import time
 import UI.colored_text
 from UI.colored_text import ColorString
 import logging
-
-LOG_DRAWING = True
-
-
 import os
+
+LOG_DRAWING = False
+
 try: os.mkdir("logs")
 except: pass
 logging.basicConfig(level=logging.INFO if LOG_DRAWING else logging.WARNING, filename="logs/aaa.log")
@@ -68,8 +67,11 @@ class FancyDrawer:
             filter = game.game_state.glasses.type
             for chunk in text.glassed():
                 #drawlog.info("TEXT, COLOR: " + str(chunk))
-                curses.init_pair(1, chunk[1], -1)
-                window.addstr(chunk[0], curses.color_pair(1))
+                if not isinstance(chunk[1], int):
+                    print(chunk)
+                    time.sleep(5)
+                curses.init_pair(chunk[1], chunk[1], -1)
+                window.addstr(chunk[0], curses.color_pair(chunk[1]))
         else:
             raise TypeError("Whoopsie doopsie this must be a string or ColorString")
 
@@ -100,17 +102,24 @@ class FancyDrawer:
         self.win_info.move(0, 0)
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
         time = str(game.game_state.time)
-        money = "Money: [    ]"
+        money = ColorString(("Money: [    ]", "yellow"))
         energy = "Energy: 0[          ]1"
         willpower = "Willpower: 0[          ]1"
         exhaustion = "Exhaustion: 1[          ]2"
-        infection = "???: 0[          ]1"
+        infection = ColorString(("???: 0[          ]1", "green"))
+        weekday = ["Monday   ",
+                   "Tuesday  ",
+                   "Wednesday",
+                   "Thursday ",
+                   "Friday   ",
+                   "Saturday ",
+                   "Sunday   "][game.game_state.time.weekday()]
         tab = " "*(max((columns - len(time) - len(money) - len(energy) - len(willpower)) // 10, 1))
 
         for s in [tab*3, time, tab, money, tab*2, energy, tab, willpower, "\n"]:
             self.write_text(self.win_info, s)
 
-        for s in [tab*6, " "*27, exhaustion, tab, " "*6, infection, "\n"]:
+        for s in [tab*3, weekday, tab*3, " "*18, exhaustion, tab, " "*6, infection, "\n"]:
             self.write_text(self.win_info, s)
 
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
