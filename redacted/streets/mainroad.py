@@ -1,10 +1,65 @@
 import game
 import datetime
 import redacted.misc_utilities
+import random
+from redacted.void import void
 
 class Street(game.Location):
     def __init__(self, name):
         super().__init__(name=name)
+
+        @self.action(name="Generate an event here")
+        def generate():
+            self.sleep_reset()
+
+        @game.object(name="meme", location=self)
+        def meme():
+            pass
+
+        self.encounter_meme = self.get_object("meme")
+        self.encounter_meme.infected = 0
+        self.encounter_meme.contents = self.meme_randomize()
+        
+        @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
+        def exameme():
+            game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
+            if self.encounter_meme.infected == 0:
+                self.encounter_meme.infected = 1
+                #infection increases slightly
+                game.game_state.show_message("INFECTION ++")
+            
+            inspect_meme = game.Dialogue("A crumpled note.")
+            startsit = inspect_meme.start()
+            
+            @startsit.situation("Try to forget it", response = "It was probably nothing. The Government warned against reading notes lying on the ground anyway.")
+            def meme_forget():
+                #nothing happens
+                pass
+
+            @startsit.situation("Think about it", response = "It makes no sense at all. Not in the slightest. Yet... You feel something moved in your very being.")
+            def meme_think():
+                if self.encounter_meme.infected == 1:
+                    #infection increases slightly
+                    game.game_state.show_message("INFECTION ++")
+                    self.encounter_meme.infected = 2
+
+            @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel safer.")
+            def meme_destroy():
+                #infection decreases slightly
+                game.game_state.show_message("INFECTION --")
+                self.encounter_meme.move(void)
+
+    def meme_randomize(self):
+        return random.choice(("Bee", "ä", "The note reads:", "This is a lie", "Get stick bugged lol"))
+
+    def sleep_reset(self):
+        events = ("none",)*5+("meme",)+("maybe",)*4
+        event = random.choice(events)
+        self.encounter_meme.move(void)
+        if event == "meme":
+            self.encounter_meme.infected = 0
+            self.encounter_meme.move(self)
+            self.encounter_meme.contents = self.meme_randomize()
 
 class MainRoad(Street):
     def __init__(self, name='Main road'):

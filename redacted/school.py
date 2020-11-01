@@ -1,6 +1,7 @@
 import datetime
 import game
 from UI.colored_text import ColorString
+from redacted.void import void
 
 class Holder():
     def __init__(self):
@@ -22,13 +23,6 @@ def resolve_sadness():
     #game.game_state.show_message("You last visited school on " + str(last_visit) + " and today is " + str(today))
     #game.game_state.show_message("You missed " + str(today - last_visit) + ", therefore the result is " + str(days_missed))
     return days_missed
-
-class Void(game.Location):
-    def __init__(self):
-        super().__init__(description="You aren't anywhere. There seem to be some objects here with you.")
-
-    def when_entering(self, from_location):
-        game.game_state.show_message("As you step through the rift you feel... nothing. Wait... where are you? You shouldn't be here.")
 
 class Hall(game.Location):
     def __init__(self):
@@ -186,7 +180,6 @@ holder = Holder()
 
 hall = Hall()
 clss = Class()
-void = Void()
 hall.add_neighbor(clss, timecost=clss.distance)
 
 def visit_init():
