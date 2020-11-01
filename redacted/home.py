@@ -11,30 +11,30 @@ class Bedroom(game.Location):
         def bed():
             pass
 
-        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8))
+        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE)
         def nap():
             game.show_message("You took a nice nap")
             #utils.sleep()
 
-        @bed.action(name="Sleep", description="Sleep until 6 in the morning", time_cost=datetime.timedelta(0))
+        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta())
         def sleep():
-            if game.game_state.time.hour > 11:
+            time = game.game_state.time
+            if time.hour > 18:
                 game.game_state.time = game.game_state.time + datetime.timedelta(days=1)
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
                 game.show_message("You slept through the night")
-                #utils.sleep()
-            elif game.game_state.time.hour < 7:
+            elif time.hour < 7:
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
                 game.show_message("You slept until the morning")
-                #utils.sleep()
             else:
                 game.show_message("It is no time to sleep")
+            utils.sleep(game.game_state.time - time)
 
         @self.object("kettle")
         def kettle():
             pass
 
-        @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5))
+        @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE)
         def make_noodles():
             game.show_message("you are eaten instant noods\ncongratulates")
             #utils.eat("noodles")

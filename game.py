@@ -6,7 +6,7 @@ game_state = None
 
 def game_init(starting_location, callback):
     global game_state
-    game_state = GameState(starting_location, )
+    game_state = GameState(starting_location)
     callback()
     game_state.refresh()
 
