@@ -25,3 +25,6 @@ crescent_lane = CrescentLane()
 crescent_lane.add_neighbor(long_road_west, timecost=datetime.timedelta(minutes=2))
 
 littlewood_route = LittlewoodRoute()
+
+import redacted.home as home
+crescent_lane.add_neighbor(home.hall, timecost=datetime.timedelta(minutes=1))

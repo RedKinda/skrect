@@ -37,15 +37,13 @@ class Hallway(game.Location):
 
 
 def init():
-    global bed
+    global bed, hall
     bed = Bedroom()
     hall = Hallway()
     bed.add_neighbor(hall)
 
 
-def run():
-    global bed
-    init()
-    def callback():
-        pass
-    game.game_init(bed, callback)
+init()
+def callback():
+    pass
+game.game_init(bed, callback)
