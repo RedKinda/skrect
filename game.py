@@ -119,7 +119,7 @@ class GameState(Interactable):
         self.time += timecost
         self.location.after_action(action)
         for cb in self.post_action_triggers:
-            cb()
+            cb(action)
         self.refresh()
         return True
 
@@ -175,8 +175,12 @@ class Glasses:
             if action.alignment in [Alignment.GOVERNMENT, Alignment.NEUTRAL]:
                 return True
             return False
-        else:
+        elif self.type == Alignment.INDEPENDENT:
             return True
+        elif self.type == Alignment.HIVEMIND:
+            if action.alignment in [Alignment.HIVEMIND, Alignment.NEUTRAL]:
+                return True
+            return False
 
 
 class Object(Interactable):

@@ -96,17 +96,22 @@ class FancyDrawer:
     def get_screen(self):
         return self.screen
 
+    @staticmethod
+    def make_bar(stat):
+        return " "*round(game.game_state.get_stat(stat)*10) + "X"*round(10-(game.game_state.get_stat(stat)*10))
+
     def draw_info(self):
         lines, columns = self.screen.getmaxyx()
         lines, columns = 4, columns - 1
         self.win_info.move(0, 0)
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
         time = str(game.game_state.time)
-        money = ColorString(("Money: [    ]", "yellow"))
-        energy = "Energy: 0[          ]1"
-        willpower = "Willpower: 0[          ]1"
-        exhaustion = "Exhaustion: 1[          ]2"
-        infection = ColorString(("???: 0[          ]1", "green"))
+        m = str(game.game_state.get_stat("money"))
+        money = ColorString(("Money: [{0}]".format(" "*(4-len(m)) + m), "yellow"))
+        energy = "Energy: 0[{0}]1".format(self.make_bar("energy"))
+        willpower = "Willpower: 0[{0}]1".format(self.make_bar("willpower"))
+        exhaustion = "Hunger: 1[{0}]2".format(self.make_bar("hunger"))
+        infection = ColorString(("???: 0[{0}]1".format(self.make_bar("infection")), "green"))
         weekday = ["Monday   ",
                    "Tuesday  ",
                    "Wednesday",
@@ -119,7 +124,7 @@ class FancyDrawer:
         for s in [tab*3, time, tab, money, tab*2, energy, tab, willpower, "\n"]:
             self.write_text(self.win_info, s)
 
-        for s in [tab*3, weekday, tab*3, " "*18, exhaustion, tab, " "*6, infection, "\n"]:
+        for s in [tab*3, weekday, tab*3, " "*22, exhaustion, tab, " "*6, infection, "\n"]:
             self.write_text(self.win_info, s)
 
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))

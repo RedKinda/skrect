@@ -2,6 +2,7 @@ import pyglet
 import logging
 import threading
 import time
+import game
 
 end = False
 
@@ -11,10 +12,25 @@ def ticking():
         time.sleep(0.1)
         pyglet.clock.tick()
 
+        try:
+            if game.game_state.glasses.type == game.Alignment.INDEPENDENT:
+                player.set_volume("all", 1)
+                player.set_volume("red", 0)
+            elif game.game_state.glasses.type == game.Alignment.GOVERNMENT:
+                player.set_volume("all", 0)
+                player.set_volume("red", 1)
+            player.set_volume("green", game.game_state.get_stat("infection"))
+        except:
+            pass
+
 
 def play_forever():
-    player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "ambient_all")
-    player.play_audio("ambient_all", "main", loop=True)
+    player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "a_all")
+    player.load_audio("UI/sounds/Ambient/Ambient_green.wav", "a_green")
+    player.load_audio("UI/sounds/Ambient/Ambient_red.wav", "a_red")
+    player.play_audio("a_all", "all", loop=True)
+    player.play_audio("a_green", "green", loop=True)
+    player.play_audio("a_red", "red", loop=True)
 
 
 class Audio:
@@ -45,14 +61,18 @@ class MusicPlayer:
         self.channels[channel] = player
 
         player.play()
-        #if loop:
-            #player.eos_action = pyglet.media.loop
+
+        if loop:
+            player.loop = True
 
     def stop(self):
         global end
         end = True
         for c in self.channels:
             self.channels[c].delete()
+
+    def set_volume(self, channel, volume):
+        self.channels[channel].volume = volume
 
 
 thread = threading.Thread(target=ticking)

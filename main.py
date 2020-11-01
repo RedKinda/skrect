@@ -27,6 +27,7 @@ try:  # Fancy curtsies drawer
             dr.draw(gen.buffer)
     UI.sound.play_forever()
     print("Pants work! Starting fancy terminal...")
+    input("Please maximize your terminal window for the best experience! Press ENTER once you've done so!")
 except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
     print("You can safely ignore the following error:")
