@@ -54,6 +54,7 @@ def spend_energy(amount):
 
     if new_e <= 0:
         game.show_message('You have run out of energy! Setting energy to 100%.')
+        new_e = 1.
     game.game_state.set_stat('energy', new_e)
 
 def spend_hunger(time):
