@@ -1,7 +1,7 @@
 import game
 import datetime
 import redacted.misc_utilities as utils
-
+from UI.colored_text import ColorString
 
 class Bedroom(game.Location):
     def __init__(self):
@@ -11,9 +11,9 @@ class Bedroom(game.Location):
         def bed():
             pass
 
-        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE)
+        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE, color = "magenta")
         def nap():
-            game.show_message("You took a nice nap")
+            game.show_message(ColorString(("You took a nice nap","blue")))
             #utils.sleep()
 
         @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta())

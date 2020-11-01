@@ -35,7 +35,7 @@ class Hall(game.Location):
 
         @flag.action(name="Observe flag", time_cost=datetime.timedelta(hours=1), description="A glorious mural.", energycost = game.EnergyCost.NONE)
         def inspect():
-            game.game_state.show_message("On the wall hangs the flag. It makes you feel small. Your sadness value is " + str(holder.sadness))
+            game.game_state.show_message("On the wall hangs the flag. It makes you feel small.")
             #decrease willpower
 
     def when_entering(self, from_location):
@@ -170,7 +170,7 @@ class Class(game.Location):
                 utils.spend_energy(e)
                 lesson_done()
 
-            @startsit.situation("Sleep", response = "You slept in class. The teacher is not happy.", closable = False)
+            @startsit.situation("Sleep", response = "You slept in class. The teacher is not happy.", closable = False, color = "blue")
             def lesson_schlaf():
                 utils.sleep((endTime - game.game_state.time)*0.5)
                 #sleep instead
