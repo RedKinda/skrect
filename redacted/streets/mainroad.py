@@ -19,7 +19,7 @@ class Street(game.Location):
         self.encounter_meme = self.get_object("meme")
         self.encounter_meme.infected = 0
         self.encounter_meme.contents = self.meme_randomize()
-        
+
         @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
         def exameme():
             game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
@@ -27,10 +27,10 @@ class Street(game.Location):
                 self.encounter_meme.infected = 1
                 #infection increases slightly
                 game.game_state.show_message("INFECTION ++")
-            
+
             inspect_meme = game.Dialogue("A crumpled note.")
             startsit = inspect_meme.start()
-            
+
             @startsit.situation("Try to forget it", response = "It was probably nothing. The Government warned against reading notes lying on the ground anyway.")
             def meme_forget():
                 #nothing happens
@@ -87,9 +87,11 @@ main_road_south.add_neighbor(greatwood.greatwood_row, timecost=datetime.timedelt
 
 def run():
     def callback():
-        pass
+        from redacted.misc_utilities import init_stats
+        init_stats()
 
-    game.game_init(littlewood.crescent_lane, callback)
+    from redacted.home import bedroom
+    game.game_init(bedroom, callback)
 
     from redacted.school import visit_init
     redacted.school.visit_init()

@@ -66,4 +66,4 @@ import redacted.school as school
 amaryllis_street.add_neighbor(school.hall, timecost=datetime.timedelta(minutes=1))
 
 import redacted.shop as shop
-lycoris_street.add_neighbor(shop.main, timecost=datetime.timedelta(minutes=1))
+lycoris_street.add_neighbor(shop.main_room, timecost=datetime.timedelta(minutes=1))
