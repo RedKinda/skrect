@@ -1,5 +1,5 @@
 import datetime
-
+import collections
 
 game_state = None
 
@@ -58,7 +58,7 @@ class Interactable:
 
     def get_action(self, name):
         for action in self._actions:
-            if action.name == name:
+            if str(action.name) == name:
                 return action
         return None
 
@@ -88,6 +88,7 @@ class GameState(Interactable):
         self.active_messages = []
         self.pending_messages = []
         self.player_stats = {}
+        self.post_action_triggers = set()
         self.glasses = Glasses()
 
     def refresh(self):
@@ -117,6 +118,8 @@ class GameState(Interactable):
         timecost = action.execute()
         self.time += timecost
         self.location.after_action(action)
+        for cb in self.post_action_triggers:
+            cb()
         self.refresh()
         return True
 
@@ -156,6 +159,11 @@ class GameState(Interactable):
             self.set_stat(name, value)
         else:
             raise KeyError
+
+    def add_post_action_trigger(self, callback):
+        if not isinstance(callback, collections.Callable):
+            raise TypeError("Trigger must be callable")
+        self.post_action_triggers.add(callback)
 
 
 class Glasses:
@@ -270,13 +278,24 @@ class Location(Interactable):
 
 
 class Action:
+    color_to_alignment = {
+        "red": Alignment.GOVERNMENT,
+        "magenta": Alignment.GOVERNMENT,
+        "yellow": Alignment.NEUTRAL,
+        "white": Alignment.NEUTRAL,
+        "green": Alignment.HIVEMIND,
+        "cyan": Alignment.HIVEMIND,
+        "blue": Alignment.INDEPENDENT
+    }
+
     def __init__(self, name, callback, **kwargs):
-        self.name = name
         self.timecost = kwargs.get("time_cost", datetime.timedelta(minutes=1))
         self.callback = callback
         self.enabled = not kwargs.get("disabled", False)
         self.visible = kwargs.get("visible", True)
-        self.alignment = kwargs.get("alignment", Alignment.NEUTRAL)
+        self.color = kwargs.get("color", "white")
+        self.name = ColorString((name, self.color))
+        self.alignment = kwargs.get("alignment", self.color_to_alignment[self.color])
         self.description = kwargs.get("description", None)
         self.priority = kwargs.get("priority", 50)
         self.energycost = kwargs.get("energycost", EnergyCost.MENTAL)
