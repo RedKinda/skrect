@@ -145,6 +145,18 @@ class GameState(Interactable):
     def show_message(self, message):
         self.pending_messages.append(message)
 
+    def set_stat(self, name, value):
+        self.player_stats[name] = value
+
+    def get_stat(self, name):
+        return self.player_stats[name]
+
+    def init_stat(self, name, value):
+        if name not in self.player_stats:
+            self.set_stat(name, value)
+        else:
+            raise KeyError
+
 
 class Glasses:
     def __init__(self):
