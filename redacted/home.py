@@ -28,7 +28,6 @@ class Bedroom(game.Location):
                 utils.sleep(game.game_state.time - time)
             else:
                 game.show_message("It is no time to sleep right now.")
-            utils.sleep(game.game_state.time - time)
 
         @self.object("kettle")
         def kettle():
