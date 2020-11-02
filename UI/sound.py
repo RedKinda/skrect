@@ -57,13 +57,19 @@ class MusicPlayer:
         player = pyglet.media.Player()
         player.volume = volume
         player.pitch = speed
-        player.queue(self.audios[name].source)
+        src = self.audios[name].source
+
+        if loop:
+            looper = pyglet.media.SourceGroup()
+            looper.add(src)
+            player.queue(looper)
+            player.loop = True
+            player.on_eos = lambda: player.queue(src)
+        else:
+            player.queue(src)
         self.channels[channel] = player
 
         player.play()
-
-        if loop:
-            player.loop = True
 
     def stop(self):
         global end

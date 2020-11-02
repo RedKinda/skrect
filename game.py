@@ -305,7 +305,7 @@ class Action:
         self.energycost = kwargs.get("energycost", EnergyCost.MENTAL)
 
     def __str__(self):
-        s = "{0}".format(self.name,)
+        s = "{0}".format(self.name)
         if self.timecost != datetime.timedelta(seconds=0):
             s += " - {0}".format(str(self.timecost))
         if self.description is not None:
@@ -314,7 +314,12 @@ class Action:
 
     def print(self):
         if self.enabled and self.visible:
-            return str(self)
+            s = self.name
+            if self.timecost != datetime.timedelta(seconds=0):
+                s += " - {0}".format(str(self.timecost))
+            if self.description is not None:
+                s += " - {0}".format(self.description)
+            return s
 
     def execute(self):
         self.callback()
