@@ -33,7 +33,7 @@ class Hall(game.Location):
         def flag():
             pass
 
-        @flag.action(name="Observe flag", time_cost=datetime.timedelta(hours=1), description="A glorious mural.", energycost = game.EnergyCost.NONE, priority = 5)
+        @flag.action(name="Observe flag", time_cost=datetime.timedelta(seconds=10), description="A glorious mural.", energycost = game.EnergyCost.NONE, priority = 5, color = "red")
         def inspect():
             game.game_state.show_message("On the wall hangs the flag. It makes you feel small.")
             #decrease willpower
@@ -51,7 +51,7 @@ class Canteen(game.Location):
 
         self.distance = datetime.timedelta(minutes=1)
 
-        @self.action(name="Eat lunch", time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.NONE, priority = 5)
+        @self.action(name="Eat lunch", time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.NONE, priority = 5, color = "yellow")
         def eat():
             #eat
             game.game_state.show_message("The food is edible.")
@@ -132,7 +132,7 @@ class Class(game.Location):
                 def rekt():
                     pass
 
-        @self.action(name="Attend", time_cost = datetime.timedelta(0), description="Attend class until 15.", priority = 5)
+        @self.action(name="Attend", time_cost = datetime.timedelta(0), description="Attend class until 15.", priority = 5, color = "yellow")
         def attend():
             global last_visit
             days_missed = resolve_sadness()
@@ -150,9 +150,8 @@ class Class(game.Location):
             lesson = game.Dialogue("Attending a lesson.", closable = False)
             startsit = lesson.start()
 
-            @startsit.situation("Pay close attention", response = "You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die? (cyan: The Government will make sure of that.)", closable = False)
+            @startsit.situation("Pay close attention", response = ColorString(("You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die?", "red"), ("The Government will make sure of that.", "cyan")), closable = False, color = "red")
             def lesson_attention():
-                utils.update_willpower(False, weight=40)
                 holder.sadness = max(0, holder.sadness-1)
                 if game.game_state.time.hour < 8:
                     utils.spend_stats(startTime - game.game_state.time, game.EnergyCost.NONE)
@@ -160,9 +159,10 @@ class Class(game.Location):
                 else:
                     timePoint = game.game_state.time
                 utils.spend_stats(endTime - timePoint, game.EnergyCost.MENTAL)
+                utils.update_willpower(False, time=(endTime-timePoint))
                 lesson_done()
 
-            @startsit.situation("Don't", response = "Haha, I just realized Horatio looks like Meme Man.", closable = False)
+            @startsit.situation("Don't", response = "Haha, I just realized Horatio looks like Meme Man.", closable = False, color = "cyan")
             def lesson_funni():
                 utils.spend_stats(endTime - game.game_state.time, game.EnergyCost.NONE)
                 #holder.sadness += 10
