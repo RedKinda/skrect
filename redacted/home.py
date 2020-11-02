@@ -11,37 +11,36 @@ class Bedroom(game.Location):
         def bed():
             pass
 
-        @bed.action(name="Relax", description="Pass some time", time_cost=datetime.timedelta(hours=1), energycost=game.EnergyCost.NONE, color = "white", priority = 12)
+        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE, color = "magenta", priority = 12)
         def nap():
-            game.show_message("You took a nice nap.")
+            game.show_message(ColorString(("You took a nice nap","blue")))
             #utils.sleep()
 
-        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta(0), priority = 10, color = "magenta")
+        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta(), priority = 10)
         def sleep():
             time = game.game_state.time
             if time.hour > 18:
                 game.game_state.time = game.game_state.time + datetime.timedelta(days=1)
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
-                game.show_message("You slept through the night.")
+                utils.sleep(game.game_state.time - time)
             elif time.hour < 7:
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
-                game.show_message("You slept until the morning.")
+                utils.sleep(game.game_state.time - time)
             else:
                 game.show_message("It is no time to sleep right now.")
-            utils.sleep(game.game_state.time - time)
 
         @self.object("kettle")
         def kettle():
             pass
 
-        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True)
         def make_instant_noodles():
             utils.eat(self.instant_noodles)
             utils.remove_from_inventory(self.instant_noodles.name)
             game.show_message("You cook some Instant noodles and eat them. The flavoring is a little bit off.")
             self.check_cookable()
 
-        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True)
         def make_instant_soup():
             utils.eat(self.instant_soup)
             utils.remove_from_inventory(self.instant_soup.name)
@@ -69,14 +68,14 @@ class Hallway(game.Location):
     def __init__(self):
         super().__init__()
 
-        @self.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE, color = "yellow")
+        @self.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE)
         def pay():
             if utils.spend_money(self.rent_level):
                 game.game_state.show_message("You paid your rent for this week.")
                 self.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
             else:
                 game.game_state.show_message("You don't have enough.")
-        
+
     def after_action(self, action_executed):
         pay = self.get_action("Pay rent")
         if game.game_state.time.hour >= 18 or game.game_state.time.hour <= 8:
