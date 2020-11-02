@@ -104,7 +104,7 @@ greatwood.begonia_street.get_action("Travel to Main road (north)").priority = 10
 greatwood.lycoris_street.get_action("Travel to Main road (north)").priority = 10
 greatwood.camellia_street.get_action("Travel to Main road (north)").priority = 10
 greatwood.poppy_street.get_action("Travel to Main road (north)").priority = 10
-greatwood.greatwood_row.get_action("Travel to Main road (north)").priority = 10
+greatwood.greatwood_row.get_action("Travel to Main road (south)").priority = 10
 
 encounter_streets.append(greatwood.hibiscus_street)
 encounter_streets.append(greatwood.peony_street)

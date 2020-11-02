@@ -67,4 +67,4 @@ amaryllis_street.get_action("Travel to Hall").priority = 10
 
 import redacted.shop as shop
 lycoris_street.add_neighbor(shop.main_room, timecost=datetime.timedelta(minutes=1))
-lycoris_street.get_action("Travel to mainroom").priority = 10
+lycoris_street.get_action("Travel to Inconvenience store").priority = 10
