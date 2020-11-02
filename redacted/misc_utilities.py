@@ -33,11 +33,18 @@ def update_stats(action):
 
 
 def sleep(time):
+    from redacted.streets.mainroad import encounter_streets
+    
     halflife = datetime.timedelta(hours=4)
     e = 1 - game.game_state.get_stat('energy')
 
     k = .5**(time/halflife)
     game.game_state.set_stat('energy', 1 - k*e)
+
+    for i in encounter_streets:
+        i.sleep_reset()
+
+    
 
 def eat(food):
     pass
