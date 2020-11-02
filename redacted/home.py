@@ -22,10 +22,10 @@ class Bedroom(game.Location):
             if time.hour > 18:
                 game.game_state.time = game.game_state.time + datetime.timedelta(days=1)
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
-                game.show_message("You slept through the night.")
+                utils.sleep(game.game_state.time - time)
             elif time.hour < 7:
                 game.game_state.time = game.game_state.time.replace(hour=7, minute=0, second=0)
-                game.show_message("You slept until the morning.")
+                utils.sleep(game.game_state.time - time)
             else:
                 game.show_message("It is no time to sleep right now.")
             utils.sleep(game.game_state.time - time)
@@ -76,7 +76,7 @@ class Hallway(game.Location):
                 self.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
             else:
                 game.game_state.show_message("You don't have enough.")
-        
+
     def after_action(self, action_executed):
         pay = self.get_action("Pay rent")
         if game.game_state.time.hour >= 18 or game.game_state.time.hour <= 8:
