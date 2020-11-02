@@ -190,6 +190,8 @@ class Office(game.Location):
             apply.disable()
 
         @manager.action('Leave job', description='Leave your job as a cashier')
+        def leave_job():
+            pass
 
 
 class StaffRoom(game.Location):

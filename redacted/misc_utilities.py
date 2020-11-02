@@ -1,6 +1,7 @@
 import game
 import datetime
 import random
+import redacted.dreams as dreams
 
 ENERGY = 16*3600*3
 
@@ -55,6 +56,17 @@ def eat(food):
     s = food.saturation
     h = 1 - game.game_state.get_stat('hunger')
     game.game_state.set_stat('hunger', 1 - (1 - s)*h)
+
+def spend_money(amount):
+    if type(amount) != int:
+        raise TypeError('Amount of money to spend must be an integer')
+    money = game.game_state.get_stat('money')
+
+    if amount > money:
+        return False
+
+    game.game_state.set_stat('money', money - amount)
+    return True
 
 def spend_stats(time, weight):
     h_start = game.game_state.get_stat('hunger')
