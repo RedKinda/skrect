@@ -32,7 +32,7 @@ def update_stats(action):
 
 def sleep(time):
     from redacted.streets.mainroad import encounter_streets
-    
+
     halflife = datetime.timedelta(hours=4)
     e = 1 - game.game_state.get_stat('energy')
 
@@ -42,7 +42,14 @@ def sleep(time):
     for i in encounter_streets:
         i.sleep_reset()
 
-    
+
+
+def update_infection(amount):
+    i = game.game_state.get_stat('infection')
+    i += amount
+    if i < 0: i = 0
+    elif i > 1: i = 1
+    game.game_state.set_stat('infection', i)
 
 def eat(food):
     s = food.saturation

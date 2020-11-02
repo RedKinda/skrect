@@ -20,11 +20,13 @@ class MainRoom(game.Location):
         super().__init__(name=name)
 
         self.cart_contents = []
-        self.items = {'Instant noodles':ShopItem(name='Instant noodles', cost=5, amount=1),
-        'Instant soup':ShopItem(name='Instant soup', cost=20, amount=3),
-        'Bread':ShopItem(name='Bread', cost=8, amount=1)}
-        self.in_stock = {self.items['Instant noodles']:420, self.items['Instant soup']:69, self.items['Bread']:1}
-
+        self.items = {
+            'Instant noodles':ShopItem(name='Instant noodles', cost=5, amount=1),
+            'Instant soup':ShopItem(name='Instant soup', cost=20, amount=3),
+            'Bread':ShopItem(name='Bread', cost=8, amount=1)
+        }
+        
+        self.in_stock = {self.items['Instant noodles']:0, self.items['Instant soup']:0, self.items['Bread']:0}
         self.oldseed = 0
 
 
