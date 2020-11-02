@@ -8,9 +8,9 @@ class Street(game.Location):
     def __init__(self, name):
         super().__init__(name=name)
 
-        @self.action(name="Generate an event here")
-        def generate():
-            self.sleep_reset()
+        #@self.action(name="Generate an event here", priority = 6)
+        #def generate():
+        #    self.sleep_reset()
 
         @game.object(name="meme", location=self)
         def meme():
@@ -19,7 +19,7 @@ class Street(game.Location):
         self.encounter_meme = self.get_object("meme")
         self.encounter_meme.move(void)
 
-        @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
+        @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.", priority = 5)
         def exameme():
             game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
             if self.encounter_meme.infected == 0:
@@ -71,6 +71,8 @@ encounter_streets = []
 main_road_north = MainRoad('Main road (north)')
 main_road_south = MainRoad('Main road (south)')
 main_road_north.add_neighbor(main_road_south, timecost=datetime.timedelta(minutes=5))
+main_road_north.get_action("Travel to Main road (south)").priority = 10
+main_road_south.get_action("Travel to Main road (north)").priority = 10
 
 encounter_streets.append(main_road_north)
 encounter_streets.append(main_road_south)
@@ -78,6 +80,8 @@ encounter_streets.append(main_road_south)
 import redacted.streets.littlewood as littlewood
 main_road_north.add_neighbor(littlewood.long_road_east, timecost=datetime.timedelta(minutes=3))
 main_road_north.add_neighbor(littlewood.littlewood_route, timecost=datetime.timedelta(minutes=2))
+main_road_north.get_action("Travel to Long road (east)").priority = 15
+littlewood.littlewood_route.get_action("Travel to Main road (north)").priority = 10
 
 encounter_streets.append(littlewood.long_road_east)
 encounter_streets.append(littlewood.long_road_west)
@@ -93,6 +97,14 @@ main_road_north.add_neighbor(greatwood.camellia_street, timecost=datetime.timede
 main_road_north.add_neighbor(greatwood.poppy_street, timecost=datetime.timedelta(minutes=4, seconds=30))
 
 main_road_south.add_neighbor(greatwood.greatwood_row, timecost=datetime.timedelta(minutes=2, seconds=30))
+
+greatwood.hibiscus_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.peony_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.begonia_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.lycoris_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.camellia_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.poppy_street.get_action("Travel to Main road (north)").priority = 10
+greatwood.greatwood_row.get_action("Travel to Main road (north)").priority = 10
 
 encounter_streets.append(greatwood.hibiscus_street)
 encounter_streets.append(greatwood.peony_street)
