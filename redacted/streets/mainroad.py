@@ -17,8 +17,7 @@ class Street(game.Location):
             pass
 
         self.encounter_meme = self.get_object("meme")
-        self.encounter_meme.infected = 0
-        self.encounter_meme.contents = self.meme_randomize()
+        self.encounter_meme.move(void)
 
         @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
         def exameme():
@@ -67,13 +66,23 @@ class MainRoad(Street):
 
 # -------------------------------------------
 
+encounter_streets = []
+
 main_road_north = MainRoad('Main road (north)')
 main_road_south = MainRoad('Main road (south)')
 main_road_north.add_neighbor(main_road_south, timecost=datetime.timedelta(minutes=5))
 
+encounter_streets.append(main_road_north)
+encounter_streets.append(main_road_south)
+
 import redacted.streets.littlewood as littlewood
 main_road_north.add_neighbor(littlewood.long_road_east, timecost=datetime.timedelta(minutes=3))
 main_road_north.add_neighbor(littlewood.littlewood_route, timecost=datetime.timedelta(minutes=2))
+
+encounter_streets.append(littlewood.long_road_east)
+encounter_streets.append(littlewood.long_road_west)
+encounter_streets.append(littlewood.littlewood_route)
+encounter_streets.append(littlewood.crescent_lane)
 
 import redacted.streets.greatwood as greatwood
 main_road_north.add_neighbor(greatwood.hibiscus_street, timecost=datetime.timedelta(minutes=5))
@@ -84,6 +93,16 @@ main_road_north.add_neighbor(greatwood.camellia_street, timecost=datetime.timede
 main_road_north.add_neighbor(greatwood.poppy_street, timecost=datetime.timedelta(minutes=4, seconds=30))
 
 main_road_south.add_neighbor(greatwood.greatwood_row, timecost=datetime.timedelta(minutes=2, seconds=30))
+
+encounter_streets.append(greatwood.hibiscus_street)
+encounter_streets.append(greatwood.peony_street)
+encounter_streets.append(greatwood.begonia_street)
+encounter_streets.append(greatwood.dahlia_street)
+encounter_streets.append(greatwood.lycoris_street)
+encounter_streets.append(greatwood.amaryllis_street)
+encounter_streets.append(greatwood.camellia_street)
+encounter_streets.append(greatwood.poppy_street)
+encounter_streets.append(greatwood.greatwood_row)
 
 def run():
     def callback():
