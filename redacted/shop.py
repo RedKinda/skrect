@@ -15,6 +15,7 @@ class CartItem():
         self.item=item
         self.amount=amount
 
+
 class MainRoom(game.Location):
     def __init__(self, name='Inconvenience store'):
         super().__init__(name=name)
@@ -25,7 +26,7 @@ class MainRoom(game.Location):
             'Instant soup':ShopItem(name='Instant soup', cost=20, amount=3),
             'Bread':ShopItem(name='Bread', cost=8, amount=1)
         }
-        
+
         self.in_stock = {self.items['Instant noodles']:0, self.items['Instant soup']:0, self.items['Bread']:0}
         self.oldseed = 0
 
@@ -34,36 +35,36 @@ class MainRoom(game.Location):
         def shelves():
             pass
 
-        @shelves.action(name='Instant noodles', description='Add Instant noodles (5c) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=10)
+        @shelves.action(name='Instant noodles', description='Add Instant noodles (5c) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=10, color='yellow')
         def add_instant_noodles():
             item = self.items['Instant noodles']
             self.add_item_to_cart(item, 1)
-        @shelves.action(name='Instant soup', description='Add Instant soup (20c, pack of 3) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=11)
+        @shelves.action(name='Instant soup', description='Add Instant soup (20c, pack of 3) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=11, color='yellow')
         def add_instant_soup():
             item = self.items['Instant soup']
             self.add_item_to_cart(item, 1)
-        @shelves.action(name='Bread', description='Add Bread (8c) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=12)
+        @shelves.action(name='Bread', description='Add Bread (8c) to your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=12, color='yellow')
         def add_bread():
             item = self.items['Bread']
             self.add_item_to_cart(item, 1)
-        @shelves.action(name='remove Instant noodles', description='Remove Instant noodles from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=20, disabled=True)
+        @shelves.action(name='Remove Instant noodles', description='Remove Instant noodles from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=20, disabled=True, color='yellow')
         def remove_instant_noodles():
             item = self.items['Instant noodles']
             self.add_item_to_cart(item, -1)
-        @shelves.action(name='remove Instant soup', description='Remove Instant soup from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=21, disabled=True)
+        @shelves.action(name='Remove Instant soup', description='Remove Instant soup from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=21, disabled=True, color='yellow')
         def remove_instant_soup():
             item = self.items['Instant soup']
             self.add_item_to_cart(item, -1)
-        @shelves.action(name='remove Bread', description='Remove Bread from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=22, disabled=True)
+        @shelves.action(name='Remove Bread', description='Remove Bread from your cart', time_cost=datetime.timedelta(seconds=10), energycost=game.EnergyCost.NONE, priority=22, disabled=True, color='yellow')
         def remove_bread():
             item = self.items['Bread']
             self.add_item_to_cart(item, -1)
 
-        @self.action(name='check cart contents', description='Check the contents of your shopping cart', time_cost=datetime.timedelta(seconds=30), energycost=game.EnergyCost.MENTAL, priority=30)
+        @self.action(name='check cart contents', description='Check the contents of your shopping cart', time_cost=datetime.timedelta(seconds=30), energycost=game.EnergyCost.MENTAL, priority=30, color='yellow')
         def check_cart_contents():
             self.show_cart_contents(30)
 
-        @self.action(name='checkout', description='Purchase the contents of your shopping cart', time_cost=datetime.timedelta(minutes=3), energycost=game.EnergyCost.LIGHT, priority=31)
+        @self.action(name='checkout', description='Purchase the contents of your shopping cart', time_cost=datetime.timedelta(minutes=3), energycost=game.EnergyCost.LIGHT, priority=31, color='yellow')
         def checkout():
             total_cost = 0
             for thing in self.cart_contents:
@@ -88,13 +89,13 @@ class MainRoom(game.Location):
                 thing.amount += amount
                 if thing.amount == 0:
                     self.cart_contents.remove(thing)
-                    self.get_object('shelves').get_action('remove ' + item.name).disable()
+                    self.get_object('shelves').get_action('Remove ' + item.name).disable()
                 else:
-                    self.get_object('shelves').get_action('remove ' + item.name).enable()
+                    self.get_object('shelves').get_action('Remove ' + item.name).enable()
                 break
         if not in_cart:
             self.cart_contents.append(CartItem(item))
-            self.get_object('shelves').get_action('remove ' + item.name).enable()
+            self.get_object('shelves').get_action('Remove ' + item.name).enable()
         self.in_stock[item] += -amount
 
         if self.in_stock[item]:
@@ -136,21 +137,6 @@ class MainRoom(game.Location):
         self.restock()
         game.game_state.location = self
 
-class Office(game.Location):
-    def __init__(self, name='Inconvenience office'):
-        super().__init__(name=name)
-
-        self.job = False
-
-
-        @self.object('manager')
-        def manager():
-            pass
-
-        @manager.action('apply', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.MENTAL)
-        def apply():
-            self.job=True
-            manager.get_action('apply').disable()
 
 class StorageRoom(game.Location):
     def __init__(self, name='Storage room'):
@@ -185,10 +171,39 @@ class StorageRoom(game.Location):
                 switch_glasses.color = 'white'
 
 
+class Office(game.Location):
+    def __init__(self, name='Office'):
+        super().__init__(name=name)
+
+        global job
+        job = False
+
+
+        @self.object('manager')
+        def manager():
+            pass
+
+        @manager.action('Apply', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.MENTAL, color='yellow')
+        def apply():
+            job = True
+            self.get_action('Travel to Staff room').enable()
+            apply.disable()
+
+        @manager.action('Leave job', description='Leave your job as a cashier')
+
+
+class StaffRoom(game.Location):
+    def __init__(self, name='Staff room'):
+        super().__init__(name=name)
+
 
 main_room = MainRoom()
 office = Office()
 storage_room = StorageRoom()
+staff_room = StaffRoom()
+
 main_room.add_neighbor(office, timecost=datetime.timedelta(minutes=2))
 main_room.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=1))
 office.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=2))
+office.add_neighbor(staff_room, timecost=datetime.timedelta(seconds=20))
+office.get_action('Travel to Staff room').disable()
