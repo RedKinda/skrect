@@ -179,7 +179,7 @@ class Class(game.Location):
                 lesson_done()
 
             def lesson_done():
-                @lesson.situation("Wait for the end.", response = "You attended class for today.", closable = False)
+                @lesson.situation("Wait for the end.", response = "It is time for a late lunch.", closable = False)
                 def lesson_end():
                     game.game_state.time = endTime
                     if holder.sadness >= 15:
