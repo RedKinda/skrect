@@ -1,7 +1,8 @@
 import game
 import datetime
-import redacted.misc_utilities
+import redacted.misc_utilities as utils
 from UI.colored_text import ColorString
+import random
 
 class ShopItem():
     def __init__(self, name=None, cost=0, amount=1):
@@ -23,6 +24,8 @@ class MainRoom(game.Location):
         'Instant soup':ShopItem(name='Instant soup', cost=20, amount=3),
         'Bread':ShopItem(name='Bread', cost=8, amount=1)}
         self.in_stock = {self.items['Instant noodles']:420, self.items['Instant soup']:69, self.items['Bread']:1}
+
+        self.oldseed = 0
 
 
         @self.object('shelves')
@@ -63,7 +66,17 @@ class MainRoom(game.Location):
             total_cost = 0
             for thing in self.cart_contents:
                 total_cost += thing.item.cost*thing.amount
-            game.show_message('Your total is {}c. Money and items not yet supported.'.format(total_cost))
+            money = game.game_state.get_stat('money')
+            if total_cost > money:
+                game.show_message('Your total is {}c. Unfortunately you do not have enough money.'.format(total_cost))
+                return
+            money -= total_cost
+            game.game_state.set_stat('money', money)
+            for thing in self.cart_contents:
+                for i in range(thing.amount*thing.item.amount):
+                    utils.add_to_inventory(thing.item.name)
+            self.cart_contents = []
+            game.show_message('Your total is {}c. You take the items you bought with you.'.format(total_cost))
 
     def add_item_to_cart(self, item, amount):
         in_cart = False
@@ -107,6 +120,19 @@ class MainRoom(game.Location):
         m_end = ' {}\n'.format(total_cost)
         message += m_start + '_'*(width - len(m_start) - len(m_end)) + m_end
         game.show_message(message)
+
+    def restock(self):
+        seed = game.game_state.get_stat('seed')
+        if seed == self.oldseed:
+            return
+
+        random.seed(a=seed)
+        for thing in self.in_stock:
+            self.in_stock[thing] = random.randrange(1, 16)
+
+    def when_entering(self, from_location):
+        self.restock()
+        game.game_state.location = self
 
 class Office(game.Location):
     def __init__(self, name='Inconvenience office'):
@@ -152,9 +178,9 @@ class StorageRoom(game.Location):
             game.game_state.glasses.type = storage_shelves.glasses
             storage_shelves.glasses = glasses
             if glasses == game.Alignment.GOVERNMENT:
-                switch_glasses.name = ColorString(('Switch glasses', 'red'))
+                switch_glasses.color = 'red'
             else:
-                switch_glasses.name = 'Switch glasses'
+                switch_glasses.color = 'white'
 
 
 

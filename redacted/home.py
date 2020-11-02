@@ -34,10 +34,43 @@ class Bedroom(game.Location):
         def kettle():
             pass
 
+<<<<<<< HEAD
+        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True)
+        def make_instant_noodles():
+            utils.eat(self.instant_noodles)
+            utils.remove_from_inventory(self.instant_noodles.name)
+            game.show_message("You cook some Instant noodles and eat them. It ain't much, but it's honest work.")
+            self.check_cookable()
+
+        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True)
+        def make_instant_soup():
+            utils.eat(self.instant_soup)
+            utils.remove_from_inventory(self.instant_soup.name)
+            game.show_message("You cook a cup of Instant soup and eat it. It doesn't taste amazing, but at least it's hot.")
+            self.check_cookable()
+
+    def check_cookable(self):
+        self.instant_noodles = utils.Food(name='Instant noodles', saturation=.25)
+        if utils.is_in_inventory(self.instant_noodles.name):
+            self.get_object('kettle').get_action('Make Instant noodles').enable()
+        else:
+            self.get_object('kettle').get_action('Make Instant noodles').disable()
+
+        self.instant_soup = utils.Food(name='Instant soup', saturation=.3)
+        if utils.is_in_inventory(self.instant_soup.name):
+            self.get_object('kettle').get_action('Make Instant soup').enable()
+        else:
+            self.get_object('kettle').get_action('Make Instant soup').disable()
+
+    def when_entering(self, from_location):
+        self.check_cookable()
+        game.game_state.location = self
+=======
         @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, priority = 5)
         def make_noodles():
             game.show_message("you are eaten instant noods\ncongratulates")
             #utils.eat("noodles")
+>>>>>>> fd473306401a6e39a71a149e9b79b8248ea9978c
 
 class Hallway(game.Location):
     def __init__(self):
