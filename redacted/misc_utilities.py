@@ -14,6 +14,7 @@ def init_stats():
 
     game.game_state.init_stat('inventory', [])
     game.game_state.init_stat('seed', random.getrandbits(32))
+    game.game_state.init_stat('truth', False)
 
     game.game_state.add_post_action_trigger(update_stats)
 
@@ -26,12 +27,22 @@ def update_stats(action):
     color = action.color
 
     spend_stats(time, energy)
-    update_willpower(color)
+    update_willpower(color, weight=1, time=time)
 
 
 
 
-def sleep(time):
+def sleep(time, no_dreams=False):
+    if no_dreams:
+        return realsleep(time)
+    if time < datetime.timedelta(hours=6):
+        return realsleep(time)
+
+    dreams.dream()
+    realsleep(time)
+
+
+def realsleep(time):
     from redacted.streets.mainroad import encounter_streets
 
     halflife = datetime.timedelta(hours=4)
@@ -43,7 +54,10 @@ def sleep(time):
     for i in encounter_streets:
         i.sleep_reset()
 
-
+def eat(food):
+    s = food.saturation
+    h = 1 - game.game_state.get_stat('hunger')
+    game.game_state.set_stat('hunger', 1 - (1 - s)*h)
 
 def update_infection(amount):
     i = game.game_state.get_stat('infection')
@@ -51,11 +65,6 @@ def update_infection(amount):
     if i < 0: i = 0
     elif i > 1: i = 1
     game.game_state.set_stat('infection', i)
-
-def eat(food):
-    s = food.saturation
-    h = 1 - game.game_state.get_stat('hunger')
-    game.game_state.set_stat('hunger', 1 - (1 - s)*h)
 
 def spend_money(amount):
     if type(amount) != int:
@@ -99,8 +108,9 @@ def spend_hunger(time):
     k = .5**(time/halflife)
     game.game_state.set_stat('hunger', k*hunger)
 
-def update_willpower(color, weight=1):
-    k = .98
+def update_willpower(color, weight=1, time=datetime.timedelta(hours=1)):
+    time = time/datetime.timedelta(hours=1)
+    k = .95
     if not weight: return
 
     outcome = 0
@@ -108,7 +118,8 @@ def update_willpower(color, weight=1):
         outcome = 1
 
     kwed = k**weight
-    w = kwed*game.game_state.get_stat('willpower') + (1-kwed)*outcome
+    kted = kwed**time
+    w = kted*game.game_state.get_stat('willpower') + (1-kted)*outcome
     game.game_state.set_stat('willpower', w)
 
 def add_to_inventory(item):
