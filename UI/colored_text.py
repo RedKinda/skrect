@@ -98,6 +98,9 @@ class ColorString:
     def __len__(self):
         return len(" ".join(self.text_chunks))
 
+    def lower(self):
+        return str(self).lower()
+
     def glassed(self, filter=None):
         if filter is None:
             filter = game.game_state.glasses.type if game.game_state else Alignment.INDEPENDENT
@@ -137,6 +140,6 @@ class ColorString:
         return result'''
 
 
-a = ColorString(" ") + ColorString(("Something brrr", "red")) + "\n"
+#a = ColorString(" ") + ColorString(("Something brrr", "red")) + "\n"
 #print(str(a))
 #print(ColorString(("Thiss is a meta text and ", "meta"), ("this", "keyword"), (" is a keyword")).glassed(Alignment.GOVERNMENT))

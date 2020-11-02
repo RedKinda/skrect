@@ -109,7 +109,7 @@ class FancyDrawer:
         m = str(game.game_state.get_stat("money"))
         money = ColorString(("Money: [{0}]".format(" "*(4-len(m)) + m), "yellow"))
         energy = "Energy: 0[{0}]1".format(self.make_bar("energy"))
-        willpower = "Willpower: 0[{0}]1".format(self.make_bar("willpower"))
+        willpower = ColorString(("Willpower: 0[{0}]1".format(self.make_bar("willpower")), "blue"))
         exhaustion = "Hunger: 1[{0}]2".format(self.make_bar("hunger"))
         infection = ColorString(("???: 0[{0}]1".format(self.make_bar("infection")), "green"))
         weekday = ["Monday   ",
@@ -163,7 +163,9 @@ class FancyDrawer:
                 prefix = " -> "
             else:
                 prefix = "   "
-            self.write_text(self.win_actionmenu, "{0}{1}: {2}".format(prefix, ind + 1, ac.print()) + "\n")
+            txt = ColorString(prefix, str(ind+1), ": ") + ac.print() + "\n"
+            self.write_text(self.win_actionmenu, txt)
+            #self.write_text(self.win_actionmenu, "{0}{1}: {2}".format(prefix, ind + 1, ac.print()) + "\n")
             ind += 1
 
 
