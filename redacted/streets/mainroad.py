@@ -1,6 +1,6 @@
 import game
 import datetime
-import redacted.misc_utilities
+import redacted.misc_utilities as utils
 import random
 from redacted.void import void
 
@@ -24,8 +24,7 @@ class Street(game.Location):
             game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
             if self.encounter_meme.infected == 0:
                 self.encounter_meme.infected = 1
-                #infection increases slightly
-                game.game_state.show_message("INFECTION ++")
+                utils.update_infection(0.1)
 
             inspect_meme = game.Dialogue("A crumpled note.")
             startsit = inspect_meme.start()
@@ -38,13 +37,13 @@ class Street(game.Location):
             @startsit.situation("Think about it", response = "It makes no sense at all. Not in the slightest. Yet... You feel something moved in your very being.")
             def meme_think():
                 if self.encounter_meme.infected == 1:
-                    #infection increases slightly
+                    utils.update_infection(0.1)
                     game.game_state.show_message("INFECTION ++")
                     self.encounter_meme.infected = 2
 
             @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel safer.")
             def meme_destroy():
-                #infection decreases slightly
+                utils.update_infection(-0.1)
                 game.game_state.show_message("INFECTION --")
                 self.encounter_meme.move(void)
 
@@ -118,11 +117,10 @@ encounter_streets.append(greatwood.greatwood_row)
 
 def run():
     def callback():
-        from redacted.misc_utilities import init_stats
-        init_stats()
+        utils.init_stats()
 
     from redacted.home import bedroom
     game.game_init(bedroom, callback)
 
     from redacted.school import visit_init
-    redacted.school.visit_init()
+    visit_init()
