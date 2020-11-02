@@ -71,8 +71,11 @@ class Hallway(game.Location):
 
         @self.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE)
         def pay():
-            game.game_state.show_message("You paid your rent for this week.")
-            self.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
+            if utils.spend_money(1):
+                game.game_state.show_message("You paid your rent for this week.")
+                self.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
+            else:
+                game.game_state.show_message("You don't have enough.")
         
     def after_action(self, action_executed):
         pay = self.get_action("Pay rent")
