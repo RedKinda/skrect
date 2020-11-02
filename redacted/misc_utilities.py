@@ -1,7 +1,7 @@
 import game
 import datetime
 import random
-#import redacted.dreams as dreams
+import redacted.dreams as dreams
 
 ENERGY = 16*3600*3
 
