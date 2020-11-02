@@ -69,11 +69,32 @@ class Hallway(game.Location):
     def __init__(self):
         super().__init__()
 
+        @self.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE)
+        def pay():
+            game.game_state.show_message("You paid your rent for this week.")
+            self.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
+        
     def after_action(self, action_executed):
+        pay = self.get_action("Pay rent")
         if game.game_state.time.hour >= 18 or game.game_state.time.hour <= 8:
             game.show_message("Your parents are here")
+            if game.game_state.time.weekday() == 6 and self.last_payment != game.game_state.time.replace(hour = 0, minute = 0, second = 0):
+                pay.enabled = True
+            else:
+                pay.enabled = False
         else:
             game.show_message("There is no one here")
+            pay.enabled = False
+
+
+    def when_entering(self, from_location):
+        last_sunday = game.game_state.time - datetime.timedelta(days=(game.game_state.time.weekday()+1))
+        last_sunday = last_sunday.replace(hour = 0, minute = 0, second = 0)
+        if self.last_payment < last_sunday and from_location != bedroom:
+            game.game_state.show_message("It is locked")
+        else:
+            game.game_state.location = self
+        
 
 
 def init():
@@ -82,10 +103,10 @@ def init():
     hall = Hallway()
     bedroom.add_neighbor(hall)
     bedroom.get_action("Travel to Hallway").priority = 15
-    hall.get_action("Travel to Bedroom").priority = 5
+    hall.get_action("Travel to Bedroom").priority = 10
 
 
 init()
 def callback():
-    pass
+    hall.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
 game.game_init(bedroom, callback)
