@@ -34,7 +34,6 @@ class Bedroom(game.Location):
         def kettle():
             pass
 
-<<<<<<< HEAD
         @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True)
         def make_instant_noodles():
             utils.eat(self.instant_noodles)
@@ -65,12 +64,6 @@ class Bedroom(game.Location):
     def when_entering(self, from_location):
         self.check_cookable()
         game.game_state.location = self
-=======
-        @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, priority = 5)
-        def make_noodles():
-            game.show_message("you are eaten instant noods\ncongratulates")
-            #utils.eat("noodles")
->>>>>>> fd473306401a6e39a71a149e9b79b8248ea9978c
 
 class Hallway(game.Location):
     def __init__(self):
