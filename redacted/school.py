@@ -33,7 +33,7 @@ class Hall(game.Location):
         def flag():
             pass
 
-        @flag.action(name="Observe flag", time_cost=datetime.timedelta(hours=1), description="A glorious mural.", energycost = game.EnergyCost.NONE)
+        @flag.action(name="Observe flag", time_cost=datetime.timedelta(hours=1), description="A glorious mural.", energycost = game.EnergyCost.NONE, priority = 5)
         def inspect():
             game.game_state.show_message("On the wall hangs the flag. It makes you feel small.")
             #decrease willpower
@@ -51,7 +51,7 @@ class Canteen(game.Location):
 
         self.distance = datetime.timedelta(minutes=1)
 
-        @self.action(name="Eat lunch", time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.NONE)
+        @self.action(name="Eat lunch", time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.NONE, priority = 5)
         def eat():
             #eat
             game.game_state.show_message("The food is edible.")
@@ -90,7 +90,7 @@ class Class(game.Location):
         self.dave.ego = datetime.timedelta(minutes=1)
         self.joey.ego = datetime.timedelta(minutes=1)
 
-        @dave.action(name="Talk to Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY)
+        @dave.action(name="Talk to Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY, priority = 10)
         def talk():
             self.dave.location.reload(game.game_state.time + self.dave.ego)
             dialogue = game.Dialogue("Perfection.")
@@ -111,7 +111,7 @@ class Class(game.Location):
                 def rekt():
                     pass
 
-        @joey.action(name="Talk to Another Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY)
+        @joey.action(name="Talk to Another Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY, priority = 10)
         def talk():
             self.joey.location.reload(game.game_state.time + self.joey.ego)
             dialogue = game.Dialogue("Almost perfection.")
@@ -132,7 +132,7 @@ class Class(game.Location):
                 def rekt():
                     pass
 
-        @self.action(name="Attend", time_cost = datetime.timedelta(0), description="Attend class until 15.")
+        @self.action(name="Attend", time_cost = datetime.timedelta(0), description="Attend class until 15.", priority = 5)
         def attend():
             global last_visit
             days_missed = resolve_sadness()
@@ -271,6 +271,8 @@ clss = Class()
 cant = Canteen()
 hall.add_neighbor(clss, timecost=clss.distance)
 hall.add_neighbor(cant, timecost=cant.distance)
+hall.get_action("Travel to Class").priority = 10
+hall.get_action("Travel to Canteen").priority = 15
 
 def visit_init():
     global last_visit
