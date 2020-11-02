@@ -17,8 +17,7 @@ class Street(game.Location):
             pass
 
         self.encounter_meme = self.get_object("meme")
-        self.encounter_meme.infected = 0
-        self.encounter_meme.contents = self.meme_randomize()
+        self.encounter_meme.move(void)
 
         @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.")
         def exameme():
