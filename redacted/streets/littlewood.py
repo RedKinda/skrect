@@ -28,3 +28,7 @@ littlewood_route = LittlewoodRoute()
 
 import redacted.home as home
 crescent_lane.add_neighbor(home.hall, timecost=datetime.timedelta(minutes=1))
+
+crescent_lane.get_action("Travel to Hallway").priority = 10
+long_road_west.get_action("Travel to Long road (east)").priority = 10
+long_road_east.get_action("Travel to Long road (west)").priority = 10
