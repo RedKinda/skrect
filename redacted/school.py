@@ -143,38 +143,35 @@ class Class(game.Location):
             game.game_state.show_message("WARNING: SOMETHING MAY HAPPEN TO THE SADNESS VALUE IF YOU PRESS \"GOODBYE\" NOW. DO NOT DO IT! IT IS NOT A FEATURE.")
             last_visit = game.game_state.time
             last_visit = last_visit.replace(hour=0, minute=0, second=0)
-            startTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 8, 0, 0)        
+            startTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 8, 0, 0)
             endTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 15, 0, 0)
-            
+
             #this should not be exitable
             lesson = game.Dialogue("Attending a lesson.")
             startsit = lesson.start()
 
             @startsit.situation("Pay close attention", response = "You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die? (cyan: The Government will make sure of that.)", closable = False)
             def lesson_attention():
-                #decrease willpower
+                utils.update_willpower(False, weight=40)
                 holder.sadness = max(0, holder.sadness-1)
                 if game.game_state.time.hour < 8:
-                    e = (startTime - game.game_state.time)/(datetime.timedelta(seconds=1))*(game.EnergyCost.NONE+1)
+                    utils.spend_stats(startTime - game.game_state.time, game.EnergyCost.NONE)
                     timePoint = startTime
                 else:
                     timePoint = game.game_state.time
-                    e = 0
-                e += (endTime - timePoint)/(datetime.timedelta(seconds=1))*(game.EnergyCost.MENTAL+1)
-                utils.spend_energy(e)
+                utils.spend_stats(endTime - timePoint, game.EnergyCost.MENTAL)
                 lesson_done()
 
             @startsit.situation("Don't", response = "Haha, I just realized Horatio looks like Meme Man.", closable = False)
             def lesson_funni():
-                e = (endTime - game.game_state.time)/(datetime.timedelta(seconds=1))*(game.EnergyCost.NONE+1)
-                utils.spend_energy(e)
+                utils.spend_stats(endTime - game.game_state.time, game.EnergyCost.NONE)
                 lesson_done()
 
             @startsit.situation("Sleep", response = "You slept in class. The teacher is not happy.", closable = False, color = "blue")
             def lesson_schlaf():
                 utils.sleep((endTime - game.game_state.time)*0.5)
                 #sleep instead
-                
+
                 holder.sadness += 1
                 lesson_done()
 
@@ -193,7 +190,7 @@ class Class(game.Location):
                         game.game_state.show_message("The teacher does not appear happy with you. You should be more careful.")
                     self.reload(game.game_state.time)
                     lesson.exit()
-                    
+
     def when_entering(self, from_location):
         game.game_state.location = self
         game.game_state.show_message("You enter the class.")
@@ -239,7 +236,7 @@ class Class(game.Location):
 
 def reload(new_time):
 
-    
+
     dave = clss.dave
     joey = clss.joey
 
@@ -262,7 +259,7 @@ def reload(new_time):
         dave.move(void)
         joey.move(void)
 
-    
+
 
 holder = Holder()
 
