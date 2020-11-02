@@ -11,12 +11,12 @@ class Bedroom(game.Location):
         def bed():
             pass
 
-        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE, color = "magenta")
+        @bed.action(name="Nap", description="Take a 8 hour nap", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.NONE, color = "magenta", priority = 12)
         def nap():
             game.show_message(ColorString(("You took a nice nap","blue")))
             #utils.sleep()
 
-        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta())
+        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta(), priority = 10)
         def sleep():
             time = game.game_state.time
             if time.hour > 18:
@@ -34,7 +34,7 @@ class Bedroom(game.Location):
         def kettle():
             pass
 
-        @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE)
+        @kettle.action(name="Make noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, priority = 5)
         def make_noodles():
             game.show_message("you are eaten instant noods\ncongratulates")
             #utils.eat("noodles")
@@ -55,6 +55,8 @@ def init():
     bedroom = Bedroom()
     hall = Hallway()
     bedroom.add_neighbor(hall)
+    bedroom.get_action("Travel to Hallway").priority = 15
+    hall.get_action("Travel to Bedroom").priority = 5
 
 
 init()
