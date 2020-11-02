@@ -140,14 +140,14 @@ class Class(game.Location):
             if days_missed > 0:
                 holder.sadness -= 1
             #game.game_state.show_message("Lessons missed: " + str(days_missed))
-            game.game_state.show_message("WARNING: SOMETHING MAY HAPPEN TO THE SADNESS VALUE IF YOU PRESS \"GOODBYE\" NOW. DO NOT DO IT! IT IS NOT A FEATURE.")
+            #game.game_state.show_message("WARNING: SOMETHING MAY HAPPEN TO THE SADNESS VALUE IF YOU PRESS \"GOODBYE\" NOW. DO NOT DO IT! IT IS NOT A FEATURE.")
             last_visit = game.game_state.time
             last_visit = last_visit.replace(hour=0, minute=0, second=0)
             startTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 8, 0, 0)
             endTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 15, 0, 0)
 
             #this should not be exitable
-            lesson = game.Dialogue("Attending a lesson.")
+            lesson = game.Dialogue("Attending a lesson.", closable = False)
             startsit = lesson.start()
 
             @startsit.situation("Pay close attention", response = "You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die? (cyan: The Government will make sure of that.)", closable = False)
@@ -165,12 +165,12 @@ class Class(game.Location):
             @startsit.situation("Don't", response = "Haha, I just realized Horatio looks like Meme Man.", closable = False)
             def lesson_funni():
                 utils.spend_stats(endTime - game.game_state.time, game.EnergyCost.NONE)
+                #holder.sadness += 10
                 lesson_done()
 
             @startsit.situation("Sleep", response = "You slept in class. The teacher is not happy.", closable = False, color = "blue")
             def lesson_schlaf():
                 utils.sleep((endTime - game.game_state.time)*0.5)
-                #sleep instead
 
                 holder.sadness += 1
                 lesson_done()
