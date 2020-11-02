@@ -152,7 +152,6 @@ class Class(game.Location):
 
             @startsit.situation("Pay close attention", response = "You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die? (cyan: The Government will make sure of that.)", closable = False)
             def lesson_attention():
-                utils.update_willpower(False, weight=40)
                 holder.sadness = max(0, holder.sadness-1)
                 if game.game_state.time.hour < 8:
                     utils.spend_stats(startTime - game.game_state.time, game.EnergyCost.NONE)
@@ -160,6 +159,7 @@ class Class(game.Location):
                 else:
                     timePoint = game.game_state.time
                 utils.spend_stats(endTime - timePoint, game.EnergyCost.MENTAL)
+                utils.update_willpower(False, time=(endTime-timePoint))
                 lesson_done()
 
             @startsit.situation("Don't", response = "Haha, I just realized Horatio looks like Meme Man.", closable = False)
