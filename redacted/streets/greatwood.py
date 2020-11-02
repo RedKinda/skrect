@@ -52,7 +52,6 @@ poppy_street = PoppyStreet()
 
 greatwood_row = GreatwoodRow()
 
-
 peony_street.add_neighbor(begonia_street, timecost=datetime.timedelta(minutes=2))
 peony_street.add_neighbor(dahlia_street, timecost=datetime.timedelta(minutes=3))
 amaryllis_street.add_neighbor(begonia_street, timecost=datetime.timedelta(minutes=3))
@@ -64,6 +63,8 @@ poppy_street.add_neighbor(greatwood_row, timecost=datetime.timedelta(minutes=2))
 
 import redacted.school as school
 amaryllis_street.add_neighbor(school.hall, timecost=datetime.timedelta(minutes=1))
+amaryllis_street.get_action("Travel to Hall").priority = 10
 
 import redacted.shop as shop
 lycoris_street.add_neighbor(shop.main_room, timecost=datetime.timedelta(minutes=1))
+lycoris_street.get_action("Travel to mainroom").priority = 10
