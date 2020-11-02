@@ -1,6 +1,7 @@
 import game
 import datetime
 import redacted.misc_utilities as utils
+from redacted.home import bedroom
 
 def dream():
     blue_dream()
@@ -55,4 +56,5 @@ def blue_dream():
                             def unmasked():
                                 game.game_state.glasses.type = game.Alignment.INDEPENDENT
                                 game.game_state.set_stat('truth', True)
+                                bedroom.has_lens = False
                                 dream.exit()
