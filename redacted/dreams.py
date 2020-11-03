@@ -8,6 +8,7 @@ def dream():
 def blue_dream():
     willpower = game.game_state.get_stat('willpower')
     needed = 0.6
+    game.show_message(str(willpower))
 
     game.show_message('You are in a strange place. There are trees all around you. One of the trees reminds you of something. Its shape... Or is it the color? It\'s red. Everything is red. Unsurprisingly.')
 
