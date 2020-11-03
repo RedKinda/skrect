@@ -324,8 +324,8 @@ class Action:
     def execute(self):
         self.callback()
         cost = self.energycost * self.timecost.total_seconds()
-        msg = ColorString(("You would lose "), (cost, "yellow"), (" points of energy"))
-        show_message(msg)
+        #msg = ColorString(("You would lose "), (cost, "yellow"), (" points of energy"))
+        #show_message(msg)
         return self.timecost
 
     def disable(self):
