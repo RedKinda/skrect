@@ -7,6 +7,8 @@ class Bedroom(game.Location):
     def __init__(self):
         super().__init__()
 
+        self.has_lens = True
+
         @self.object("bed")
         def bed():
             pass
@@ -47,6 +49,16 @@ class Bedroom(game.Location):
             game.show_message("You cook a cup of Instant soup. It doesn't taste amazing, but at least it's hot.")
             self.check_cookable()
 
+        @self.action(name="Remove Lens", time_cost=datetime.timedelta(seconds=1), disabled = True, energycost=game.EnergyCost.LIGHT)
+        def lens_remove():
+            self.has_lens = False
+            game.game_state.glasses.type = game.Alignment.INDEPENDENT
+
+        @self.action(name="Equip Lens", time_cost=datetime.timedelta(seconds=1), energycost=game.EnergyCost.LIGHT, color = "yellow", disabled = True)
+        def lens_equip():
+            self.has_lens = True
+            game.game_state.glasses.type = game.Alignment.GOVERNMENT
+
     def check_cookable(self):
         self.instant_noodles = utils.Food(name='Instant noodles', saturation=.25)
         if utils.is_in_inventory(self.instant_noodles.name):
@@ -63,6 +75,20 @@ class Bedroom(game.Location):
     def when_entering(self, from_location):
         self.check_cookable()
         game.game_state.location = self
+
+    def after_action(self, action_executed):
+        lens_remove = self.get_action("Remove Lens")
+        lens_equip = self.get_action("Equip Lens")
+        if game.game_state.get_stat("truth"):
+            if self.has_lens:
+                lens_remove.enabled = True
+                lens_equip.enabled = False
+            else:
+                lens_remove.enabled = False
+                lens_equip.enabled = True
+        else:
+            lens_remove.enabled = False
+            lens_equip.enabled = False
 
 class Hallway(game.Location):
     def __init__(self):
@@ -110,10 +136,14 @@ class Hallway(game.Location):
             if self.last_payment < last_sunday and from_location != bedroom:
                 game.game_state.show_message("It is locked")
                 self.available = False
+            elif from_location == bedroom and bedroom.has_lens == False:
+                game.game_state.show_message(ColorString(("You can't risk someone seeing you without the Lens.", "cyan")))
             else:
                 game.game_state.location = self
         else:
             game.game_state.show_message("It is locked")
+
+        
 
 
 
