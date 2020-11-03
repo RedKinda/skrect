@@ -3,6 +3,7 @@ import datetime
 import redacted.misc_utilities as utils
 import random
 from redacted.void import void
+from UI.colored_text import ColorString
 
 class Street(game.Location):
     def __init__(self, name):
@@ -19,7 +20,7 @@ class Street(game.Location):
         self.encounter_meme = self.get_object("meme")
         self.encounter_meme.move(void)
 
-        @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.", priority = 5)
+        @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.", priority = 5, color="yellow")
         def exameme():
             game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
             if self.encounter_meme.infected == 0:
@@ -29,22 +30,20 @@ class Street(game.Location):
             inspect_meme = game.Dialogue("A crumpled note.")
             startsit = inspect_meme.start()
 
-            @startsit.situation("Try to forget it", response = "It was probably nothing. The Government warned against reading notes lying on the ground anyway.")
+            @startsit.situation("Try to forget it", response = ColorString(("It was probably nothing. ", "white"), ("The Government warned against reading notes lying on the ground anyway.", "red")), color = "red")
             def meme_forget():
                 #nothing happens
                 pass
 
-            @startsit.situation("Think about it", response = "It makes no sense at all. Not in the slightest. Yet... You feel something moved in your very being.")
+            @startsit.situation("Think about it", response = ColorString(("It makes no sense at all. Not in the slightest. Yet... ", "blue"), ("You feel something moved in your very being.", "green")), color = "green")
             def meme_think():
                 if self.encounter_meme.infected == 1:
                     utils.update_infection(0.1)
-                    game.game_state.show_message("INFECTION ++")
                     self.encounter_meme.infected = 2
 
-            @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel safer.")
+            @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel safer.", color = "magenta")
             def meme_destroy():
                 utils.update_infection(-0.1)
-                game.game_state.show_message("INFECTION --")
                 self.encounter_meme.move(void)
 
     def meme_randomize(self):

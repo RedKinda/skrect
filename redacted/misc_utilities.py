@@ -7,7 +7,7 @@ ENERGY = 16*3600*3
 
 def init_stats():
     game.game_state.init_stat('money', 500)
-    game.game_state.init_stat('energy', .5)
+    game.game_state.init_stat('energy', 1.)
     game.game_state.init_stat('hunger', 1.)
     game.game_state.init_stat('willpower', .5)
     game.game_state.init_stat('infection', 0.)

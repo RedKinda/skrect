@@ -56,6 +56,7 @@ class Canteen(game.Location):
             #eat
             game.game_state.show_message("The food is edible.")
             new_time = game.game_state.time + datetime.timedelta(minutes=30)
+            self.last_lunch = game.game_state.time.replace(hour=0,minute=0,second=0)
             self.reload(new_time)
 
     def when_entering(self, from_location):
@@ -64,12 +65,16 @@ class Canteen(game.Location):
         game.game_state.location = self
 
     def reload(self, new_time):
-        if new_time.hour < 14 or new_time.hour > 15:
+        if (new_time.hour < 14 or new_time.hour > 15) or new_time.weekday() > 4:
             self.get_action("Eat lunch").enabled = False
-            game.game_state.show_message("Lunch is not being served right now")
-        else:
+            game.game_state.show_message("Lunch is not being served right now.")
+        elif self.last_lunch < new_time.replace(hour=0,minute=0,second=0):
             self.get_action("Eat lunch").enabled = True
-            game.game_state.show_message("You're in time for lunch")
+            game.game_state.show_message("You're in time for lunch.")
+        else:
+            self.get_action("Eat lunch").enabled = False
+            game.game_state.show_message("You already had your lunch today.")
+            
         reload(new_time)
 
 class Class(game.Location):
@@ -276,6 +281,7 @@ def visit_init():
     last_visit = game.game_state.time
     last_visit -= datetime.timedelta(days = 1)
     last_visit = last_visit.replace(hour=0, minute=0, second=0)
+    cant.last_lunch = game.game_state.time.replace(hour=0, minute=0, second=0) - datetime.timedelta(days=1)
 
 def run():
     game.game_init(hall, visit_init)

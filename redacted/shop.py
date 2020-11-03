@@ -60,11 +60,11 @@ class MainRoom(game.Location):
             item = self.items['Bread']
             self.add_item_to_cart(item, -1)
 
-        @self.action(name='check cart contents', description='Check the contents of your shopping cart', time_cost=datetime.timedelta(seconds=30), energycost=game.EnergyCost.MENTAL, priority=30, color='yellow')
+        @shelves.action(name='check cart contents', description='Check the contents of your shopping cart', time_cost=datetime.timedelta(seconds=30), energycost=game.EnergyCost.MENTAL, priority=30, color='yellow')
         def check_cart_contents():
             self.show_cart_contents(30)
 
-        @self.action(name='checkout', description='Purchase the contents of your shopping cart', time_cost=datetime.timedelta(minutes=3), energycost=game.EnergyCost.LIGHT, priority=31, color='yellow')
+        @shelves.action(name='checkout', description='Purchase the contents of your shopping cart', time_cost=datetime.timedelta(minutes=3), energycost=game.EnergyCost.LIGHT, priority=31, color='yellow')
         def checkout():
             total_cost = 0
             for thing in self.cart_contents:
@@ -78,8 +78,11 @@ class MainRoom(game.Location):
             for thing in self.cart_contents:
                 for i in range(thing.amount*thing.item.amount):
                     utils.add_to_inventory(thing.item.name)
-            self.cart_contents = []
             game.show_message('Your total is {}c. You take the items you bought with you.'.format(total_cost))
+
+            self.cart_contents = []
+            for item in self.items:
+                shelves.get_action('Remove ' + item).disable()
 
     def add_item_to_cart(self, item, amount):
         in_cart = False
@@ -145,11 +148,12 @@ class StorageRoom(game.Location):
         @self.object('storage shelves')
         def storage_shelves():
             pass
+
         self.get_object('storage shelves').glasses = game.Alignment.INDEPENDENT
 
-        @storage_shelves.action('Switch glasses', time_cost=datetime.timedelta(seconds=15), energycost=game.EnergyCost.NONE)
+        @storage_shelves.action('Switch glasses', time_cost=datetime.timedelta(seconds=15), energycost=game.EnergyCost.NONE, color='cyan', disabled=True)
         def switch_glasses():
-            glasses = game.game_state.glasses.type
+            glasses = self.glasses
             m_start = ('You put the glasses on. You leave your old ones in their place.', 'white')
 
             if storage_shelves.glasses == game.Alignment.INDEPENDENT:
@@ -163,12 +167,51 @@ class StorageRoom(game.Location):
                 else:
                     game.show_message(ColorString(m_start))
 
-            game.game_state.glasses.type = storage_shelves.glasses
+            self.glasses = storage_shelves.glasses
             storage_shelves.glasses = glasses
-            if glasses == game.Alignment.GOVERNMENT:
-                switch_glasses.color = 'red'
+            self.glasses_on()
+            if storage_shelves.glasses == game.Alignment.GOVERNMENT:
+                storage_shelves.get_action('Switch glasses').color = 'red'
             else:
-                switch_glasses.color = 'white'
+                storage_shelves.get_action('Switch glasses').color = 'cyan'
+
+        @self.action('Remove Lens', time_cost=datetime.timedelta(seconds=30))
+        def remove_lens():
+            self.glasses_off()
+
+        @self.action('Equip Lens', time_cost=datetime.timedelta(seconds=30), disabled=True, color='yellow')
+        def equip_lens():
+            self.glasses_on()
+
+    def glasses_off(self):
+        self.glasses = game.game_state.glasses.type
+        game.game_state.glasses.type = game.Alignment.INDEPENDENT
+        self.get_action('Travel to Inconvenience store').disable()
+        self.get_action('Equip Lens').enable()
+        if self.glasses == game.Alignment.GOVERNMENT:
+            self.get_action('Equip Lens').color = 'yellow'
+        else:
+            self.get_action('Equip Lens').color = 'white'
+        self.get_action('Remove Lens').disable()
+        self.get_object('storage shelves').get_action('Switch glasses').enable()
+
+    def glasses_on(self):
+        game.game_state.glasses.type = self.glasses
+        self.glasses = None
+        self.get_action('Travel to Inconvenience store').enable()
+        self.get_action('Remove Lens').enable()
+        self.get_action('Equip Lens').disable()
+        self.get_object('storage shelves').get_action('Switch glasses').disable()
+
+
+    def when_entering(self, from_location):
+        self.glasses = None
+        if game.game_state.get_stat('truth'): #and > potrebne
+            self.get_action('Remove Lens').enable()
+        else:
+            self.get_action('Remove Lens').disable()
+
+        game.game_state.location = self
 
 
 class Office(game.Location):
@@ -206,6 +249,5 @@ staff_room = StaffRoom()
 
 main_room.add_neighbor(office, timecost=datetime.timedelta(minutes=2))
 main_room.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=1))
-office.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=2))
 office.add_neighbor(staff_room, timecost=datetime.timedelta(seconds=20))
 office.get_action('Travel to Staff room').disable()

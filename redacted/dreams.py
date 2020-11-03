@@ -1,13 +1,16 @@
 import game
 import datetime
 import redacted.misc_utilities as utils
+from redacted.home import bedroom
+
+red_willpower = 0.4
 
 def dream():
     blue_dream()
 
 def blue_dream():
-    willpower = game.game_state.get_stat('willpower')
-    needed = 0.6
+    willpower = game.game_state.get_stat('willpower') - red_willpower
+    needed = 0.6 - red_willpower
 
     game.show_message('You are in a strange place. There are trees all around you. One of the trees reminds you of something. Its shape... Or is it the color? It\'s red. Everything is red. Unsurprisingly.')
 
@@ -55,4 +58,5 @@ def blue_dream():
                             def unmasked():
                                 game.game_state.glasses.type = game.Alignment.INDEPENDENT
                                 game.game_state.set_stat('truth', True)
+                                bedroom.has_lens = False
                                 dream.exit()
