@@ -149,68 +149,63 @@ class StorageRoom(game.Location):
         def storage_shelves():
             pass
 
-        self.get_object('storage shelves').glasses = game.Alignment.INDEPENDENT
+        #self.get_object('storage shelves').glasses = game.Alignment.INDEPENDENT
 
-        @storage_shelves.action('Switch glasses', time_cost=datetime.timedelta(seconds=15), energycost=game.EnergyCost.NONE, color='cyan', disabled=True)
+        @storage_shelves.action('Switch glasses', time_cost=datetime.timedelta(seconds=15), energycost=game.EnergyCost.NONE, color='cyan')
         def switch_glasses():
-            glasses = self.glasses
-            m_start = ('You put the glasses on. You leave your old ones in their place.', 'white')
+            game.game_state.show_message(ColorString(('You put the glasses on. You leave your old ones in their place. This way you can safely see everything even in public.', 'white')))
+            self.get_action("Equip Lens").disable()
+            game.game_state.set_stat("fake_glass", True)
+            self.get_action('Travel to Inconvenience store').enable()
 
-            if storage_shelves.glasses == game.Alignment.INDEPENDENT:
-                if glasses == game.Alignment.GOVERNMENT:
-                    game.show_message(ColorString(m_start, (' Everything changes colours. They are not tinted red like your previous ones.', 'cyan')))
-                else:
-                    game.show_message(ColorString(m_start))
+        @storage_shelves.action("Inspect defective glasses", time_cost=datetime.timedelta(seconds=5), energycost = game.EnergyCost.NONE)
+        def inspecc_glass():
+            if game.game_state.get_stat("fake_glass"):
+                game.game_state.show_message(ColorString(("There are some defective glasses. ","white"),("You took one of them and left your old one in its place.","cyan")))
             else:
-                if glasses == game.Alignment.INDEPENDENT:
-                    game.show_message(ColorString(m_start, (' Everything goes back to normal. This is how it was always supposed to be.', 'red')))
-                else:
-                    game.show_message(ColorString(m_start))
+                game.game_state.show_message(ColorString(("There are some defective glasses. One of them have colorless lens. ","white"),("Now that you think about it, no one wearing the glasses can tell you're wearing a colorless piece.","cyan")))
 
-            self.glasses = storage_shelves.glasses
-            storage_shelves.glasses = glasses
-            self.glasses_on()
-            if storage_shelves.glasses == game.Alignment.GOVERNMENT:
-                storage_shelves.get_action('Switch glasses').color = 'red'
-            else:
-                storage_shelves.get_action('Switch glasses').color = 'cyan'
+        @self.action(name="Remove Lens", time_cost=datetime.timedelta(seconds=1), disabled = True, energycost=game.EnergyCost.LIGHT)
+        def lens_remove():
+            game.game_state.glasses.type = game.Alignment.INDEPENDENT
+            self.get_action('Travel to Inconvenience store').disable()
+            self.get_action("Equip Lens").enable()
+            self.get_action("Remove Lens").disable()
+            game.game_state.show_message(ColorString(("You briefly took down your red glasses.","cyan")))
 
-        @self.action('Remove Lens', time_cost=datetime.timedelta(seconds=30))
-        def remove_lens():
-            self.glasses_off()
+        @self.action(name="Equip Lens", time_cost=datetime.timedelta(seconds=1), energycost=game.EnergyCost.LIGHT, color = "yellow", disabled = True)
+        def lens_equip():
+            game.game_state.glasses.type = game.Alignment.GOVERNMENT
+            self.get_action('Travel to Inconvenience store').enable()
+            self.get_action("Equip Lens").disable()
+            self.get_action("Remove Lens").enable()
+            game.game_state.show_message(ColorString(("You put your red glasses back on.","red")))
 
-        @self.action('Equip Lens', time_cost=datetime.timedelta(seconds=30), disabled=True, color='yellow')
-        def equip_lens():
-            self.glasses_on()
+    #def glasses_off(self):
+    #    self.glasses = game.game_state.glasses.type
+    #    game.game_state.glasses.type = game.Alignment.INDEPENDENT
+    #    self.get_action('Travel to Inconvenience store').disable()
+    #    self.get_action('Equip Lens').enable()
+    #    if self.glasses == game.Alignment.GOVERNMENT:
+    #        self.get_action('Equip Lens').color = 'yellow'
+    #    else:
+    #        self.get_action('Equip Lens').color = 'white'
+    #    self.get_action('Remove Lens').disable()
+    #    self.get_object('storage shelves').get_action('Switch glasses').enable()
 
-    def glasses_off(self):
-        self.glasses = game.game_state.glasses.type
-        game.game_state.glasses.type = game.Alignment.INDEPENDENT
-        self.get_action('Travel to Inconvenience store').disable()
-        self.get_action('Equip Lens').enable()
-        if self.glasses == game.Alignment.GOVERNMENT:
-            self.get_action('Equip Lens').color = 'yellow'
-        else:
-            self.get_action('Equip Lens').color = 'white'
-        self.get_action('Remove Lens').disable()
-        self.get_object('storage shelves').get_action('Switch glasses').enable()
-
-    def glasses_on(self):
-        game.game_state.glasses.type = self.glasses
-        self.glasses = None
-        self.get_action('Travel to Inconvenience store').enable()
-        self.get_action('Remove Lens').enable()
-        self.get_action('Equip Lens').disable()
-        self.get_object('storage shelves').get_action('Switch glasses').disable()
+    #def glasses_on(self):
+    #    game.game_state.glasses.type = self.glasses
+    #    self.glasses = None
+    #    self.get_action('Travel to Inconvenience store').enable()
+    #    self.get_action('Remove Lens').enable()
+    #    self.get_action('Equip Lens').disable()
+    #    self.get_object('storage shelves').get_action('Switch glasses').disable()
 
 
     def when_entering(self, from_location):
-        self.glasses = None
-        if game.game_state.get_stat('truth'): #and > potrebne
-            self.get_action('Remove Lens').enable()
-        else:
-            self.get_action('Remove Lens').disable()
-
+        if not game.game_state.get_stat("fake_glass") and game.game_state.get_stat("truth"):
+            self.get_action("Remove Lens").enabled = True
+            game.game_state.show_message("You should be able to remove your Lens now.")
         game.game_state.location = self
 
 

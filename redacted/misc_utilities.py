@@ -15,6 +15,7 @@ def init_stats():
     game.game_state.init_stat('inventory', [])
     game.game_state.init_stat('seed', random.getrandbits(32))
     game.game_state.init_stat('truth', False)
+    game.game_state.init_stat('fake_glass', False)
 
     game.game_state.add_post_action_trigger(update_stats)
 
