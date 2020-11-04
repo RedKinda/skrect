@@ -157,6 +157,7 @@ class StorageRoom(game.Location):
             self.get_action("Equip Lens").disable()
             game.game_state.set_stat("fake_glass", True)
             self.get_action('Travel to Inconvenience store').enable()
+            self.get_object("storage shelves").get_action("Switch glasses").disable()
 
         @storage_shelves.action("Inspect defective glasses", time_cost=datetime.timedelta(seconds=5), energycost = game.EnergyCost.NONE)
         def inspecc_glass():
