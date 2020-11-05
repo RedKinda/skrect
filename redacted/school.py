@@ -57,6 +57,8 @@ class Canteen(game.Location):
             game.game_state.show_message("The food is edible.")
             new_time = game.game_state.time + datetime.timedelta(minutes=30)
             self.last_lunch = game.game_state.time.replace(hour=0,minute=0,second=0)
+            lunch = utils.Food(name = "Canteen lunch", saturation = .5)
+            utils.eat(lunch)
             self.reload(new_time)
 
     def when_entering(self, from_location):
