@@ -25,12 +25,25 @@ def ticking():
 
 
 def play_forever():
-    player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "a_all")
-    player.load_audio("UI/sounds/Ambient/Ambient_green.wav", "a_green")
-    player.load_audio("UI/sounds/Ambient/Ambient_red.wav", "a_red")
-    player.play_audio("a_all", "all", loop=True)
-    player.play_audio("a_green", "green", loop=True)
-    player.play_audio("a_red", "red", loop=True)
+    threading.Thread(target=_play_forever).start()
+    print("Spooky groove playing...")
+
+
+def _play_forever():
+    while True:
+        player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "a_all")
+        player.load_audio("UI/sounds/Ambient/Ambient_green.wav", "a_green")
+        player.load_audio("UI/sounds/Ambient/Ambient_red.wav", "a_red")
+        player.play_audio("a_all", "all", loop=True)
+        player.play_audio("a_green", "green", loop=True)
+        player.play_audio("a_red", "red", loop=True)
+        t = 0
+        while t < 125 and not end:
+            time.sleep(1)
+        if end:
+            return
+        
+
 
 
 class Audio:
