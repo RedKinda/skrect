@@ -53,11 +53,13 @@ class Bedroom(game.Location):
         def lens_remove():
             self.has_lens = False
             game.game_state.glasses.type = game.Alignment.INDEPENDENT
+            game.game_state.show_message(ColorString(("You briefly took down your red glasses.","cyan")))
 
         @self.action(name="Equip Lens", time_cost=datetime.timedelta(seconds=1), energycost=game.EnergyCost.LIGHT, color = "yellow", disabled = True)
         def lens_equip():
             self.has_lens = True
             game.game_state.glasses.type = game.Alignment.GOVERNMENT
+            game.game_state.show_message(ColorString(("You put your red glasses back on.","red")))
 
     def check_cookable(self):
         self.instant_noodles = utils.Food(name='Instant noodles', saturation=.25)
@@ -79,13 +81,17 @@ class Bedroom(game.Location):
     def after_action(self, action_executed):
         lens_remove = self.get_action("Remove Lens")
         lens_equip = self.get_action("Equip Lens")
-        if game.game_state.get_stat("truth"):
-            if self.has_lens:
-                lens_remove.enabled = True
-                lens_equip.enabled = False
+        if not game.game_state.get_stat("fake_glass"):
+            if game.game_state.get_stat("truth"):
+                if self.has_lens:
+                    lens_remove.enabled = True
+                    lens_equip.enabled = False
+                else:
+                    lens_remove.enabled = False
+                    lens_equip.enabled = True
             else:
                 lens_remove.enabled = False
-                lens_equip.enabled = True
+                lens_equip.enabled = False
         else:
             lens_remove.enabled = False
             lens_equip.enabled = False

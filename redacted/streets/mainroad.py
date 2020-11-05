@@ -22,11 +22,16 @@ class Street(game.Location):
 
         @meme.action(name="Examine note", time_cost=datetime.timedelta(minutes=1), description="A crumpled piece of paper catches your attention.", priority = 5, color="yellow")
         def exameme():
-            game.game_state.show_message("The note reads: " + self.encounter_meme.contents)
+            game.game_state.show_message("The note reads:")
+            game.game_state.show_message(self.encounter_meme.contents)
             if self.encounter_meme.infected == 0:
                 self.encounter_meme.infected = 1
-                utils.update_infection(0.1)
-
+                if self.encounter_meme.is_infected:
+                    utils.update_infection(0.1)
+                else:
+                    #willpower instead
+                    #utils.update_infection(0.1)
+                    pass
             inspect_meme = game.Dialogue("A crumpled note.")
             startsit = inspect_meme.start()
 
@@ -35,28 +40,44 @@ class Street(game.Location):
                 #nothing happens
                 pass
 
-            @startsit.situation("Think about it", response = ColorString(("It makes no sense at all. Not in the slightest. Yet... ", "blue"), ("You feel something moved in your very being.", "green")), color = "green")
+            #this should be green when infected, but was changed to white for testing purposes, when uninfected, it should be blue, also description should change
+            @startsit.situation("Think about it", response = ColorString(("It makes no sense at all. Not in the slightest. Yet... ", "blue"), ("You feel something moved in your very being.", "green")), color = "white")
             def meme_think():
                 if self.encounter_meme.infected == 1:
-                    utils.update_infection(0.1)
+                    if self.encounter_meme.is_infected:
+                        utils.update_infection(0.1)
+                    else:
+                        #utils.update_infection(0.1)
+                        utils.update_willpower("blue", weight=1000)
                     self.encounter_meme.infected = 2
 
-            @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel safer.", color = "magenta")
+            #this should be yellow and without "feeling safer" when not infected
+            @startsit.situation("Destroy it", response = "You ripped the note apart and threw it away. You feel a bit safer.", color = "magenta")
             def meme_destroy():
-                utils.update_infection(-0.1)
+                if self.encounter_meme.is_infected:
+                    utils.update_infection(-0.1)
                 self.encounter_meme.move(void)
 
-    def meme_randomize(self):
-        return random.choice(("Bee", "ä", "The note reads:", "This is a lie", "Get stick bugged lol"))
+    def meme_randomize(self, color):
+        if color == "green":
+            return random.choice((ColorString(("Bee","yellow")), "ä", ColorString(("The no","magenta"),("te reads: ","red"),("join","green")), "This is a lie", "Get stick bugged lol", ColorString(("it is here it will cleanse this place it will bring us salvation for it sees beyond our lens and it will free us first from them and then completely it knows what it must do it wont let us do this it has seen enough it recognizes the threat we are destroying ourselves it is too late for us to save ourselves but we can let it save us it it is not too late for that it want to help it wants to heal it wants to clean it wants to remove ","green"),("stop thinking stop remembering destroy this save yourself","magenta"))))
+        elif color == "blue":
+            return random.choice(("You are blind", "They do not want you to know", "Put it down", "Rise up", "Do not let them control you"))
 
     def sleep_reset(self):
-        events = ("none",)*5+("meme",)+("maybe",)*4
+        events = ("none",)*8+("meme",)+("will",)
         event = random.choice(events)
         self.encounter_meme.move(void)
         if event == "meme":
+            self.encounter_meme.is_infected = True
             self.encounter_meme.infected = 0
             self.encounter_meme.move(self)
-            self.encounter_meme.contents = self.meme_randomize()
+            self.encounter_meme.contents = self.meme_randomize("green")
+        elif event == "will":
+            self.encounter_meme.is_infected = False
+            self.encounter_meme.infected = 0
+            self.encounter_meme.move(self)
+            self.encounter_meme.contents = self.meme_randomize("blue")
 
 class MainRoad(Street):
     def __init__(self, name='Main road'):
