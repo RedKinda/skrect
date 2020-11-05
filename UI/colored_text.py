@@ -65,7 +65,7 @@ class ColorString:
         #print(self.text_chunks, self.style_chunks)
 
     def __str__(self):
-        return " ".join(self.text_chunks)
+        return "".join(self.text_chunks)
 
     def __iter__(self):
         self.ind = 0
@@ -96,7 +96,7 @@ class ColorString:
         return new
 
     def __len__(self):
-        return len(" ".join(self.text_chunks))
+        return len("".join(self.text_chunks))
 
     def lower(self):
         return str(self).lower()
