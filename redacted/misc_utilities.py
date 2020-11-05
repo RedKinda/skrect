@@ -37,6 +37,8 @@ def update_stats(action):
 
 
 def sleep(time, no_dreams=False):
+    if no_dreams:
+        return realsleep(time)
     if game.game_state.time > test_date.replace(hour = 12, minute = 0, second = 0):
         test = game.game_state.get_stat("test")
         if test == "infected":
@@ -45,13 +47,12 @@ def sleep(time, no_dreams=False):
             game.game_state.show_message("Ending achieved! You are going to Brazil.")
         else:
             game.game_state.show_message("Ending achieved! You remain in your home village. You are stuck here. At your home. You are stuck, at home. You could say you're stuck home.")
-    if no_dreams:
-        return realsleep(time)
     if time < datetime.timedelta(hours=6):
         return realsleep(time)
 
     dreams.dream()
     realsleep(time)
+
 
 
 def realsleep(time):
