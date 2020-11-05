@@ -2,6 +2,7 @@ import game
 import datetime
 import random
 import redacted.dreams as dreams
+from redacted.school import test_date
 
 ENERGY = 16*3600*3
 
@@ -16,6 +17,8 @@ def init_stats():
     game.game_state.init_stat('seed', random.getrandbits(32))
     game.game_state.init_stat('truth', False)
     game.game_state.init_stat('fake_glass', False)
+
+    game.game_state.init_stat("test", "no")
 
     game.game_state.add_post_action_trigger(update_stats)
 
@@ -34,6 +37,14 @@ def update_stats(action):
 
 
 def sleep(time, no_dreams=False):
+    if game.game_state.time > test_date.replace(hour = 12, minute = 0, second = 0):
+        test = game.game_state.get_stat("test")
+        if test == "infected":
+            game.game_state.show_message("Failure. You are going to quarantine. For all of eternity. Congratulations!")
+        elif test == "passed":
+            game.game_state.show_message("Ending achieved! You are going to Brazil.")
+        else:
+            game.game_state.show_message("Ending achieved! You remain in your home village. You are stuck here. At your home. You are stuck, at home. You could say you're stuck home.")
     if no_dreams:
         return realsleep(time)
     if time < datetime.timedelta(hours=6):

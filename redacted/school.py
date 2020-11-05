@@ -198,6 +198,55 @@ class Class(game.Location):
                     self.reload(game.game_state.time)
                     lesson.exit()
 
+        @self.action(name="Attend testing", time_cost = datetime.timedelta(0), description="Attend the special testing until 15.", priority = 5, color = "yellow")
+        def attend():
+            global last_visit
+            days_missed = resolve_sadness()
+            holder.sadness += days_missed*2
+            if days_missed > 0:
+                holder.sadness -= 1
+            #game.game_state.show_message("Lessons missed: " + str(days_missed))
+            #game.game_state.show_message("WARNING: SOMETHING MAY HAPPEN TO THE SADNESS VALUE IF YOU PRESS \"GOODBYE\" NOW. DO NOT DO IT! IT IS NOT A FEATURE.")
+            last_visit = game.game_state.time
+            last_visit = last_visit.replace(hour=0, minute=0, second=0)
+            startTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 8, 0, 0)
+            endTime = datetime.datetime(game.game_state.time.year, game.game_state.time.month, game.game_state.time.day, 15, 0, 0)
+
+            #this should not be exitable
+            lesson = game.Dialogue("Doing the test.", closable = False)
+            startsit = lesson.start()
+
+            @startsit.situation("Do your best", response = ColorString(("You completed the test. Results should come soon.", "yellow"), (" The questions were really odd. Some of them didn't seem to even have anything in common with mental strength...\n\nMaybe they're testing for something else?", "cyan")), closable = False, color = "red")
+            def lesson_attention():
+                if game.game_state.time.hour < 8:
+                    utils.spend_stats(startTime - game.game_state.time, game.EnergyCost.NONE)
+                    timePoint = startTime
+                else:
+                    timePoint = game.game_state.time
+                utils.spend_stats(endTime - timePoint, game.EnergyCost.MENTAL)
+                game.game_state.set_stat("test", "passed")
+                lesson_done()
+
+            @startsit.situation("Don't", response = ColorString(("You failed the test on purpose. Well, you hope you did? It was really strange.","blue")), closable = False, color = "blue")
+            def lesson_funni():
+                if game.game_state.time.hour < 8:
+                    utils.spend_stats(startTime - game.game_state.time, game.EnergyCost.NONE)
+                    timePoint = startTime
+                else:
+                    timePoint = game.game_state.time
+                utils.spend_stats(endTime - timePoint, game.EnergyCost.TRAVEL)
+                #holder.sadness += 10
+                lesson_done()
+
+            def lesson_done():
+                @lesson.situation("Wait for the end.", response = "It is time for a late lunch.", closable = False)
+                def lesson_end():
+                    game.game_state.time = endTime
+                    if game.game_state.get_stat("infection") > 0.1:
+                        game.game_state.set_stat("test", "infected")
+                    self.reload(game.game_state.time)
+                    lesson.exit()
+
     def when_entering(self, from_location):
         game.game_state.location = self
         game.game_state.show_message("You enter the class.")
@@ -207,6 +256,7 @@ class Class(game.Location):
     def reload(self, new_time):
         attend = self.get_action("Attend")
         escape = self.get_action("Travel to Hall")
+        test = self.get_action("Attend testing")
 
         if new_time.weekday() > 4:
             game.game_state.show_message("There is no one here. No school during weekend.")
@@ -238,6 +288,12 @@ class Class(game.Location):
             game.game_state.show_message("The class is over. No one is here.")
             attend.enabled = False
             escape.enabled = True
+
+        test.disable()
+        if test_date == game.game_state.time.replace(hour = 0, minute = 0, second = 0):
+            if attend.enabled:
+                attend.disable()
+                test.enable()
 
         reload(new_time)
 
@@ -277,6 +333,8 @@ hall.add_neighbor(clss, timecost=clss.distance)
 hall.add_neighbor(cant, timecost=cant.distance)
 hall.get_action("Travel to Class").priority = 10
 hall.get_action("Travel to Canteen").priority = 15
+
+test_date = datetime.datetime(year = 2864, month = 8, day = 7, hour = 0, minute = 0, second = 0)
 
 def visit_init():
     global last_visit
