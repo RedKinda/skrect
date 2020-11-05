@@ -63,8 +63,18 @@ poppy_street.add_neighbor(greatwood_row, timecost=datetime.timedelta(minutes=2))
 
 import redacted.school as school
 amaryllis_street.add_neighbor(school.hall, timecost=datetime.timedelta(minutes=1))
-amaryllis_street.get_action("Travel to Hall").priority = 10
+t = amaryllis_street.get_action("Travel to Hall")
+t.priority = 10
+t.name = 'Travel to Greatwood school'
 
 import redacted.shop as shop
 lycoris_street.add_neighbor(shop.main_room, timecost=datetime.timedelta(minutes=1))
-lycoris_street.get_action("Travel to Inconvenience store").priority = 10
+t = lycoris_street.get_action("Travel to Main room")
+t.priority = 10
+t.name = 'Travel to Inconvenience store'
+
+import redacted.station as station
+greatwood_row.add_neighbor(station.waiting_room, timecost=datetime.timedelta(minutes=1))
+t = greatwood_row.get_action("Travel to Waiting room")
+t.priority = 10
+t.name = 'Travel to Greatwood station'
