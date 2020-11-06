@@ -318,9 +318,9 @@ class Action:
         if self.enabled and self.visible:
             s = self.name
             if self.timecost != datetime.timedelta(seconds=0):
-                s += " - {0}".format(str(self.timecost))
+                s += " - " + str(self.timecost)
             if self.description is not None:
-                s += " - {0}".format(self.description)
+                s += " - " + self.description
             return s
 
     def execute(self):
