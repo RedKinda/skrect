@@ -3,8 +3,8 @@ import game
 from UI.colored_text import ColorString
 from redacted.void import void
 import redacted.misc_utilities as utils
-from redacted.NPCs.dave import dave_void
-from redacted.NPCs.horatio import horatio_prime
+from redacted.npcs.dave import dave_void
+from redacted.npcs.horatio import horatio_prime
 
 
 class Holder():
@@ -52,7 +52,7 @@ class Hall(game.Location):
         @bored.action(name="Inspect effectivity measures announcement", time_cost=datetime.timedelta(seconds=10), description="These were estabilished rather recently.")
         def effectivity_announcement():
             game.game_state.show_message(ColorString(("Attention! The Government recommends following measures to ensure that workplace effectivity is at its maximum:\nMinimalize chatting\nAbsolutely NO art in any way, shape or form\nDo not read text you don't trust\nDo not observe imagery you do not trust","red")))
-                
+
     def when_entering(self, from_location):
         if isinstance(from_location, Class):
             game.game_state.show_message("You return to the great hall. Not much has changed.")
@@ -86,7 +86,7 @@ class Canteen(game.Location):
         else:
             self.get_action("Eat lunch").disable()
             game.game_state.show_message("You already had your lunch today.")
-            
+
         #reload NPCs
 
 class Class(game.Location):

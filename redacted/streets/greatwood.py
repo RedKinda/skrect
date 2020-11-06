@@ -2,6 +2,7 @@ import game
 import datetime
 import redacted.misc_utilities
 from redacted.streets.mainroad import Street
+from redacted.npcs.dave import dave_void
 
 class HibiscusStreet(Street):
     def __init__(self, name='Hibiscus street'):
@@ -42,6 +43,9 @@ class GreatwoodRow(Street):
 class GreatwoodPark(Street):
     def __init__(self, name="Greatwood park"):
         super().__init__(name=name)
+
+    def after_action(self, action_executed):
+        dave_void.reload()
 
 # -------------------------------------------
 

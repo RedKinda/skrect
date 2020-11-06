@@ -100,7 +100,11 @@ class Hallway(game.Location):
     def __init__(self):
         super().__init__()
 
-        @self.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE, color = "yellow")
+        @self.object("parents")
+        def parents():
+            pass
+
+        @parents.action(name = "Pay rent", time_cost = datetime.timedelta(minutes=1), priority = 5, energycost = game.EnergyCost.NONE, color = "yellow")
         def pay():
             if utils.spend_money(self.rent_level):
                 game.game_state.show_message("You paid your rent for this week.")
@@ -108,10 +112,16 @@ class Hallway(game.Location):
             else:
                 game.game_state.show_message("You don't have enough.")
 
+        @parents.action(name = "Talk to parents", time_cost = datetime.timedelta(minutes=5),priority = 10, energycost = game.EnergyCost.MENTAL, color = "yellow")
+        def talk_parents():
+            game.game_state.show_message(ColorString(("Your rent is currently ","white"),(str(self.rent_level)+"c","yellow"),(". Don't forget you need to pay every sunday.","white")))
+
     def after_action(self, action_executed):
-        pay = self.get_action("Pay rent")
+        pay = self.get_object("parents").get_action("Pay rent")
+        talk = self.get_object("parents").get_action("Talk to parents")
         if game.game_state.time.hour >= 18 or game.game_state.time.hour <= 8:
             game.show_message("Your parents are here")
+            talk.enable()
             if game.game_state.time.weekday() == 6 and self.last_payment != game.game_state.time.replace(hour = 0, minute = 0, second = 0):
                 pay.enabled = True
             else:
@@ -134,6 +144,7 @@ class Hallway(game.Location):
         else:
             game.show_message("There is no one here")
             pay.enabled = False
+            talk.disable()
 
     def when_entering(self, from_location):
         if self.available:
@@ -158,8 +169,8 @@ def init():
     bedroom = Bedroom()
     hall = Hallway()
     bedroom.add_neighbor(hall)
-    bedroom.get_action("Travel to Hallway").priority = 15
-    hall.get_action("Travel to Bedroom").priority = 10
+    bedroom.get_action("Travel to Hallway").priority = 20
+    hall.get_action("Travel to Bedroom").priority = 15
 
 
 init()
