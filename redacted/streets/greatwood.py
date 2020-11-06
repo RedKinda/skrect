@@ -2,7 +2,7 @@ import game
 import datetime
 import redacted.misc_utilities
 from redacted.streets.mainroad import Street
-from redacted.NPCs.dave import dave_void
+from redacted.npcs.dave import dave_void
 
 class HibiscusStreet(Street):
     def __init__(self, name='Hibiscus street'):
