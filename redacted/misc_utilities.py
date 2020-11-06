@@ -10,7 +10,7 @@ def init_stats():
     game.game_state.init_stat('money', 500)
     game.game_state.init_stat('energy', 1.)
     game.game_state.init_stat('hunger', 1.)
-    game.game_state.init_stat('willpower', .5)
+    game.game_state.init_stat('willpower', .2)
     game.game_state.init_stat('infection', 0.)
 
     game.game_state.init_stat('inventory', [])
@@ -123,11 +123,13 @@ def spend_hunger(time):
 
 def update_willpower(color, weight=1, time=datetime.timedelta(hours=1)):
     time = time/datetime.timedelta(hours=1)
-    k = .95
+    k = .97
     if not weight: return
 
     outcome = 0
-    if color in ['magenta', 'cyan', 'blue', 'white', True]:
+    if type(color) == int:
+        outcome = color
+    elif color in ['magenta', 'cyan', 'blue', 'white', True]:
         outcome = 1
 
     kwed = k**weight
