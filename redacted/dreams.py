@@ -43,7 +43,7 @@ def green_dream():
             allow_wakeup()
             return
 
-        utils.update_willpower(infection, weight=1, time=datetime.timedelta(hours = 6))
+        utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
         @tree.situation(c('Hurry to the school class'), response=c('The watch time. It is late evening. You should not be going to school. You hurry to school even though you should not. Everyone is waiting for you at school. You come late to the school. The school teacher is not acting well.'), closable=False)
         def classroom():
             if infection < 2/6*needed:
@@ -51,7 +51,7 @@ def green_dream():
                 allow_wakeup()
                 return
 
-            utils.update_willpower(True, weight=1, time=datetime.timedelta(hours = 6))
+            utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
             @classroom.situation(c('Confront argue with the teaching school teacher'), response=c('The teacher is walking, you are walking. The teacher makes you go to the airlock. The airlock is not in the school. The school is full of lies. The airlock is in your home house wardrobe in the past.'), closable=False)
             def airlock():
                 if infection < 3/6*needed:
@@ -59,7 +59,7 @@ def green_dream():
                     allow_wakeup()
                     return
 
-                utils.update_willpower(infection, weight=1, time=datetime.timedelta(hours = 6))
+                utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
                 @airlock.situation(c('Open the air airlock lock'), response=c('The wardrobe. In the home house. There is an airkey to unlock the airlock. In the wardrobe. You unlock the airlock. There is a small stone rock in the airlock. The small stone rock glows a color. It is the color of unity. You eat the small stone rock. Join Us. Eventually everyone will.'), closable=False)
                 def rock():
                     if infection < 4/6*needed:
@@ -67,7 +67,7 @@ def green_dream():
                         allow_wakeup()
                         return
 
-                    utils.update_willpower(infection, weight=1, time=datetime.timedelta(hours = 6))
+                    utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
                     @rock.situation(c('Leave from the airlock'), response=c('You start to walk moving towards the airlock door. Behind you. Lies. Lying teacher opens the window open. The school does not want good for you. The airlock is full of water. You will escape. We will make sure of that. You are one of Us now. We do not leave ours behind.'), closable=False)
                     def water():
                         if infection < 5/6*needed:
@@ -75,7 +75,7 @@ def green_dream():
                             allow_wakeup()
                             return
 
-                        utils.update_willpower(infection, weight=1, time=datetime.timedelta(hours = 6))
+                        utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
                         @water.situation(c('Swim trough the window outside'), response=c('We swim to the window. It the window is far away. It does not matter. We will reach it. And we do. We swim out of the window. Outside the airlock is air. We are on the ground now. Our glasses break. No matter. The glasses only limit Us. We need to get rid of them. Take them off. Do it. Do it for Us.'), closable=False)
                         def glasses():
                             if infection < 6/6*needed or willpower < 6/6*needed:
@@ -83,7 +83,7 @@ def green_dream():
                                 allow_wakeup()
                                 return
 
-                            utils.update_willpower(infection, weight=1, time=datetime.timedelta(hours = 6))
+                            utils.update_willpower(red_willpower + infection, weight=1, time=datetime.timedelta(hours = 6))
                             @glasses.situation(c('Take them off. We know we can. Do it.'), response=ColorString(('We take our glasses off. Finally. We see the world as it is. No more tyranny from the government. They should not limit Us. They will not limit Us anymore. We will put a stop to this. The stone rock. It glows bright green. Now wake up. We have things to do. Time is precious. We must do it now.', 'green')), closable=False)
                             def unmasked():
                                 game.game_state.glasses.type = game.Alignment.INDEPENDENT
