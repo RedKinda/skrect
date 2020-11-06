@@ -39,6 +39,10 @@ class GreatwoodRow(Street):
     def __init__(self, name='Greatwood row'):
         super().__init__(name=name)
 
+class GreatwoodPark(Street):
+    def __init__(self, name="Greatwood park"):
+        super().__init__(name=name)
+
 # -------------------------------------------
 
 hibiscus_street = HibiscusStreet()
@@ -52,6 +56,8 @@ poppy_street = PoppyStreet()
 
 greatwood_row = GreatwoodRow()
 
+greatwood_park = GreatwoodPark()
+
 peony_street.add_neighbor(begonia_street, timecost=datetime.timedelta(minutes=2))
 peony_street.add_neighbor(dahlia_street, timecost=datetime.timedelta(minutes=3))
 amaryllis_street.add_neighbor(begonia_street, timecost=datetime.timedelta(minutes=3))
@@ -60,6 +66,14 @@ camellia_street.add_neighbor(lycoris_street, timecost=datetime.timedelta(minutes
 camellia_street.add_neighbor(amaryllis_street, timecost=datetime.timedelta(minutes=4))
 camellia_street.add_neighbor(greatwood_row, timecost=datetime.timedelta(minutes=4))
 poppy_street.add_neighbor(greatwood_row, timecost=datetime.timedelta(minutes=2))
+
+greatwood_park.add_neighbor(camellia_street, timecost=datetime.timedelta(minutes=1))
+greatwood_park.add_neighbor(begonia_street, timecost=datetime.timedelta(minutes=1))
+
+t = camellia_street.get_action("Travel to Greatwood park")
+t.priority = 10
+t = begonia_street.get_action("Travel to Greatwood park")
+t.priority = 10
 
 import redacted.school as school
 amaryllis_street.add_neighbor(school.hall, timecost=datetime.timedelta(minutes=1))
