@@ -72,16 +72,16 @@ class Davoid(game.Location):
                 @conversation_begin.situation("How's life?", response = event)
                 def daily():
                     pass
-
-                if self.dave.progression < 3:
-                    dave_wait = "Dave: Good idea, I'll be waiting in the park. See you there."
-                else:
-                    dave_wait = "Dave: Why? Why would I show you it everything then when I can show you EVERYTHING here?"
-                
-                @conversation_begin.situation("Shall we hang out after school?", response = dave_wait)
-                def idk2():
+                if self.dave.location == clss:
                     if self.dave.progression < 3:
-                        self.dave.hang_out_day = game.game_state.time.replace(hour=0,minute=0,second=0)
+                        dave_wait = "Dave: Good idea, I'll be waiting in the park. See you there."
+                    else:
+                        dave_wait = "Dave: Why? Why would I show you it everything then when I can show you EVERYTHING here?"
+                    
+                    @conversation_begin.situation("Shall we hang out after school?", response = dave_wait)
+                    def idk2():
+                        if self.dave.progression < 3:
+                            self.dave.hang_out_day = game.game_state.time.replace(hour=0,minute=0,second=0)
 
                 from redacted.streets.greatwood import greatwood_park as park
                 if self.dave.location == park or self.dave.progression == 3:
