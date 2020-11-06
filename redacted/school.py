@@ -3,6 +3,9 @@ import game
 from UI.colored_text import ColorString
 from redacted.void import void
 import redacted.misc_utilities as utils
+from redacted.NPCs.dave import dave_void
+from redacted.NPCs.horatio import horatio_prime
+
 
 class Holder():
     def __init__(self):
@@ -55,89 +58,28 @@ class Canteen(game.Location):
         def eat():
             #eat
             game.game_state.show_message("The food is edible.")
-            new_time = game.game_state.time + datetime.timedelta(minutes=30)
             self.last_lunch = game.game_state.time.replace(hour=0,minute=0,second=0)
             lunch = utils.Food(name = "Canteen lunch", saturation = .5)
             utils.eat(lunch)
-            self.reload(new_time)
 
-    def when_entering(self, from_location):
-        new_time = game.game_state.time + self.distance
-        self.reload(new_time)
-        game.game_state.location = self
-
-    def reload(self, new_time):
-        if (new_time.hour < 14 or new_time.hour > 15) or new_time.weekday() > 4:
-            self.get_action("Eat lunch").enabled = False
+    def after_action(self, action_executed):
+        time = game.game_state.time
+        if (time.hour < 14 or time.hour > 15) or time.weekday() > 4:
+            self.get_action("Eat lunch").disable()
             game.game_state.show_message("Lunch is not being served right now.")
-        elif self.last_lunch < new_time.replace(hour=0,minute=0,second=0):
-            self.get_action("Eat lunch").enabled = True
+        elif self.last_lunch < time.replace(hour=0,minute=0,second=0):
+            self.get_action("Eat lunch").enable()
             game.game_state.show_message("You're in time for lunch.")
+            game.game_state.show_message(str(self.last_lunch))
         else:
-            self.get_action("Eat lunch").enabled = False
+            self.get_action("Eat lunch").disable()
             game.game_state.show_message("You already had your lunch today.")
             
-        reload(new_time)
+        #reload NPCs
 
 class Class(game.Location):
     def __init__(self):
         super().__init__(description="You are in your class.", desc_when_nearby="You know the way there.")
-
-        @game.object(name="dave", location=self)
-        def dave():
-            pass
-
-        @game.object(name="joey", location=self)
-        def joey():
-            pass
-
-        self.dave = self.get_object("dave")
-        self.joey = self.get_object("joey")
-        self.distance = datetime.timedelta(minutes=1)
-        self.dave.ego = datetime.timedelta(minutes=1)
-        self.joey.ego = datetime.timedelta(minutes=1)
-
-        @dave.action(name="Talk to Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY, priority = 10)
-        def talk():
-            self.dave.location.reload(game.game_state.time + self.dave.ego)
-            dialogue = game.Dialogue("Perfection.")
-            startsit = dialogue.start()
-
-            @startsit.situation("'H...'", response = "Horatio: Come to pry on the most stunning man in the galaxy?")
-            def conversation_begin():
-
-                @conversation_begin.situation("I was just wondering...", response = "Horatio: Wondering whether you could observe me for just a bit longer? Of course you can, you are my best friend! In the same way a dog is a man's best friend, that is.\nFriendship with Horatio increased!")
-                def observe_Horatio():
-                    pass
-
-                @conversation_begin.situation("Do you wanna hang out after...", response = "Horatio: After I'm done cloning myself and creating a perfect intergalactic empire? Of course! I'll assign you one of my lesser clones to keep you company.\nFriendship with Horatio increased? Yeah, let's say it increased.")
-                def hang_out_with_Horatio_question_mark():
-                    pass
-
-                @conversation_begin.situation("Can you stop interrupting me when...", response = "Horatio: No.\nHoratio would hate you now, if he considered your relationship worth remembering its status. And if he actually had a friendship variable.")
-                def rekt():
-                    pass
-
-        @joey.action(name="Talk to Another Horatio", time_cost=datetime.timedelta(minutes=1), description="As you approach Horatio, you can hear him saying \"Make Horatio great again!\" to thin air.", energycost = game.EnergyCost.HEAVY, priority = 10)
-        def talk():
-            self.joey.location.reload(game.game_state.time + self.joey.ego)
-            dialogue = game.Dialogue("Almost perfection.")
-            startsit = dialogue.start()
-
-            @startsit.situation("'H...'", response = "Another Horatio: Come to pry on the second most stunning man in the galaxy?")
-            def conversation_begin():
-
-                @conversation_begin.situation("I was just wondering...", response = "Another Horatio: Wondering whether you could observe me for just a bit longer? Of course you can, you are my best friend! In the same way a dog is a man's best friend, that is.\nFriendship with Another Horatio increased!")
-                def observe_Horatio():
-                    pass
-
-                @conversation_begin.situation("Do you wanna hang out after...", response = "Another Horatio: After I'm done cloning myself and creating a perfect intergalactic empire? Of course! I'll assign you one of my lesser clones to keep you company.\nFriendship with Another Horatio increased? Yeah, let's say it increased.")
-                def hang_out_with_Horatio_question_mark():
-                    pass
-
-                @conversation_begin.situation("Can you stop interrupting me when...", response = "Another Horatio: No.\nAnother Horatio would hate you now, if he considered your relationship worth remembering its status. And if he actually had a friendship variable.")
-                def rekt():
-                    pass
 
         @self.action(name="Attend", time_cost = datetime.timedelta(0), description="Attend class until 15.", priority = 5, color = "yellow")
         def attend():
@@ -195,7 +137,6 @@ class Class(game.Location):
                         game.game_state.show_message("You can tell from the way the teacher looks at you before leaving the class that you're standing on thin ice.")
                     elif holder.sadness >= 5:
                         game.game_state.show_message("The teacher does not appear happy with you. You should be more careful.")
-                    self.reload(game.game_state.time)
                     lesson.exit()
 
         @self.action(name="Attend testing", time_cost = datetime.timedelta(0), description="Attend the special testing until 15.", priority = 5, color = "yellow")
@@ -244,33 +185,31 @@ class Class(game.Location):
                     game.game_state.time = endTime
                     if game.game_state.get_stat("infection") > 0.1:
                         game.game_state.set_stat("test", "infected")
-                    self.reload(game.game_state.time)
                     lesson.exit()
 
     def when_entering(self, from_location):
         game.game_state.location = self
         game.game_state.show_message("You enter the class.")
-        new_time = game.game_state.time + self.distance
-        self.reload(new_time)
 
-    def reload(self, new_time):
+    def after_action(self, action_executed):
         attend = self.get_action("Attend")
         escape = self.get_action("Travel to Hall")
         test = self.get_action("Attend testing")
+        time = game.game_state.time
 
-        if new_time.weekday() > 4:
+        if time.weekday() > 4:
             game.game_state.show_message("There is no one here. No school during weekend.")
             attend.enabled = False
             escape.enabled = True
-        elif new_time.hour < 6:
+        elif time.hour < 6:
             game.game_state.show_message("There is no one here yet.")
             attend.enabled = True
             escape.enabled = True
-        elif new_time.hour < 8:
+        elif time.hour < 8:
             game.game_state.show_message("There are a few other students. The class will start soon.")
             attend.enabled = True
             escape.enabled = True
-        elif new_time.hour < 15:
+        elif time.hour < 15:
             game.game_state.show_message("You are late. The class is in progress.")
             days_missed = resolve_sadness()
             holder.sadness += 1
@@ -280,47 +219,61 @@ class Class(game.Location):
 
             attend.enabled = True
             escape.enabled = False
-        elif new_time.hour < 16:
+        elif time.hour < 16:
             game.game_state.show_message("The class just ended, and there are still some students here.")
             attend.enabled = False
             escape.enabled = True
         else:
-            game.game_state.show_message("The class is over. No one is here.")
+            game.game_state.show_message("The class is over. No one is here. Except for Horatio, for some reason.")
             attend.enabled = False
             escape.enabled = True
 
         test.disable()
-        if test_date == game.game_state.time.replace(hour = 0, minute = 0, second = 0):
+        if test_date == time.replace(hour = 0, minute = 0, second = 0):
             if attend.enabled:
                 attend.disable()
                 test.enable()
 
-        reload(new_time)
+        dave_void.reload()
+        horatio_prime.reload()
 
-def reload(new_time):
+#this function is no longer used hopefully? I dont know how to phrase this
+#def reload(new_time):
+#    dave = clss.dave
+#    joey = clss.joey
+#    jane = clss.jane
+#    horatio = clss.horatio
 
-
-    dave = clss.dave
-    joey = clss.joey
-
-    if new_time.weekday() > 4:
-        dave.move(void)
-        joey.move(void)
-    elif new_time.hour < 6:
-        dave.move(void)
-        joey.move(void)
-    elif new_time.hour < 8:
-        dave.move(void)
-        joey.move(clss)
-    elif new_time.hour < 15:
-        dave.move(void)
-        joey.move(void)
-    elif new_time.hour < 16:
-        dave.move(clss)
-        joey.move(cant)
-    else:
-        dave.move(void)
-        joey.move(void)
+    #if new_time.weekday() > 4:
+    #    dave.move(void)
+    #    joey.move(void)
+    #    jane.move(void)
+    #    horatio.move(clss)
+    #elif new_time.hour < 6:
+    #    dave.move(void)
+    #    joey.move(void)
+    #    jane.move(void)
+    #    horatio.move(void)
+    #elif new_time.hour < 8:
+    #    dave.move(clss)
+    #    joey.move(clss)
+    #    jane.move(clss)
+    #    horatio.move(clss)
+    #elif new_time.hour < 15:
+    #    dave.move(void)
+    #    joey.move(void)
+    #    jane.move(void)
+    #    horatio.move(void)
+    #elif new_time.hour < 16:
+    #    dave.move(clss)
+    #    joey.move(cant)
+    #    jane.move(cant)
+    #    horatio.move(void)
+    #else:
+    #    dave.move(void)
+    #    joey.move(void)
+    #    jane.move(void)
+    #    horatio.move(void)
 
 
 
@@ -329,8 +282,8 @@ holder = Holder()
 hall = Hall()
 clss = Class()
 cant = Canteen()
-hall.add_neighbor(clss, timecost=clss.distance)
-hall.add_neighbor(cant, timecost=cant.distance)
+hall.add_neighbor(clss, timecost=datetime.timedelta(minutes=1))
+hall.add_neighbor(cant, timecost=datetime.timedelta(minutes=1))
 hall.get_action("Travel to Class").priority = 10
 hall.get_action("Travel to Canteen").priority = 15
 
