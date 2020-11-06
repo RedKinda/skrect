@@ -127,7 +127,7 @@ def update_willpower(color, weight=1, time=datetime.timedelta(hours=1)):
     if not weight: return
 
     outcome = 0
-    if type(color) == int:
+    if type(color) == float:
         outcome = color
     elif color in ['magenta', 'cyan', 'blue', 'white', True]:
         outcome = 1
