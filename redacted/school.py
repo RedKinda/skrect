@@ -32,15 +32,27 @@ class Hall(game.Location):
     def __init__(self):
         super().__init__(description="You are in the great hall of your school.")
 
-        @game.object(name="flag", location=self)
-        def flag():
-            pass
+        #@game.object(name="flag", location=self)
+        #def flag():
+        #    pass
 
-        @flag.action(name="Observe flag", time_cost=datetime.timedelta(seconds=10), description="A glorious mural.", energycost = game.EnergyCost.NONE, priority = 5, color = "red")
-        def inspect():
-            game.game_state.show_message("On the wall hangs the flag. It makes you feel small.")
+        #@flag.action(name="Observe flag", time_cost=datetime.timedelta(seconds=10), description="A glorious mural.", energycost = game.EnergyCost.NONE, priority = 5, color = "red")
+        #def inspect():
+        #    game.game_state.show_message("On the wall hangs the flag. It makes you feel small.")
             #decrease willpower
 
+        @game.object(name="notice board", location=self)
+        def bored():
+            pass
+
+        @bored.action(name="Inspect testing announcement", time_cost=datetime.timedelta(seconds=10), description="Your grade will all be tested for special abilities soon. As every year.")
+        def test_announcement():
+            game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 31st of May 2120. Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
+
+        @bored.action(name="Inspect effectivity measures announcement", time_cost=datetime.timedelta(seconds=10), description="These were estabilished rather recently.")
+        def effectivity_announcement():
+            game.game_state.show_message(ColorString(("Attention! The Government recommends following measures to ensure that workplace effectivity is at its maximum:\nMinimalize chatting\nAbsolutely NO art in any way, shape or form\nDo not read text you don't trust\nDo not observe imagery you do not trust","red")))
+                
     def when_entering(self, from_location):
         if isinstance(from_location, Class):
             game.game_state.show_message("You return to the great hall. Not much has changed.")
@@ -287,7 +299,7 @@ hall.add_neighbor(cant, timecost=datetime.timedelta(minutes=1))
 hall.get_action("Travel to Class").priority = 10
 hall.get_action("Travel to Canteen").priority = 15
 
-test_date = datetime.datetime(year = 2864, month = 8, day = 7, hour = 0, minute = 0, second = 0)
+test_date = datetime.datetime(year = 2120, month = 5, day = 31, hour = 0, minute = 0, second = 0)
 
 def visit_init():
     global last_visit
