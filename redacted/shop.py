@@ -17,7 +17,7 @@ class CartItem():
 
 
 class MainRoom(game.Location):
-    def __init__(self, name='Inconvenience store'):
+    def __init__(self, name='Main room'):
         super().__init__(name=name)
 
         self.cart_contents = []
@@ -156,7 +156,7 @@ class StorageRoom(game.Location):
             game.game_state.show_message(ColorString(('You put the glasses on. You leave your old ones in their place. This way you can safely see everything even in public.', 'white')))
             self.get_action("Equip Lens").disable()
             game.game_state.set_stat("fake_glass", True)
-            self.get_action('Travel to Inconvenience store').enable()
+            self.get_action('Travel to Main room').enable()
             self.get_object("storage shelves").get_action("Switch glasses").disable()
 
         @storage_shelves.action("Inspect defective glasses", time_cost=datetime.timedelta(seconds=5), energycost = game.EnergyCost.NONE)
@@ -169,7 +169,7 @@ class StorageRoom(game.Location):
         @self.action(name="Remove Lens", time_cost=datetime.timedelta(seconds=1), disabled = True, energycost=game.EnergyCost.LIGHT)
         def lens_remove():
             game.game_state.glasses.type = game.Alignment.INDEPENDENT
-            self.get_action('Travel to Inconvenience store').disable()
+            self.get_action('Travel to Main room').disable()
             self.get_action("Equip Lens").enable()
             self.get_action("Remove Lens").disable()
             game.game_state.show_message(ColorString(("You briefly took down your red glasses.","cyan")))
@@ -177,7 +177,7 @@ class StorageRoom(game.Location):
         @self.action(name="Equip Lens", time_cost=datetime.timedelta(seconds=1), energycost=game.EnergyCost.LIGHT, color = "yellow", disabled = True)
         def lens_equip():
             game.game_state.glasses.type = game.Alignment.GOVERNMENT
-            self.get_action('Travel to Inconvenience store').enable()
+            self.get_action('Travel to Main room').enable()
             self.get_action("Equip Lens").disable()
             self.get_action("Remove Lens").enable()
             game.game_state.show_message(ColorString(("You put your red glasses back on.","red")))
