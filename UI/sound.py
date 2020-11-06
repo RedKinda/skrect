@@ -30,19 +30,22 @@ def play_forever():
 
 
 def _play_forever():
+    player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "a_all")
+    player.load_audio("UI/sounds/Ambient/Ambient_green.wav", "a_green")
+    player.load_audio("UI/sounds/Ambient/Ambient_red.wav", "a_red")
     while True:
-        player.load_audio("UI/sounds/Ambient/Ambient_all.wav", "a_all")
-        player.load_audio("UI/sounds/Ambient/Ambient_green.wav", "a_green")
-        player.load_audio("UI/sounds/Ambient/Ambient_red.wav", "a_red")
         player.play_audio("a_all", "all", loop=True)
         player.play_audio("a_green", "green", loop=True)
         player.play_audio("a_red", "red", loop=True)
         t = 0
         while t < 125 and not end:
             time.sleep(1)
+            t += 1
         if end:
             return
-        
+        player.channels["all"].delete()
+        player.channels["green"].delete()
+        player.channels["red"].delete()
 
 
 

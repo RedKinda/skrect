@@ -2,7 +2,7 @@ from PIL import Image
 import threading
 
 
-def show_map(path="UI/images/peasant.jpg"):
+def show_map(path="UI/images/mapa.png"):
     im = Image.open(path)
     threading.Thread(target=im.show).start()
 

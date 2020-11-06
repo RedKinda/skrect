@@ -30,6 +30,8 @@ try:  # Fancy curtsies drawer
     input("Please maximize your terminal window for the best experience! Press ENTER once you've done so!")
 except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
+
+    UI.sound.play_forever()
     print("You can safely ignore the following error:")
     traceback.print_exc()
     print("Warning! Using the 'classic' version of interface. Use smart terminal for the fancy version")

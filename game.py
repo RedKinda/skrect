@@ -320,7 +320,7 @@ class Action:
             if self.timecost != datetime.timedelta(seconds=0):
                 s += " - " + str(self.timecost)
             if self.description is not None:
-                s += " - " + self.description
+                s += ColorString(" - ") + self.description
             return s
 
     def execute(self):

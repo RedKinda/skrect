@@ -5,6 +5,7 @@ import random
 from redacted.void import void
 from UI.colored_text import ColorString
 
+
 class Street(game.Location):
     def __init__(self, name):
         super().__init__(name=name)
@@ -135,8 +136,14 @@ encounter_streets.append(greatwood.camellia_street)
 encounter_streets.append(greatwood.poppy_street)
 encounter_streets.append(greatwood.greatwood_row)
 
+
 def run():
     def callback():
+        # Init the map command
+        @game.game_state.action("map", visible=False)
+        def map():
+            from UI.images import show_map
+            show_map()
         utils.init_stats()
 
     from redacted.home import bedroom
@@ -144,3 +151,4 @@ def run():
 
     from redacted.school import visit_init
     visit_init()
+
