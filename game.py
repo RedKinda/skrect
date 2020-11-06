@@ -83,7 +83,7 @@ class GameState(Interactable):
         self.location = location
         self.visible_actions = []
         self.possible_actions = []
-        self.time = datetime.datetime(2864, 8, 6, 8, 0, 0)
+        self.time = datetime.datetime(2120, 5, 1, 7, 0, 0)
         self.highlighted_action = 0
         self.active_messages = []
         self.pending_messages = []
@@ -245,6 +245,8 @@ class Location(Interactable):
         self.neighbors.add(neighbor)
         timecost = timecost if timecost else datetime.timedelta(minutes=5)
 
+        # if travel_text and (not onedirectional): raise ValueError
+
         if travel_text is None:
             travel_text = "Travel to " + neighbor.name
 
@@ -340,10 +342,10 @@ class Situation(Action):
         super().__init__(name, callback, time_cost=timecost, **kwargs)
         self.response = kwargs.get("response", "You are waiting.")
         self.dialogue = dialogue
-        self.closable = kwargs.get("closable", True)
+        self.closable = kwargs.get("closable", "Goodbye!")
         self.subsituations = []
         if self.closable:
-            @self.situation("Goodbye!", closable=False, priority=100, response="")
+            @self.situation(self.closable, closable=False, priority=100, response="")
             def close():
                 self.dialogue.exit()
 
