@@ -1,6 +1,8 @@
 import game
 from UI.colored_text import ColorString
 import datetime
+import random
+import redacted.misc_utilities as utils
 
 class Davoid(game.Location):
     def __init__(self):
@@ -12,11 +14,6 @@ class Davoid(game.Location):
 
         self.dave = self.get_object("dave")
         self.dave.progression = 0
-        #0 - almost normal
-        #1 - likes his art a lot
-        #2 - a bit too obsessed
-        #3 - does not even hide it anymore
-        #4 - absent, will leave the player the key to his room for extra plot
 
         self.dave.hang_out_day = datetime.datetime(1,1,1,0,0,0)
 
@@ -83,15 +80,49 @@ class Davoid(game.Location):
                         if self.dave.progression < 3:
                             self.dave.hang_out_day = game.game_state.time.replace(hour=0,minute=0,second=0)
 
+
                 from redacted.streets.greatwood import greatwood_park as park
                 if self.dave.location == park or self.dave.progression == 3:
                     if self.dave.progression < 3:
-                        dave_response = ColorString(("I found these glasses in the forest on the ground. I didn't really think about it but I put them on and everyhting was different. Now I can't really wear the red ones anymore, everything is so dark. Sometimes I just straight up can't do something. It's weird.","cyan"))
+                        dave_response_glass = ColorString(("I found these glasses in the forest on the ground. I didn't really think about it but I put them on and everyhting was different. Now I can't really wear the red ones anymore, everything is so dark. Sometimes I just straight up can't do something. It's weird.","cyan"))
+                        dave_response_art = ColorString(("Dave: I came up with this:\n","white")) + self.generate_poem(False)
+                        color_lock = ("cyan","green")
                     else:
-                        dave_response = ColorString(("I couldn't see anything, but NOW it is obvious, and We It will give everyone a pair, so they can read ALL the word I We will write! EVERYONE.","green"))
-                    @conversation_begin.situation("Discuss stuff you couldn't otherwise.", response = dave_response, color="cyan")
-                    def forbidden():
+                        dave_response_glass = ColorString(("I couldn't see anything, but NOW it is obvious, and We It will give everyone a pair, so they can read ALL the word I We will write! EVERYONE.","green"))
+                        dave_response_art = ColorString(("Dave: This is what I We did, you'll find it very greatly fascinated by the Art:\n","white")) + self.generate_poem(True)
+                        color_lock = ("white","white")
+                    @conversation_begin.situation("Discuss glasses", response = dave_response_glass, color=color_lock[0])
+                    def glass():
                         pass
+
+                    if self.dave.progression > 0:
+                        @conversation_begin.situation("Discuss poetry", response = dave_response_art, color=color_lock[1])
+                        def art():
+                            utils.update_infection(0.025*self.dave.progression)
+                            if self.dave.progression == 3:
+                                utils.update_infection(0.025)
+                        
+    def generate_poem(self, severe):
+        keys = ("bee", "burn", "star")
+        color_choices = [("green","blue","yellow","cyan","magenta","red","white"),
+                         ("green","blue","yellow","cyan","magenta","red","white"),
+                         ("green","green","green","green","green","green","green","blue","yellow","cyan","magenta","red","white","white"),
+                         ("green","green","green","green","green","green","white"),
+                         ("green","green","green","green","green","green","green")]
+        colors = color_choices[self.dave.progression]
+        verses = random.randint(2,8)
+        result = ColorString(("","white"))
+        for i in range(verses):
+            words = random.randint(1,8)
+            for j in range(words):
+                result = result + ColorString((random.choice(keys),random.choice(colors)))
+                if j == words-1:
+                    if i != verses-1:
+                        result = result + "\n"
+                else:
+                    result = result + " "
+
+        return result
                 
     def reload(self):
         from redacted.school import clss
@@ -101,6 +132,8 @@ class Davoid(game.Location):
 
         if time.day < 8:
             pass
+            #dave.progression = 3
+            #AAA this line is for testing purposes AAA
         elif time.day < 15:
             dave.progression = 1
         elif time.day < 20:
