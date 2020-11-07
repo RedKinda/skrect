@@ -131,7 +131,8 @@ class Davoid(game.Location):
         dave = self.dave
 
         if time.day < 8:
-            dave.progression = 3
+            pass
+            #dave.progression = 3
             #AAA this line is for testing purposes AAA
         elif time.day < 15:
             dave.progression = 1
