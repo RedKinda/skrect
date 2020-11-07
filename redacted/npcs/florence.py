@@ -25,8 +25,8 @@ class Italy(game.Location):
             self.last_talked_to = game.game_state.time
 
             self.friendship -= self.close_friendship
-            self.close_friendship *= .9^days
-            self.friendship *= .75^days
+            self.close_friendship *= .9**days
+            self.friendship *= .75**days
             self.friendship += self.close_friendship
 
             if self.friendship <= -1:
@@ -37,11 +37,11 @@ class Italy(game.Location):
                 topics = [0, 1, 2]
                 self.topic = random.choice(topics)
 
-            dialogue = game.Dialogue("Florence")
+            l = "I should go."
+            dialogue = game.Dialogue("Florence", closable=l)
             startsit = dialogue.start()
             game.show_message("Hi Red, what's up?")
             self.friendship -= 1
-            l = "I should go."
 
             if self.topic == 0: # generic conversation about school
                 @startsit.situation("Hey Florence. Not much. You?", response = "Florence: I'm fine, thanks. School's a bit annoying sometimes, but I manage.", closable=l)
@@ -178,8 +178,8 @@ class Italy(game.Location):
         if time.weekday() > 4:
             florence.move(self)
         elif time.hour < 16:
-            florence.move(self)
-        else:
             florence.move(school.cant)
+        else:
+            florence.move(self)
 
 italy = Italy()
