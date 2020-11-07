@@ -123,7 +123,10 @@ class ColorString:
                 if j != len(words) - 1:
                     words[j] += " "
                 if random.randrange(0, 100) < infection:
-                    tup = translate(words[j], styles[j], translate_green_filter)
+                    if game.game_state.glasses == game.Alignment.INDEPENDENT:
+                        tup = translate(words[j], styles[j], translate_green_filter)
+                    else:
+                        tup = translate(words[j], blank, translate_green_filter)
                 else:
                     tup = translate(words[j], styles[j], translator)
                 new.text_chunks.append(tup[0])

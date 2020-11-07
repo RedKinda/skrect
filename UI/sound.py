@@ -13,13 +13,14 @@ def ticking():
         pyglet.clock.tick()
 
         try:
+            inf = game.game_state.get_stat("infection")
             if game.game_state.glasses.type == game.Alignment.INDEPENDENT:
-                player.set_volume("all", 1)
+                player.set_volume("all", 1 - inf)
                 player.set_volume("red", 0)
             elif game.game_state.glasses.type == game.Alignment.GOVERNMENT:
                 player.set_volume("all", 0)
-                player.set_volume("red", 1)
-            player.set_volume("green", game.game_state.get_stat("infection"))
+                player.set_volume("red", 1 - inf)
+            player.set_volume("green", inf)
         except:
             pass
 

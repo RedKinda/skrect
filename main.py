@@ -4,7 +4,7 @@ import time
 import game
 import UI.sound
 
-
+DEBUG = True
 #from sample_world.sample1 import run
 #from redacted.shop import run
 from redacted.streets.mainroad import run
@@ -33,8 +33,9 @@ except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
 
     UI.sound.play_forever()
-    print("You can safely ignore the following error:")
-    traceback.print_exc()
+    if DEBUG:
+        print("You can safely ignore the following error:")
+        traceback.print_exc()
     print("Warning! Using the 'classic' version of interface. Use smart terminal for the fancy version")
     generator = ClassicInput
     drawer = ClassicDrawer
@@ -57,6 +58,8 @@ try:
                 drawer.draw(input_generator.buffer)
 except:
     print("Whoops an error happened")
+    if DEBUG:
+        traceback.print_exc()
 finally:
     print("Exiting...")
     UI.sound.player.stop()

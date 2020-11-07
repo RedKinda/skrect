@@ -7,6 +7,7 @@ import logging
 import os
 
 LOG_DRAWING = False
+REMOVED_BOTTOMLEFT = False
 
 try: os.mkdir("logs")
 except: pass
@@ -78,8 +79,11 @@ class FancyDrawer:
     def new_size(self, lines, columns):
         self.win_info =             curses.newwin(4, columns - 1, 0, 0)
         self.win_main =             curses.newwin((lines - 4) // 2, columns - 1, 4, 0)
-        self.win_idksemmozespisat = curses.newwin((lines - 4) // 2, (columns - 1) * 2 // 5, 4 + (lines - 4) // 2, 0)
-        self.win_actionmenu =       curses.newwin((lines - 4) // 2, (columns - 1) * 3 // 5, 4 + (lines - 4) // 2, (columns - 1) * 2 // 5)
+        if not REMOVED_BOTTOMLEFT:
+            self.win_idksemmozespisat = curses.newwin((lines - 4) // 2, (columns - 1) * 2 // 5, 4 + (lines - 4) // 2, 0)
+            self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1) * 3 // 5, 4 + (lines - 4) // 2, (columns - 1) * 2 // 5)
+        else:
+            self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1), 4 + (lines - 4) // 2, (columns - 1))
 
     def draw(self, input_buffer):
         try:
@@ -87,7 +91,8 @@ class FancyDrawer:
             self.draw_info()
             self.draw_main()
             self.draw_actions(input_buffer)
-            self.draw_idkwindow()
+            if not REMOVED_BOTTOMLEFT:
+                self.draw_idkwindow()
             self.screen.refresh()
         except curses.error:
             print("Your terminal is too small. Recommended minimum size is 180x50")
@@ -110,7 +115,7 @@ class FancyDrawer:
         money = ColorString(("Money: [{0}]".format(" "*(4-len(m)) + m), "yellow"))
         energy = "Energy: 0[{0}]1".format(self.make_bar("energy"))
         willpower = ColorString(("Willpower: 0[{0}]1".format(self.make_bar("willpower")), "blue"))
-        exhaustion = "Hunger: 1[{0}]2".format(self.make_bar("hunger"))
+        exhaustion = "Hunger: 0[{0}]1".format(self.make_bar("hunger"))
         infection = ColorString(("???: 0[{0}]1".format(self.make_bar("infection")), "green"))
         weekday = ["Monday   ",
                    "Tuesday  ",
