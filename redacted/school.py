@@ -5,6 +5,7 @@ from redacted.void import void
 import redacted.misc_utilities as utils
 from redacted.npcs.dave import dave_void
 from redacted.npcs.horatio import horatio_prime
+from redacted.npcs.florence import italy
 
 
 class Holder():
@@ -88,6 +89,7 @@ class Canteen(game.Location):
             game.game_state.show_message("You already had your lunch today.")
 
         #reload NPCs
+        italy.reload()
 
 class Class(game.Location):
     def __init__(self):

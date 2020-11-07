@@ -2,7 +2,7 @@ import game
 from UI.colored_text import ColorString
 import datetime
 import redacted.misc_utilities as utils
-from redacted.school import cant
+import redacted.school as school
 import random
 
 class Italy(game.Location):
@@ -17,7 +17,7 @@ class Italy(game.Location):
         self.last_talked_to = datetime.datetime(2120, 5, 1, 7, 0, 0)
         self.friendship = 0.
         self.close_friendship = 0.
-        self.topic = random.choice(0, 1)
+        self.topic = random.choice([0, 1, 2])
 
         @florence.action(name="Talk to Florence", time_cost=datetime.timedelta(minutes=5))
         def talk():
@@ -34,7 +34,8 @@ class Italy(game.Location):
                 return
 
             if days > 0.5:
-                self.topic = random.choice(0, 1)
+                topics = [0, 1, 2]
+                self.topic = random.choice(topics)
 
             dialogue = game.Dialogue("Florence")
             startsit = dialogue.start()
@@ -89,59 +90,84 @@ class Italy(game.Location):
                             self.friendship -= 1
                             dialogue.exit()
 
-            elif topic == 1: # generic conversation about the test
-            @startsit.situation("Hey Florence. Not much. You?", response="Florence: All good. I was thinking about the test.")
-            def gtest():
-                self.friendship += 1
-
-                @gtest.situation("The test?", response="Florence: The test at the end of the month! I know you forgot the road trip we had, but surely you couldn't have forgotten the thing that's going to affect the rest of your life?", closable=l)
-                def gtest_confused():
+            elif self.topic == 1: # generic conversation about the test
+                @startsit.situation("Hey Florence. Not much. You?", response="Florence: All good. I was thinking about the test.")
+                def gtest():
                     self.friendship += 1
 
-                    @gtest_confused.situation("Right. The test.", response="Florence: Red, is everything okay? Are YOU okay?", closable=l)
-                    def gtest_confused_cont():
+                    @gtest.situation("The test?", response="Florence: The test at the end of the month! I know you forgot the road trip we had, but surely you couldn't have forgotten the thing that's going to affect the rest of your life?", closable=l)
+                    def gtest_confused():
                         self.friendship += 1
 
-                        @gtest_confused.situation("Yeah, yeah. I'm fine", response="Florence: Okay. You're a bit confused. I think you should go home and get a good sleep.", closable=l)
-                        def gtest_confused_fine():
-                            pass
+                        @gtest_confused.situation("Right. The test.", response="Florence: Red, is everything okay? Are YOU okay?", closable=l)
+                        def gtest_confused_cont():
+                            self.friendship += 1
 
-                        if self.friendship < 5:
-                            return
-
-                        @gtest_confused.situation("Not really. My parents want me to move out. They make me pay rent every week.", response="Florence: Oh. I'm sorry. I... don't know what to say to that. I hope you can make it through the test. To go to the city.", closable=l)
-                        def gtest_close():
-                            self.close_friendship += 5
-                            self.friendship += 2
-
-                            @gtest_close.situation("Sorry to bother you with this.", response="Florence: No! Don't apologise. It's not your fault.", closable=l)
-                            def gtest_close_apology():
+                            @gtest_confused.situation("Yeah, yeah. I'm fine", response="Florence: Okay. You're a bit confused. I think you should go home and get a good sleep.", closable=l)
+                            def gtest_confused_fine():
                                 pass
 
-                    @gtest_confused.situation("The test?", response="Florence: Yes! The test that decides whether you're going to be able to move to the city. Are you okay Red? You seem a little confused.", closable=l)
-                    def gtest_confused_x2():
-                        gtest_confused_cont()
+                            if self.friendship < 5:
+                                return
 
-                @gtest.situation("Yeah. It's a bit stressful to know that such an important test is coming.", response="Florence: Exactly. I was thinking, what am I going to do if I don't pass? Do I stay here, in Greatwood?", closable=l)
-                def gtest_yeah():
-                    self.friendship += 1
+                            @gtest_confused.situation("Not really. My parents want me to move out. They make me pay rent every week.", response="Florence: Oh. I'm sorry. I... don't know what to say to that. I hope you can make it through the test. To go to the city.", closable=l)
+                            def gtest_close():
+                                self.close_friendship += 5
+                                self.friendship += 2
 
-                    if self.close_friendship > 3:
-                        game.show_message(ColorString(("Florence: But then again. What even happens in the city? Do I want to go there? I've never heard from anyone who did.", 'blue')))
+                                @gtest_close.situation("Sorry to bother you with this.", response="Florence: No! Don't apologise. It's not your fault.", closable=l)
+                                def gtest_close_apology():
+                                    pass
+
+                        @gtest_confused.situation("The test?", response="Florence: Yes! The test that decides whether you're going to be able to move to the city. Are you okay Red? You seem a little confused.", closable=l)
+                        def gtest_confused_x2():
+                            gtest_confused_cont()
+
+                    @gtest.situation("Yeah. It's a bit stressful to know that such an important test is coming.", response="Florence: Exactly. I was thinking, what am I going to do if I don't pass? Do I stay here, in Greatwood?", closable=l)
+                    def gtest_yeah():
                         self.friendship += 1
-                        utils.update_willpower('white', weight=12, time=datetime.timedelta(minutes=5))
 
-                    @gtest_yeah.situation("I'm going.", response="Florence: Well, that's what everyone thinks. But they never take everyone. Someone always stays behind.", closable=l)
-                    def gtest_yeah_going():
-                        pass
+                        if self.close_friendship > 3:
+                            game.show_message(ColorString(("Florence: But then again. What even happens in the city? Do I want to go there? I've never heard from anyone who did.", 'blue')))
+                            self.friendship += 1
+                            utils.update_willpower('white', weight=12, time=datetime.timedelta(minutes=5))
 
-                    @gtest_yeah.situation("I'm not going.", response="Florence: Really? I thought everyone would want to go. At least they would try.", color='blue', closable=l)
-                    def gtest_yeah_notgoing():
-                        self.close_friendship += 2
-                        self.friendship += 1
+                        @gtest_yeah.situation("I'm going.", response="Florence: Well, that's what everyone thinks. But they never take everyone. Someone always stays behind.", closable=l)
+                        def gtest_yeah_going():
+                            pass
+
+                        @gtest_yeah.situation("I'm not going.", response="Florence: Really? I thought everyone would want to go. At least they would try.", color='blue', closable=l)
+                        def gtest_yeah_notgoing():
+                            self.close_friendship += 2
+                            self.friendship += 1
+
+            elif self.topic == 2:
+                @startsit.situation("Hey Florence. Not much. You?", response="Florence: Yeah, I'm fine. I was actually just thinking about how it's a funny coincidence... Nevermind.", closable=l)
+                def gcoincidence():
+                    self.close_friendship += 1
+
+                    if game.game_state.get_stat('fake_glass'):
+                        @gcoincidence.situation("What?", response=ColorString("Florence: Nothing. I mean it's a little funny how your name is Red, but ", ("not even your glasses are...", 'cyan'), " Like your parents knew. Or they were very wrong."), closable=l)
+                        def gcoincidence_name():
+                            self.friendship += 1
+
+                            @gcoincidence_name.situation("I... actually picked the name myself.", response="Florence: Oh! I understand. That makes sense. I should have known. Obviously you used a different name before.", closable=l)
+                            def gcoincidence_name_myself():
+                                self.close_friendship += 1
+                                self.friendship += 1
+
+                            @gcoincidence_name.situation("Right.", response="Florence: Yeah. Hm.", closable=l)
+                            def gcoincidence_name_right():
+                                pass
+
+                    else:
+                        @gcoincidence.situation("What?", response="Florence: Nevermind. Nothing.", closable=l)
+                        def gcoincidence_name():
+                            pass
 
             @startsit.situation("Hey Florence. I'm glad to be back at school. You?", response="Florence: Well, I'm not.", closable=l)
             def rschool():
+                self.close_friendship -= 1
                 utils.update_willpower('red', weight=3, time=datetime.timedelta(minutes=5))
 
     def reload(self):
@@ -154,6 +180,6 @@ class Italy(game.Location):
         elif time.hour < 16:
             florence.move(self)
         else:
-            florence.move(cant)
+            florence.move(school.cant)
 
 italy = Italy()
