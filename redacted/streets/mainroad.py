@@ -30,7 +30,7 @@ class Street(game.Location):
                 if self.encounter_meme.is_infected:
                     utils.update_infection(0.1)
                 else:
-                    #willpower instead
+                    utils.update_willpower("blue", weight=10)
                     #utils.update_infection(0.1)
                     pass
             inspect_meme = game.Dialogue("A crumpled note.")
@@ -49,7 +49,7 @@ class Street(game.Location):
                         utils.update_infection(0.1)
                     else:
                         #utils.update_infection(0.1)
-                        utils.update_willpower("blue", weight=1000)
+                        utils.update_willpower("blue", weight=10)
                     self.encounter_meme.infected = 2
 
             #this should be yellow and without "feeling safer" when not infected
