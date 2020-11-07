@@ -1,5 +1,6 @@
 import datetime
 import collections
+import hashlib
 
 game_state = None
 
@@ -95,7 +96,7 @@ class GameState(Interactable):
         self.possible_actions = self.location.get_actions()
         self.visible_actions = []
         for ac in self.get_actions():
-            if ac.enabled:
+            if ac.enabled and ac.get_infection_treshold() > self.get_stat("infection") * 100:
                 self.possible_actions.append(ac)
         ind = 0
         for action in self.possible_actions:
@@ -305,6 +306,8 @@ class Action:
         self.description = kwargs.get("description", None)
         self.priority = kwargs.get("priority", 50)
         self.energycost = kwargs.get("energycost", EnergyCost.MENTAL)
+        self.last_seed = None
+        self.last_hash = None
 
     def __str__(self):
         s = "{0}".format(self.name)
@@ -313,6 +316,16 @@ class Action:
         if self.description is not None:
             s += " - {0}".format(self.description)
         return s
+
+    def get_infection_treshold(self):
+        seed = game_state.get_stat("seed")
+        if seed == self.last_seed:
+            pass
+        else:
+            self.last_seed = seed
+            print(seed)
+            self.last_hash = int(hashlib.sha1((str(self.name) + str(seed)).encode()).hexdigest(), 16) % 100
+        return self.last_hash
 
     def print(self):
         if self.enabled and self.visible:

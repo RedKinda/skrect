@@ -65,7 +65,7 @@ class FancyDrawer:
         elif isinstance(text, UI.colored_text.ColorString):
             #drawlog.info("Colored: " + str(text))
             filter = game.game_state.glasses.type
-            for chunk in text.glassed():
+            for chunk in text.glassed(game.game_state.get_stat("infection")):
                 #drawlog.info("TEXT, COLOR: " + str(chunk))
                 if not isinstance(chunk[1], int):
                     print(chunk)

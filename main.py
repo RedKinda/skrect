@@ -27,6 +27,7 @@ try:  # Fancy curtsies drawer
             dr.draw(gen.buffer)
     UI.sound.play_forever()
     print("Pants work! Starting fancy terminal...")
+    print("You can exit the game any time by pressing the escape button")
     input("Please maximize your terminal window for the best experience! Press ENTER once you've done so!")
 except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
@@ -39,22 +40,26 @@ except:  # Fallback to simple drawing for dumb terminals
     drawer = ClassicDrawer
 
 
-with drawer() as drawer:
-    with generator(drawer.get_screen(), translator) as input_generator:
-        #print("Starting game cycle...")
-        drawer.draw(input_generator.buffer)
-        for inp in input_generator:
-            if inp == "ESCAPE":
-                break
-            elif inp in translator:
-                translator[inp]()
-            elif len(inp) > 1:
-                game.game_state.execute_action_by_string(inp)
-            elif inp.isdigit():
-                game.game_state.execute_action_from_list(int(inp)-1)
+try:
+    with drawer() as drawer:
+        with generator(drawer.get_screen(), translator) as input_generator:
+            #print("Starting game cycle...")
             drawer.draw(input_generator.buffer)
-print("Exiting...")
-UI.sound.player.stop()
+            for inp in input_generator:
+                if inp == "ESCAPE":
+                    break
+                elif inp in translator:
+                    translator[inp]()
+                elif len(inp) > 1:
+                    game.game_state.execute_action_by_string(inp)
+                elif inp.isdigit():
+                    game.game_state.execute_action_from_list(int(inp)-1)
+                drawer.draw(input_generator.buffer)
+except:
+    print("Whoops an error happened")
+finally:
+    print("Exiting...")
+    UI.sound.player.stop()
 
 
 

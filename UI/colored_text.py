@@ -3,6 +3,7 @@
 from game import Alignment
 import game
 import curses
+import random
 import time
 
 
@@ -101,7 +102,7 @@ class ColorString:
     def lower(self):
         return str(self).lower()
 
-    def glassed(self, filter=None):
+    def glassed(self, infection, filter=None):
         if filter is None:
             filter = game.game_state.glasses.type if game.game_state else Alignment.INDEPENDENT
         if filter == Alignment.GOVERNMENT:
@@ -115,9 +116,18 @@ class ColorString:
 
         new = ColorString()
         for i in range(len(self.text_chunks)):
-            tup = translate(self.text_chunks[i], self.style_chunks[i], translator)
-            new.text_chunks.append(tup[0])
-            new.style_chunks.append(tup[1])
+            text, style = self.text_chunks[i], self.style_chunks[i]
+            words = text.split(" ")
+            styles = [style for k in range(len(words))]
+            for j in range(len(words)):
+                if j != len(words) - 1:
+                    words[j] += " "
+                if random.randrange(0, 100) < infection:
+                    tup = translate(words[j], styles[j], translate_green_filter)
+                else:
+                    tup = translate(words[j], styles[j], translator)
+                new.text_chunks.append(tup[0])
+                new.style_chunks.append(tup[1])
         return new
 
 '''    def glassed(self, filter_color):
