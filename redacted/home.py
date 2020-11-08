@@ -5,9 +5,27 @@ from UI.colored_text import ColorString
 
 class Bedroom(game.Location):
     def __init__(self):
-        super().__init__()
+        super().__init__(description = "You are at home, in the familiar bedroom")
 
         self.has_lens = True
+
+        @self.object("flag")
+        def flag():
+            pass
+
+        self.flag = self.get_object("flag")
+        self.flag.desc = ColorString(("Flag of the nation hangs on your wall. It is mandatory to have one. ","red"),("A simple way to support controlled population's loyalty.","cyan"))
+
+        @flag.action(name="Observe flag", time_cost=datetime.timedelta(seconds=10), color="red")
+        def observe_flag():
+            game.show_message(self.flag.desc)
+
+        @flag.action(name="Desecrate flag", time_cost=datetime.timedelta(minutes=1), color="cyan")
+        def desecrate():
+            game.show_message(ColorString(("You have successfully desecrated the flag. ","cyan"),("Now that you think about it, that might not have been the best idea. You hope no one sees it.","yellow")))
+            self.flag.get_action("Desecrate flag").disable()
+            self.flag.desc = ColorString(("Flag of the nation hangs on your wall. It is mandatory to have one. ","red"),("It has been desecrated.","cyan"))
+            
 
         @self.object("bed")
         def bed():
@@ -98,7 +116,7 @@ class Bedroom(game.Location):
 
 class Hallway(game.Location):
     def __init__(self):
-        super().__init__()
+        super().__init__(description = "You are in the hallway of your house")
 
         self.first_visit = True
 
