@@ -25,7 +25,7 @@ class Bedroom(game.Location):
             game.show_message(ColorString(("You have successfully desecrated the flag. ","cyan"),("Now that you think about it, that might not have been the best idea. You hope no one sees it.","yellow")))
             self.flag.get_action("Desecrate flag").disable()
             self.flag.desc = ColorString(("Flag of the nation hangs on your wall. It is mandatory to have one. ","red"),("It has been desecrated.","cyan"))
-            
+
 
         @self.object("bed")
         def bed():
@@ -146,16 +146,16 @@ class Hallway(game.Location):
                 pay.enabled = True
             else:
                 pay.enabled = False
-            if self.rent_level == 1:
+            if self.rent_level == 40:
                 from redacted.school import holder
                 if holder.sadness_level > 1:
                     self.available = False
                     pay.enabled = False
                     game.game_state.show_message("Your parents know about your behavior regarding school. You are no longer welcome here.")
                 elif holder.sadness_level > 0:
-                    self.rent_level = 5
+                    self.rent_level = 60
                     game.game_state.show_message("Your parents do not seem happy. School must've complained about you. They raised the rent.")
-            elif self.rent_level == 5:
+            elif self.rent_level == 60:
                 from redacted.school import holder
                 if holder.sadness_level > 1:
                     self.available = False
@@ -184,7 +184,7 @@ class Hallway(game.Location):
         else:
             game.game_state.show_message("It is locked")
 
-        
+
 
 
 
@@ -200,6 +200,6 @@ def init():
 init()
 def callback():
     hall.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
-    hall.rent_level = 1
+    hall.rent_level = 40
     hall.available = True
 game.game_init(bedroom, callback)

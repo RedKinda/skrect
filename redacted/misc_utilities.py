@@ -7,7 +7,7 @@ from redacted.school import test_date
 ENERGY = 16*3600*3
 
 def init_stats():
-    game.game_state.init_stat('money', 500)
+    game.game_state.init_stat('money', 30)
     game.game_state.init_stat('energy', 1.)
     game.game_state.init_stat('hunger', 1.)
     game.game_state.init_stat('willpower', .2)

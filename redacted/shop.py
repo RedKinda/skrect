@@ -83,6 +83,13 @@ class MainRoom(game.Location):
             for thing in self.cart_contents:
                 self.add_item_to_cart(thing.item, -thing.amount)
 
+        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
+        def work():
+            game.game_state.time = game.game_state.time.replace(hour=8, minute=0, second=0)
+            game.show_message("You worked for 8 hours. You feel tired and hungry.")
+            utils.spend_money(-20)
+            work.disable()
+
     def add_item_to_cart(self, item, amount):
         in_cart = False
         for thing in self.cart_contents:
@@ -138,6 +145,15 @@ class MainRoom(game.Location):
     def when_entering(self, from_location):
         self.restock()
         game.game_state.location = self
+
+    def after_action(self, action):
+        if job:
+            if game.game_state.time.hour < 7:
+                pass
+            elif game.game_state.time.hour < 8:
+                self.get_action("Work until 16").enable()
+            elif game.game_state.time.hour < 9 and game.game_state.time.minute < 15:
+                self.get_action("Work until 16").enable()
 
 
 class StorageRoom(game.Location):
@@ -223,6 +239,8 @@ class Office(game.Location):
 
         @manager.action('Apply for job', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.MENTAL, color='yellow')
         def apply():
+            global job
+
             job = True
             self.get_action('Travel to Staff room').enable()
             self.get_action("Travel to Storage room").enable()
@@ -232,6 +250,8 @@ class Office(game.Location):
 
         @manager.action('Leave job', description='Leave your job as a cashier', disabled=True)
         def leave_job():
+            global job
+
             job = False
             self.get_action("Travel to Staff room").disable()
             self.get_action("Travel to Storage room").disable()
@@ -260,5 +280,6 @@ staff_room = StaffRoom()
 
 main_room.add_neighbor(office, timecost=datetime.timedelta(minutes=1))
 office.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=1))
+office.get_action("Travel to Storage room").disable()
 office.add_neighbor(staff_room, timecost=datetime.timedelta(seconds=20))
 office.get_action('Travel to Staff room').disable()
