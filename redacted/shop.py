@@ -273,6 +273,24 @@ class StaffRoom(game.Location):
             utils.sleep(datetime.timedelta(minutes=30))
             game.show_message("You took a nice nap.")
 
+        @self.object("kettle")
+        def kettle():
+            pass
+
+        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        def make_instant_noodles():
+            utils.eat(self.instant_noodles)
+            utils.remove_from_inventory(self.instant_noodles.name)
+            game.show_message("You cook some Instant noodles and eat them. The flavoring is a little bit off.")
+            self.check_cookable()
+
+        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        def make_instant_soup():
+            utils.eat(self.instant_soup)
+            utils.remove_from_inventory(self.instant_soup.name)
+            game.show_message("You cook a cup of Instant soup. It doesn't taste amazing, but at least it's hot.")
+            self.check_cookable()
+
 main_room = MainRoom()
 office = Office()
 storage_room = StorageRoom()

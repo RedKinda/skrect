@@ -35,12 +35,12 @@ class Bedroom(game.Location):
         def bed():
             pass
 
-        @bed.action(name="Relax", description="Pass some time", time_cost=datetime.timedelta(hours=1), energycost=game.EnergyCost.NONE, color = "white", priority = 12)
+        @bed.action(name="Relax", description="Pass some time", time_cost=datetime.timedelta(hours=1), energycost=game.EnergyCost.NONE, color = "magenta", priority = 12)
         def nap():
             game.show_message("You took a nice nap.")
             #utils.sleep()
 
-        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta(0), priority = 10, color = "magenta")
+        @bed.action(name="Sleep", description="Sleep until 7 in the morning", time_cost=datetime.timedelta(0), priority = 10, color = "white")
         def sleep():
             time = game.game_state.time
             if time.hour > 18:
