@@ -192,7 +192,7 @@ def init():
     global bedroom, hall
     bedroom = Bedroom()
     hall = Hallway()
-    bedroom.add_neighbor(hall)
+    bedroom.add_neighbor(hall, timecost = datetime.timedelta(seconds=30))
     bedroom.get_action("Travel to Hallway").priority = 20
     hall.get_action("Travel to Bedroom").priority = 15
 
