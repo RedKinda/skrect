@@ -11,7 +11,7 @@ def init_stats():
     game.game_state.init_stat('energy', 1.)
     game.game_state.init_stat('hunger', 1.)
     game.game_state.init_stat('willpower', .2)
-    game.game_state.init_stat('infection', 0.)
+    game.game_state.init_stat('infection', 0.3)
 
     game.game_state.init_stat('inventory', [])
     game.game_state.init_stat('seed', random.getrandbits(32))
@@ -50,8 +50,8 @@ def sleep(time, no_dreams=False):
     if time < datetime.timedelta(hours=6):
         return realsleep(time)
 
-    dreams.dream()
     realsleep(time)
+    dreams.dream()
 
 
 
@@ -64,6 +64,8 @@ def realsleep(time):
     k = .5**(time/halflife)
     game.game_state.set_stat('energy', 1 - k*e)
 
+    dreams.infect(time)
+    game.game_state.set_stat('seed', random.getrandbits(32))
     for i in encounter_streets:
         i.sleep_reset()
 
