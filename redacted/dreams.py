@@ -38,7 +38,7 @@ def green_dream():
 
     def allow_wakeup():
         utils.update_infection(0.05)
-        @dream.situation('Wake up stop sleeping', response='You hear with your ears ringing now. The ringing is your alarm clock ringing.', closable=False)
+        @dream.situation('Wake up stop sleeping', response='You hear the ringing with your ears now. It your alarm clock ringing.', closable=False)
         def wakeup():
             dream.exit()
 
@@ -107,28 +107,28 @@ def blue_dream():
 
     @startdream.situation('Walk towards the tree', response='You walk towards the tree. You have seen it before. Suddenly you remember what it is. It is the tree that stands on Amaryllis street. You are right. You are standing in the middle of the street.', closable=False)
     def tree():
-        allow_wakeup()
-        if willpower < 1/6*needed: return
+        if willpower < 1/6*needed:
+            allow_wakeup()
 
         @tree.situation('Hurry to class', response='You look at your watch. The time is 19:25. You are late for class. You sprint through the door to find that everyone is staring at you. Why did you come late again? You do not answer. The teacher is angry with you.', closable=False)
         def classroom():
-            allow_wakeup()
-            if willpower < 2/6*needed: return
+            if willpower < 2/6*needed:
+                allow_wakeup()
 
             @classroom.situation('Confront the teacher', response='The teacher takes you to the... The... What is this room? It looks vaguely like an airlock. You are certain there is no airlock in your school. You remember clearly you hid the airlock in your wardrobe last week.', closable=False)
             def airlock():
-                allow_wakeup()
-                if willpower < 3/6*needed: return
+                if willpower < 3/6*needed:
+                    allow_wakeup()
 
                 @airlock.situation('Open the airlock', response='You pull an airkey out of your wardrobe. You unlock the airlock and the airkey dissolves in the air. You look in the airlock and find a small rock. It glows a color you have never seen before. Or have you? You place it in your mouth. It will be safe there.', closable=False)
                 def rock():
-                    allow_wakeup()
-                    if willpower < 4/6*needed: return
+                    if willpower < 4/6*needed:
+                        allow_wakeup()
 
                     @rock.situation('Leave the airlock', response='You start walking towards the airlock door. There comes a silent "click" from behind you. As you turn around, you see that your teacher opened the window. Water is flowing into the room. Your hands fill with water. The peculiar rock is no longer in your hand.', closable=False)
                     def water():
-                        allow_wakeup()
-                        if willpower < 5/6*needed: return
+                        if willpower < 5/6*needed:
+                            allow_wakeup()
 
                         @water.situation('Swim through the window', response='You begin to swim. The window is far away. It will take at least an hour to get there. A few seconds later you pass the window frame. As soon as you are out of the room, you fall to the ground. Your glasses break. The rock is in your hand. Its glow blinds you through the cracks in your glasses.', closable=False)
                         def glasses():

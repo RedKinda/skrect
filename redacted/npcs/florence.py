@@ -5,7 +5,7 @@ import redacted.misc_utilities as utils
 import redacted.school as school
 import random
 
-class Italy(game.Location):
+class Florence(game.Location):
     def __init__(self, name='Italy'):
         super().__init__(name=name, description="You are in Italy. Wait, there is Italy in the year 2120", desc_when_nearby="How do you travel to Italy? In five minutes?")
 
@@ -182,4 +182,4 @@ class Italy(game.Location):
         else:
             florence.move(self)
 
-italy = Italy()
+italy = Florence()
