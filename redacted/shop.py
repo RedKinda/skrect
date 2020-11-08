@@ -66,6 +66,10 @@ class MainRoom(game.Location):
 
         @shelves.action(name='checkout', description='Purchase the contents of your shopping cart', time_cost=datetime.timedelta(minutes=3), energycost=game.EnergyCost.LIGHT, priority=31, color='yellow')
         def checkout():
+            if self.cart_contents == []:
+                game.show_message("There is nothing in your cart.")
+                return
+
             total_cost = 0
             for thing in self.cart_contents:
                 total_cost += thing.item.cost*thing.amount
