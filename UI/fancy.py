@@ -7,7 +7,7 @@ import logging
 import os
 
 LOG_DRAWING = False
-REMOVED_BOTTOMLEFT = False
+REMOVED_BOTTOMLEFT = True
 
 try: os.mkdir("logs")
 except: pass
@@ -83,7 +83,7 @@ class FancyDrawer:
             self.win_idksemmozespisat = curses.newwin((lines - 4) // 2, (columns - 1) * 2 // 5, 4 + (lines - 4) // 2, 0)
             self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1) * 3 // 5, 4 + (lines - 4) // 2, (columns - 1) * 2 // 5)
         else:
-            self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1), 4 + (lines - 4) // 2, (columns - 1))
+            self.win_actionmenu = curses.newwin((lines - 4) // 2, (columns - 1), 4 + (lines - 4) // 2, 0)
 
     def draw(self, input_buffer):
         try:
@@ -153,13 +153,20 @@ class FancyDrawer:
     def draw_actions(self, buffer):
         self.win_actionmenu.move(0, 0)
         lines, columns = self.screen.getmaxyx()
-        lines, columns = (lines - 4) // 2, (columns - 1) * 3 // 5
+        if REMOVED_BOTTOMLEFT:
+            lines, columns = (lines - 4) // 2, (columns - 1)
+        else:
+            lines, columns = (lines - 4) // 2, (columns - 1) * 3 // 5
 
         self.write_text(self.win_actionmenu, "=" * (columns) + "\n")
+
+        self.write_text(self.win_actionmenu, "Action menu" + " "*(columns-12-len(buffer)))
+
         try:
-            self.write_text(self.win_actionmenu, "Action menu" + " "*(columns-12-len(buffer)) + buffer + "\n")
+            self.write_text(self.win_actionmenu, buffer + "\n")
         except:
             pass
+
         #self.win_actionmenu.addstr("="*20 + "\nAction menu")
 
         ind = 0

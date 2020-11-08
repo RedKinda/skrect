@@ -13,7 +13,8 @@ translate_style = {
     "bold": curses.A_BOLD,
     "underline": curses.A_UNDERLINE,
     "meta": curses.A_UNDERLINE,
-    "keyword": curses.A_BOLD
+    "keyword": curses.A_BOLD,
+    "blank": blank
 }
 
 translate_color = {
@@ -123,10 +124,10 @@ class ColorString:
                 if j != len(words) - 1:
                     words[j] += " "
                 if random.randrange(0, 100) < infection:
-                    if game.game_state.glasses == game.Alignment.INDEPENDENT:
-                        tup = translate(words[j], styles[j], translate_green_filter)
+                    if game.game_state.glasses == game.Alignment.GOVERNMENT:
+                        tup = translate(words[j], "blank", translate_green_filter)
                     else:
-                        tup = translate(words[j], blank, translate_green_filter)
+                        tup = translate(words[j], styles[j], translate_green_filter)
                 else:
                     tup = translate(words[j], styles[j], translator)
                 new.text_chunks.append(tup[0])

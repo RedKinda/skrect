@@ -1,4 +1,11 @@
-from PIL import Image
+import platform
+if platform.system() == "Linux":
+    from PIL import Image
+elif platform.system() == "Windows":
+    from Pillow import Image
+else:
+    print("Unsupported OS")
+    raise OSError
 import threading
 
 

@@ -323,7 +323,6 @@ class Action:
             pass
         else:
             self.last_seed = seed
-            print(seed)
             self.last_hash = int(hashlib.sha1((str(self.name) + str(seed)).encode()).hexdigest(), 16) % 100
         return self.last_hash
 
