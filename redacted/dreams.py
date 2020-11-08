@@ -119,8 +119,6 @@ def blue_dream():
         def wakeup():
             dream.exit()
 
-    allow_wakeup()
-
     @startdream.situation('Walk towards the tree', response='You walk towards the tree. You have seen it before. Suddenly you remember what it is. It is the tree that stands on Amaryllis street. You are right. You are standing in the middle of the street.', closable=False)
     def tree():
         if willpower < 1/6*needed:
