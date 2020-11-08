@@ -85,11 +85,11 @@ class Davoid(game.Location):
                 if self.dave.location == park or self.dave.progression == 3:
                     if self.dave.progression < 3:
                         dave_response_glass = ColorString(("I found these glasses in the forest on the ground. I didn't really think about it but I put them on and everyhting was different. Now I can't really wear the red ones anymore, everything is so dark. Sometimes I just straight up can't do something. It's weird.","cyan"))
-                        dave_response_art = ColorString(("Dave: I came up with this:\n","white")) + self.generate_poem(False)
+                        dave_response_art = ColorString(("Dave: I came up with this:\n","white")) + self.generate_poem()
                         color_lock = ("cyan","green")
                     else:
                         dave_response_glass = ColorString(("I couldn't see anything, but NOW it is obvious, and We It will give everyone a pair, so they can read ALL the word I We will write! EVERYONE.","green"))
-                        dave_response_art = ColorString(("Dave: This is what I We did, you'll find it very greatly fascinated by the Art:\n","white")) + self.generate_poem(True)
+                        dave_response_art = ColorString(("Dave: This is what I We did, you'll find it very greatly fascinated by the Art:\n","white")) + self.generate_poem()
                         color_lock = ("white","white")
                     @conversation_begin.situation("Discuss glasses", response = dave_response_glass, color=color_lock[0])
                     def glass():
@@ -103,26 +103,46 @@ class Davoid(game.Location):
                                 utils.update_infection(0.025)
 
                 if self.dave.location == park:
-                    @conversation_begin.situation("Hang out for an hour", response = "You hang out for a while.")
+                    hangout_responses = ["You hang out with Dave. For how little you talk, you feel surprisingly at peace.",
+                                         "You hang out with Dave. You've never seen this poetic side of him. ",
+                                         "You hang out with Dave. You feel a little bit worried, but also intrigued.",
+                                         "You hang out with Dave. Suddenly you understand him better.",
+                                         "You hang out with Dave... How? In this stage of infection he should be absent from the game."
+                                         ]
+                        
+                    @conversation_begin.situation("Hang out for an hour", response = hangout_responses[self.dave.progression])
                     def hangout():
                         game.game_state.time = game.game_state.time + datetime.timedelta(hours=1)
                         utils.update_infection(0.025*self.dave.progression)
-                        utils.update_willpower("blue", weight=50-15*(self.dave.progression))
+                        utils.update_willpower("blue", weight=1-self.dave.progression/4)
                         
-    def generate_poem(self, severe):
-        keys = ("bee", "burn", "star")
+    def generate_poem(self):
+        key_choices = ["no",
+                ("the bee", "the rock", "the stars", "the cold", "the fuel", "the storm", "the mind", "the time", "the space", "the earth", "the warmth", "the fire", "the water", "the air",
+                "freeing", "burning", "fueling", "stalling", "calling", "being", "feeling", "pulling", "thinking", "resting", "meaning",
+                "hidden", "unleashed", "stored", "imagined", "thought", "pushed", "bound", "forgotten", "realized", "interested"),
+                ("the worm", "the rook", "the star", "the frost", "the fill", "the maelstrom", "the brain", "the passage", "the expanse", "the dirt", "the soul", "the consumption", "the juice", "the lung",
+                "awakening", "smelting", "bellowing", "standing", "wailing", "being", "sensing", "draining", "knowing", "slumbering", "signifying",
+                "sheathed", "unrestrained", "held", "invited", "unpredicted", "shifted", "trapped", "forbidden", "present", "attracted",
+                "no", "please", "help", "why", "run"),
+                ("It", "We", "I", "Us", "Me", "Them", "They", "drill", "bishop", "gas", "still", "way", "mother", "corruption")
+                ]
         color_choices = [("green","blue","yellow","cyan","magenta","red","white"),
                          ("green","blue","yellow","cyan","magenta","red","white"),
                          ("green","green","green","green","green","green","green","blue","yellow","cyan","magenta","red","white","white"),
                          ("green","green","green","green","green","green","white"),
                          ("green","green","green","green","green","green","green")]
         colors = color_choices[self.dave.progression]
-        verses = random.randint(2,8)
+        keys = key_choices[self.dave.progression]
+        verses = random.randint(2,6)
         result = ColorString(("","white"))
         for i in range(verses):
-            words = random.randint(1,8)
+            words = random.randint(1,4)
+            line_color = random.choice(colors)
             for j in range(words):
-                result = result + ColorString((random.choice(keys),random.choice(colors)))
+                if self.dave.progression > 1:
+                    line_color = random.choice(colors)
+                result = result + ColorString((random.choice(keys),line_color))
                 if j == words-1:
                     if i != verses-1:
                         result = result + "\n"
@@ -138,14 +158,18 @@ class Davoid(game.Location):
         dave = self.dave
 
         if time.day < 8:
+        #if time.day < 1:
             pass
             #dave.progression = 3
             #AAA this line is for testing purposes AAA
         elif time.day < 15:
+        #elif time.day < 2:
             dave.progression = 1
         elif time.day < 20:
+        #elif time.day < 3:
             dave.progression = 2
         elif time.day < 25:
+        #elif time.day < 4:
             dave.progression = 3
         else:
             dave.progression = 4
