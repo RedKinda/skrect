@@ -101,6 +101,13 @@ class Davoid(game.Location):
                             utils.update_infection(0.025*self.dave.progression)
                             if self.dave.progression == 3:
                                 utils.update_infection(0.025)
+
+                if self.dave.location == park:
+                    @conversation_begin.situation("Hang out for an hour", respons = "You hang out for a while.")
+                    def hangout():
+                        game.game_state.time = game.game_state.time + datetime.timedelta(hours=1)
+                        utils.update_infection(0.025*self.dave.progression)
+                        utils.update_willpower("blue", weight=50-15*(self.dave.progression))
                         
     def generate_poem(self, severe):
         keys = ("bee", "burn", "star")
