@@ -364,7 +364,7 @@ hall.add_neighbor(cant, timecost=datetime.timedelta(minutes=1))
 hall.get_action("Travel to Class").priority = 10
 hall.get_action("Travel to Canteen").priority = 15
 
-test_date = datetime.datetime(year = 2120, month = 5, day = 31, hour = 0, minute = 0, second = 0)
+test_date = datetime.datetime(year = 2120, month = 5, day = 17, hour = 0, minute = 0, second = 0)
 
 def visit_init():
     global last_visit
