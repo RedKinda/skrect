@@ -46,7 +46,7 @@ class Hall(game.Location):
         def bored():
             pass
 
-        @bored.action(name="Inspect testing announcement", time_cost=datetime.timedelta(seconds=10), description="Your grade will all be tested for special abilities soon. As every year.")
+        @bored.action(name="Inspect testing announcement", time_cost=datetime.timedelta(seconds=10), description="Your grade will all be tested for extraordinary thinking skills soon. As every year.")
         def test_announcement():
             game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 31st of May 2120. Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
 
@@ -60,6 +60,18 @@ class Hall(game.Location):
         else:
             game.game_state.show_message("You enter the school. On the opposite wall hangs a great flag.")
         game.game_state.location = self
+
+    def after_action(self, action_executed):
+        bored = self.get_object("notice board")
+        if game.game_state.time.day < 6:
+            bored.get_action("Inspect effectivity measures announcement").disable()
+            bored.get_action("Inspect testing announcement").disable()
+        elif game.game_state.time.day < 15:
+            bored.get_action("Inspect effectivity measures announcement").enable()
+            bored.get_action("Inspect testing announcement").disable()
+        else:
+            bored.get_action("Inspect effectivity measures announcement").enable()
+            bored.get_action("Inspect testing announcement").enable()
 
 class Canteen(game.Location):
     def __init__(self):
@@ -113,7 +125,49 @@ class Class(game.Location):
             lesson = game.Dialogue("Attending a lesson.", closable = False)
             startsit = lesson.start()
 
-            @startsit.situation("Pay close attention", response = ColorString(("You discussed the importance of Lens and how they increase performance. Did you know that if you don't wear them, there's a high chance you will die?", "red"), ("The Government will make sure of that.", "cyan")), closable = False, color = "red")
+            lessons = ["ä",
+                       "You learn about the past. People used to be uncoordinated, but then a scientist discovered Lens. They allow great concentration and productivity, and now everyone wears them.",
+                       "It is important that everyone wears the Lens; if you don't, harmful and distracting information and ideas can get into your mind.",
+                       "The Lens filter certain wavelengths of light, resulting in a much more orderly and clear view of reality.",
+
+                       "ä",
+                       "ä",
+
+                       "As you surely know, the Government is recently enforcing new measures to improve effectivity. You write an essay about how art can be harmful.",
+                       "In the past, people would chat all the time and not get anything done. Today, we strive to be better and discourage such nonsense.",
+                       "While the Government has always been implementing effectivity measures, recently, this rate has greatly increased thanks to their best efforts.",
+                       "You watched a short educational movie. It teaches you the danger of some information and how it can be used to spread harmful ideas. Always trust only information from Government sources.",
+                       "If you find a suspicious note on the ground, ignore it. You don't know what it contains. If you have an idea who created it, make sure to report them to the local Office.",
+
+                       "ä",
+                       "ä",
+
+                       "As you surely know, the annual test is coming soon, and this year is your turn. You will do your best, and if the Government recognizes your skills, you will move to the Capital City. You only have this chance once in a lifetime.",
+                       "The Capital City houses the nation's best thinkers and philosophers. You can get a chance to join them at the end of this month.",
+                       "Higher Education Institute is where you'll study if you pass the test. It is a wonder dedicated to the nation, raising engineers, scientists and officials.",
+                       "The Capital City is connected to all of the nation with a network of train connections. They transport goods, enforcers and sometimes workers.",
+                       "This year, a new version of the annual test will be used. Your experience may be different than of those who came before you.",
+
+                       "ä",
+                       "ä",
+
+                       "Do not litter. If everyone littered, there would be a lot of litter.",
+                       "If someone is behaving strangely, do not hesitate and tell the Office.",
+                       "Most humans have more than average amount of legs. Oh, you've heard that one already? Here's another one: it would take about a million mosquitoes to suck all of your blood. You couldn't have possibly known this one already.",
+                       "Today we were supposed to learn about mosquitoes, but I taught you about that yesterday, so we're just going to do grammar exercises.",
+                       "The annual test will be in a week. Make sure to come to school.",
+
+                       "ä",
+                       "ä",
+
+                       "You may hear about the other nations having a base on the Moon. That's obviously fake; it is not possible to land on the Moon, how gullible must their citizens be?",
+                       "You watched a movie about the dangers of dehydratation. If you don't drink water you die. That makes sense.",
+                       "Today you learned how many poppy seeds it would take to kill you.",
+                       "Don't forget the test is tomorrow. Do not be late.",
+                       "ä"
+                       ]
+            
+            @startsit.situation("Pay close attention", response = ColorString((lessons[game.game_state.time.day],"red")), closable = False, color = "red")
             def lesson_attention():
                 holder.sadness = max(0, holder.sadness-1)
                 if game.game_state.time.hour < 8:
