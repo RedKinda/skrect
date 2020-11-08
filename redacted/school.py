@@ -58,7 +58,13 @@ class Hall(game.Location):
         if isinstance(from_location, Class):
             game.game_state.show_message("You return to the great hall. Not much has changed.")
         else:
-            game.game_state.show_message("You enter the school. On the opposite wall hangs a great flag.")
+            if game.game_state.time.day < 6:
+                status = "There is also a notice board, but nothing important is on it right now. "
+            elif game.game_state.time.day < 15:
+                status = "There is an announcement on the notice board. "
+            else:
+                status = "There are two announcements on the notice board. "
+            game.game_state.show_message(ColorString(("You enter the school. You can access the canteen or the class. ","white"),(status,"red"),("You won't get into the teacher's quarters if anyone is in the building.","cyan")))
         game.game_state.location = self
 
     def after_action(self, action_executed):

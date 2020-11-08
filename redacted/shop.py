@@ -18,7 +18,7 @@ class CartItem():
 
 class MainRoom(game.Location):
     def __init__(self, name='Main room'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are in the main room of this store. You should be able to buy some food here.")
 
         self.cart_contents = []
         self.items = {
@@ -80,9 +80,15 @@ class MainRoom(game.Location):
                     utils.add_to_inventory(thing.item.name)
             game.show_message('Your total is {}c. You take the items you bought with you.'.format(total_cost))
 
-            self.cart_contents = []
-            for item in self.items:
-                shelves.get_action('Remove ' + item).disable()
+            for thing in self.cart_contents:
+                self.add_item_to_cart(thing.item, -thing.amount)
+
+        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
+        def work():
+            game.game_state.time = game.game_state.time.replace(hour=8, minute=0, second=0)
+            game.show_message("You worked for 8 hours. You feel tired and hungry.")
+            utils.spend_money(-20)
+            work.disable()
 
     def add_item_to_cart(self, item, amount):
         in_cart = False
@@ -140,10 +146,19 @@ class MainRoom(game.Location):
         self.restock()
         game.game_state.location = self
 
+    def after_action(self, action):
+        if job:
+            if game.game_state.time.hour < 7:
+                pass
+            elif game.game_state.time.hour < 8:
+                self.get_action("Work until 16").enable()
+            elif game.game_state.time.hour < 9 and game.game_state.time.minute < 15:
+                self.get_action("Work until 16").enable()
+
 
 class StorageRoom(game.Location):
     def __init__(self, name='Storage room'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is the storage room. Things that are not being sold are here.")
 
         @self.object('storage shelves')
         def storage_shelves():
@@ -212,7 +227,7 @@ class StorageRoom(game.Location):
 
 class Office(game.Location):
     def __init__(self, name='Office'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is the store manager's office.")
 
         global job
         job = False
@@ -222,28 +237,49 @@ class Office(game.Location):
         def manager():
             pass
 
-        @manager.action('Apply', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.MENTAL, color='yellow')
+        @manager.action('Apply for job', description='Apply for a job as a cashier', time_cost=datetime.timedelta(minutes=30), energycost=game.EnergyCost.MENTAL, color='yellow')
         def apply():
+            global job
+
             job = True
             self.get_action('Travel to Staff room').enable()
+            self.get_action("Travel to Storage room").enable()
             apply.disable()
+            self.get_object("manager").get_action("Leave job").enable()
+            game.show_message("The interview went well. You are hired as a cashier in the Inconvenience store.")
 
-        @manager.action('Leave job', description='Leave your job as a cashier')
+        @manager.action('Leave job', description='Leave your job as a cashier', disabled=True)
         def leave_job():
-            pass
+            global job
+
+            job = False
+            self.get_action("Travel to Staff room").disable()
+            self.get_action("Travel to Storage room").disable()
+            leave_job.disable()
+            self.get_object("manager").get_action("Apply for job").enable()
+            game.show_message("You left your position as a cashier in the Inconvenience store.")
 
 
 class StaffRoom(game.Location):
     def __init__(self, name='Staff room'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is the staff room. You can rest here if you need to.")
 
+        @self.object('couch')
+        def couch():
+            pass
+
+        @couch.action('Take a nap', description="Take a 30 minute nap", time_cost=datetime.timedelta(minutes=30), energycost=-1, color='white')
+        def nap():
+            utils.sleep(datetime.timedelta(minutes=30))
+            game.show_message("You took a nice nap.")
 
 main_room = MainRoom()
 office = Office()
 storage_room = StorageRoom()
 staff_room = StaffRoom()
 
-main_room.add_neighbor(office, timecost=datetime.timedelta(minutes=2))
-main_room.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=1))
+main_room.add_neighbor(office, timecost=datetime.timedelta(minutes=1))
+office.add_neighbor(storage_room, timecost=datetime.timedelta(minutes=1))
+office.get_action("Travel to Storage room").disable()
 office.add_neighbor(staff_room, timecost=datetime.timedelta(seconds=20))
 office.get_action('Travel to Staff room').disable()

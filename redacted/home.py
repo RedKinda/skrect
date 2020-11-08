@@ -5,9 +5,31 @@ from UI.colored_text import ColorString
 
 class Bedroom(game.Location):
     def __init__(self):
-        super().__init__()
+        super().__init__(description = "You are at home, in the familiar bedroom")
 
         self.has_lens = True
+
+        @self.action(name="magic glass", description="do them agic glasss")
+        def glass():
+            game.game_state.glasses.type = game.Alignment.INDEPENDENT
+
+        @self.object("flag")
+        def flag():
+            pass
+
+        self.flag = self.get_object("flag")
+        self.flag.desc = ColorString(("Flag of the nation hangs on your wall. It is mandatory to have one. ","red"),("A simple way to support controlled population's loyalty.","cyan"))
+
+        @flag.action(name="Observe flag", time_cost=datetime.timedelta(seconds=10), color="red")
+        def observe_flag():
+            game.show_message(self.flag.desc)
+
+        @flag.action(name="Desecrate flag", time_cost=datetime.timedelta(minutes=1), color="cyan")
+        def desecrate():
+            game.show_message(ColorString(("You have successfully desecrated the flag. ","cyan"),("Now that you think about it, that might not have been the best idea. You hope no one sees it.","yellow")))
+            self.flag.get_action("Desecrate flag").disable()
+            self.flag.desc = ColorString(("Flag of the nation hangs on your wall. It is mandatory to have one. ","red"),("It has been desecrated.","cyan"))
+
 
         @self.object("bed")
         def bed():
@@ -98,7 +120,7 @@ class Bedroom(game.Location):
 
 class Hallway(game.Location):
     def __init__(self):
-        super().__init__()
+        super().__init__(description = "You are in the hallway of your house")
 
         self.first_visit = True
 
@@ -128,16 +150,16 @@ class Hallway(game.Location):
                 pay.enabled = True
             else:
                 pay.enabled = False
-            if self.rent_level == 1:
+            if self.rent_level == 40:
                 from redacted.school import holder
                 if holder.sadness_level > 1:
                     self.available = False
                     pay.enabled = False
                     game.game_state.show_message("Your parents know about your behavior regarding school. You are no longer welcome here.")
                 elif holder.sadness_level > 0:
-                    self.rent_level = 5
+                    self.rent_level = 60
                     game.game_state.show_message("Your parents do not seem happy. School must've complained about you. They raised the rent.")
-            elif self.rent_level == 5:
+            elif self.rent_level == 60:
                 from redacted.school import holder
                 if holder.sadness_level > 1:
                     self.available = False
@@ -166,7 +188,7 @@ class Hallway(game.Location):
         else:
             game.game_state.show_message("It is locked")
 
-        
+
 
 
 
@@ -174,7 +196,7 @@ def init():
     global bedroom, hall
     bedroom = Bedroom()
     hall = Hallway()
-    bedroom.add_neighbor(hall)
+    bedroom.add_neighbor(hall, timecost = datetime.timedelta(seconds=30))
     bedroom.get_action("Travel to Hallway").priority = 20
     hall.get_action("Travel to Bedroom").priority = 15
 
@@ -182,6 +204,6 @@ def init():
 init()
 def callback():
     hall.last_payment = game.game_state.time.replace(hour = 0, minute = 0, second = 0)
-    hall.rent_level = 1
+    hall.rent_level = 40
     hall.available = True
 game.game_init(bedroom, callback)
