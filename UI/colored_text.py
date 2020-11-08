@@ -123,9 +123,9 @@ class ColorString:
             for j in range(len(words)):
                 if j != len(words) - 1:
                     words[j] += " "
-                if random.randrange(0, 100) < infection:
-                    if game.game_state.glasses == game.Alignment.GOVERNMENT:
-                        tup = translate(words[j], "blank", translate_green_filter)
+                if random.random() <= infection:
+                    if game.game_state.glasses.type == game.Alignment.GOVERNMENT:
+                        tup = translate(words[j], "red", translate_green_filter)
                     else:
                         tup = translate(words[j], styles[j], translate_green_filter)
                 else:
