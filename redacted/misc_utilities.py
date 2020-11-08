@@ -11,7 +11,7 @@ def init_stats():
     game.game_state.init_stat('energy', 1.)
     game.game_state.init_stat('hunger', 1.)
     game.game_state.init_stat('willpower', .2)
-    game.game_state.init_stat('infection', 0.)
+    game.game_state.init_stat('infection', 0.3)
 
     game.game_state.init_stat('inventory', [])
     game.game_state.init_stat('seed', random.getrandbits(32))
