@@ -228,6 +228,7 @@ class Office(game.Location):
             self.get_action("Travel to Storage room").enable()
             apply.disable()
             self.get_object("manager").get_action("Leave job").enable()
+            game.show_message("The interview went well. You are hired as a cashier in the Inconvenience store.")
 
         @manager.action('Leave job', description='Leave your job as a cashier', disabled=True)
         def leave_job():
@@ -236,6 +237,7 @@ class Office(game.Location):
             self.get_action("Travel to Storage room").disable()
             leave_job.disable()
             self.get_object("manager").get_action("Apply for job").enable()
+            game.show_message("You left your position as a cashier in the Inconvenience store.")
 
 
 class StaffRoom(game.Location):
@@ -246,8 +248,10 @@ class StaffRoom(game.Location):
         def couch():
             pass
 
-        @couch.action('Take a nap', description="Take a 30 minute nap", )
-
+        @couch.action('Take a nap', description="Take a 30 minute nap", time_cost=datetime.timedelta(minutes=30), energycost=-1, color='white')
+        def nap():
+            utils.sleep(datetime.timedelta(minutes=30))
+            game.show_message("You took a nice nap.")
 
 main_room = MainRoom()
 office = Office()
