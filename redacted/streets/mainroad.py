@@ -66,7 +66,8 @@ class Street(game.Location):
             return random.choice(("You are blind", "They do not want you to know", "Put it down", "Rise up", "Do not let them control you"))
 
     def sleep_reset(self):
-        events = ("none",)*8+("meme",)+("will",)
+        events = ("none",)*9+("meme",)
+        #+("will",)
         event = random.choice(events)
         self.encounter_meme.move(void)
         if event == "meme":
