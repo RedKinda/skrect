@@ -9,6 +9,10 @@ class Bedroom(game.Location):
 
         self.has_lens = True
 
+        @self.action(name="magic glass", description="do them agic glasss")
+        def glass():
+            game.game_state.glasses.type = game.Alignment.INDEPENDENT
+
         @self.object("flag")
         def flag():
             pass
