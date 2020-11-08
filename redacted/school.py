@@ -64,7 +64,8 @@ class Hall(game.Location):
                 status = "There is an announcement on the notice board. "
             else:
                 status = "There are two announcements on the notice board. "
-            game.game_state.show_message(ColorString(("You enter the school. You can access the canteen or the class. ","white"),(status,"red"),("You won't get into the teacher's quarters if anyone is in the building.","cyan")))
+            game.game_state.show_message(ColorString(("You enter the school. You can access the canteen or the class. ","white"),(status,"red")))
+                                                     #,("You won't get into the teacher's quarters if anyone is in the building.","cyan")))
         game.game_state.location = self
 
     def after_action(self, action_executed):
