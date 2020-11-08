@@ -18,7 +18,8 @@ def infect(time):
     infection = game.game_state.get_stat('infection')
 
     idif = ispeed*time*(infection - willpower)/datetime.timedelta(hours=1)
-    utils.update_infection(idif)
+    if infection > 0:
+        utils.update_infection(idif)
 
 def dream():
     global ichange
