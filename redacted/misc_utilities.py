@@ -26,8 +26,8 @@ def tutorial(action): #action is ignored
 
 def init_stats():
     game.game_state.init_stat('money', 30)
-    game.game_state.init_stat('energy', 1.)
-    game.game_state.init_stat('hunger', 1.)
+    game.game_state.init_stat('energy', .94)
+    game.game_state.init_stat('hunger', .94)
     game.game_state.init_stat('willpower', .2)
     game.game_state.init_stat('infection', 0.)
 
