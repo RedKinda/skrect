@@ -48,7 +48,7 @@ class Hall(game.Location):
 
         @bored.action(name="Inspect testing announcement", time_cost=datetime.timedelta(seconds=10), description="Your grade will all be tested for extraordinary thinking skills soon. As every year.")
         def test_announcement():
-            game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 31st of May 2120. Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
+            game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 17th of May 2120 (friday). Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
 
         @bored.action(name="Inspect effectivity measures announcement", time_cost=datetime.timedelta(seconds=10), description="These were estabilished rather recently.")
         def effectivity_announcement():
@@ -60,7 +60,7 @@ class Hall(game.Location):
         else:
             if game.game_state.time.day < 6:
                 status = "There is also a notice board, but nothing important is on it right now. "
-            elif game.game_state.time.day < 15:
+            elif game.game_state.time.day < 13:
                 status = "There is an announcement on the notice board. "
             else:
                 status = "There are two announcements on the notice board. "
@@ -72,7 +72,7 @@ class Hall(game.Location):
         if game.game_state.time.day < 6:
             bored.get_action("Inspect effectivity measures announcement").disable()
             bored.get_action("Inspect testing announcement").disable()
-        elif game.game_state.time.day < 15:
+        elif game.game_state.time.day < 13:
             bored.get_action("Inspect effectivity measures announcement").enable()
             bored.get_action("Inspect testing announcement").disable()
         else:
@@ -151,7 +151,9 @@ class Class(game.Location):
                        "As you surely know, the annual test is coming soon, and this year is your turn. You will do your best, and if the Government recognizes your skills, you will move to the Capital City. You only have this chance once in a lifetime.",
                        "The Capital City houses the nation's best thinkers and philosophers. You can get a chance to join them at the end of this month.",
                        "Higher Education Institute is where you'll study if you pass the test. It is a wonder dedicated to the nation, raising engineers, scientists and officials.",
-                       "The Capital City is connected to all of the nation with a network of train connections. They transport goods, enforcers and sometimes workers.",
+                       #"The Capital City is connected to all of the nation with a network of train connections. They transport goods, enforcers and sometimes workers.",
+                       #the following line only applies for the earlier test date:
+                       "Don't forget the test is tomorrow. Do not be late. Actually, this year, a new version of the annual test will be used. Your experience may be different than of those who came before you."
                        "This year, a new version of the annual test will be used. Your experience may be different than of those who came before you.",
 
                        "ä",
