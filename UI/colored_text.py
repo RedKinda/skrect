@@ -121,6 +121,9 @@ class ColorString:
             words = text.split(" ")
             styles = [style for k in range(len(words))]
             for j in range(len(words)):
+                if len(words[j]) > 2:
+                    if words[j][0:3] == "Red":
+                        styles[j] = 'red'
                 if j != len(words) - 1:
                     words[j] += " "
                 if random.random() <= infection:
