@@ -122,8 +122,6 @@ class Hallway(game.Location):
     def __init__(self):
         super().__init__(description = "You are in the hallway of your house")
 
-        self.first_visit = True
-
         @self.object("parents")
         def parents():
             pass
@@ -169,10 +167,6 @@ class Hallway(game.Location):
             game.show_message("There is no one here")
             pay.enabled = False
             talk.disable()
-
-        if self.first_visit:
-            self.first_visit = False
-            game.game_state.show_message("You enter the hallway. You should probably get going soon, school starts at 8. To open town map, type \"map\" and press ENTER.")
 
     def when_entering(self, from_location):
         if self.available:

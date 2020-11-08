@@ -4,7 +4,25 @@ import random
 import redacted.dreams as dreams
 from redacted.school import test_date
 
-ENERGY = 16*3600*3
+ENERGY = 24*3600*3
+
+intro_id = 0
+def tutorial(action): #action is ignored
+    global intro_id
+    if intro_id > 6:
+        return
+    messages = {
+        0: "Welcome to REDACTED! To highlight different actions, use your arrow keys. To execute the highlighted action, press the return key.",
+        1: "At the top of your screen there are a few informations that will be useful to you. The current date and time is on the left side. Next to that you also see the amount of money you have.",
+        2: "Make sure you have enough money ready each sunday, because you need to pay rent. It's a not-so-subtle reminder that your parents would like you to move out.",
+        3: "Next to that you can see your total energy and hunger. You can replenish energy by sleeping, and hunger, by, unsurprisingly, eating food. Watch out so you don't run out of energy, or you'll lose.",
+        4: "The hungrier you are, the faster your energy drains. Keep that in mind when you're running out of hunger. You can have lunch at school, and you can buy some foods at the Inconvenience store.",
+        5: "Speaking of school, you should probably hurry. You should be there by eight. Don't be late. Oh yeah, and you can view the village map by typing map and pressing return.",
+        6: "Good luck, Red. We hope you have fun. -ä"
+    }
+    game.show_message(messages[intro_id])
+    intro_id += 1
+
 
 def init_stats():
     game.game_state.init_stat('money', 30)
@@ -21,6 +39,8 @@ def init_stats():
     game.game_state.init_stat("test", "no")
 
     game.game_state.add_post_action_trigger(update_stats)
+    game.game_state.add_post_action_trigger(tutorial)
+    tutorial("ä")
 
 
 
