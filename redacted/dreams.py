@@ -17,7 +17,10 @@ def infect(time):
     willpower = (game.game_state.get_stat('willpower') - red_willpower)*willpower_scale
     infection = game.game_state.get_stat('infection')
 
-    idif = ispeed*time*(infection - willpower)/datetime.timedelta(hours=1)
+    if willpower > 0:
+        idif = ispeed*time*(infection - willpower)/datetime.timedelta(hours=1)
+    else:
+        idif = ispeed*time*(infection)/datetime.timedelta(hours=1)
     if infection > 0:
         utils.update_infection(idif)
 
@@ -57,7 +60,7 @@ def green_dream():
     @startdream.situation(c('Walk moving towards the dark wood tree'), response=c('You move walking to the dark wood tree. You know remeber the wood tree. The image of tree in your mind. You see the dark tree on Amaryllis street. You are standing on Amaryllis street.'), closable=False)
     def tree():
         if infection < 1/6*needed:
-            utils.update_infection(0.05)
+            # utils.update_infection(0.05)
             allow_wakeup()
             return
 
@@ -65,7 +68,7 @@ def green_dream():
         @tree.situation(c('Hurry to the school class'), response=c('The watch time. It is late evening. You should not be going to school. You hurry to school even though you should not. Everyone is waiting for you at school. You come late to the school. The school teacher is not acting well.'), closable=False)
         def classroom():
             if infection < 2/6*needed:
-                utils.update_infection(0.06)
+                # utils.update_infection(0.06)
                 allow_wakeup()
                 return
 
@@ -73,7 +76,7 @@ def green_dream():
             @classroom.situation(c('Confront argue with the teaching school teacher'), response=c('The teacher is walking, you are walking. The teacher makes you go to the airlock. The airlock is not in the school. The school is full of lies. The airlock is in your home house wardrobe in the past.'), closable=False)
             def airlock():
                 if infection < 3/6*needed:
-                    utils.update_infection(0.07)
+                    # utils.update_infection(0.07)
                     allow_wakeup()
                     return
 
@@ -81,7 +84,7 @@ def green_dream():
                 @airlock.situation(c('Open the air airlock lock'), response=c('The wardrobe. In the home house. There is an airkey to unlock the airlock. In the wardrobe. You unlock the airlock. There is a small stone rock in the airlock. The small stone rock glows a color. It is the color of unity. You eat the small stone rock. Join Us. Eventually everyone will.'), closable=False)
                 def rock():
                     if infection < 4/6*needed:
-                        utils.update_infection(0.08)
+                        # utils.update_infection(0.08)
                         allow_wakeup()
                         return
 
@@ -89,7 +92,7 @@ def green_dream():
                     @rock.situation(c('Leave from the airlock'), response=c('You start to walk moving towards the airlock door. Behind you. Lies. Lying teacher opens the window open. The school does not want good for you. The airlock is full of water. You will escape. We will make sure of that. You are one of Us now. We do not leave ours behind.'), closable=False)
                     def water():
                         if infection < 5/6*needed:
-                            utils.update_infection(0.09)
+                            # utils.update_infection(0.09)
                             allow_wakeup()
                             return
 
@@ -97,7 +100,7 @@ def green_dream():
                         @water.situation(c('Swim trough the window outside'), response=c('We swim to the window. It the window is far away. It does not matter. We will reach it. And we do. We swim out of the window. Outside the airlock is air. We are on the ground now. Our glasses break. No matter. The glasses only limit Us. We need to get rid of them. Take them off. Do it. Do it for Us.'), closable=False)
                         def glasses():
                             if infection < 6/6*needed:
-                                utils.update_infection(0.1)
+                                # utils.update_infection(0.1)
                                 allow_wakeup()
                                 return
 
@@ -186,4 +189,4 @@ def mind_dream():
                         def end():
                             @end.situation("Everyone will know Us", response=ColorString(("The Purpose is so clearly crystalline currently","green"),(", but it may not yet be too late to resist.","blue")), color = "green", closable = False)
                             def exit_mind():
-                                dream.exit()                                
+                                dream.exit()

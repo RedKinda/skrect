@@ -72,6 +72,8 @@ def sleep(time, no_dreams=False):
 
 
 def realsleep(time):
+    dreams.infect(time)
+
     from redacted.streets.mainroad import encounter_streets
 
     halflife = datetime.timedelta(hours=4)
@@ -80,7 +82,6 @@ def realsleep(time):
     k = .5**(time/halflife)
     game.game_state.set_stat('energy', 1 - k*e)
 
-    dreams.infect(time)
     game.game_state.set_stat('seed', random.getrandbits(32))
     for i in encounter_streets:
         i.sleep_reset()
