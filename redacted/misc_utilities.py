@@ -55,21 +55,17 @@ def update_stats(action):
 
 
 def sleep(time, no_dreams=False):
-    if no_dreams:
-        return realsleep(time)
     if game.game_state.time > test_date.replace(hour = 12, minute = 0, second = 0):
-        test = game.game_state.get_stat("test")
-        if test == "infected":
-            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: After doing the test, you are swiftly put into quarantine. For all of eternity. Congratulations!")
-        elif test == "passed":
-            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: You are going to Brazil. Sorry, no, that was a joke. You're going to the Capital City! Congratulations! But what awaits you there?")
-        else:
-            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: You remain in your home village. You are stuck here. At your home. You are stuck, at home. You could say you're stuck home.")
-    if time < datetime.timedelta(hours=6):
-        return realsleep(time)
+        from redacted.void import endingVoid
+        game.game_state.location = endingVoid
+    else:
+        if no_dreams:
+            return realsleep(time)
+        if time < datetime.timedelta(hours=6):
+            return realsleep(time)
 
-    realsleep(time)
-    dreams.dream()
+        realsleep(time)
+        dreams.dream()
 
 
 
