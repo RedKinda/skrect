@@ -121,7 +121,7 @@ class Hall(game.Location):
 
         @bored.action(name="Inspect testing announcement", time_cost=datetime.timedelta(seconds=10), description="Your grade will all be tested for extraordinary thinking skills soon. As every year.")
         def test_announcement():
-            game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 17th of May 2120 (friday). Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
+            game.game_state.show_message(ColorString(("Attention! All students of grade 12 will be tested on the 17th of May 2120 (friday). ","white"),("Good results on the test will result in relocation to the Capital City and a place at the Higher Education Institute. Participation is highly recommended.","red")))
 
         @bored.action(name="Inspect effectivity measures announcement", time_cost=datetime.timedelta(seconds=10), description="These were estabilished rather recently.")
         def effectivity_announcement():
