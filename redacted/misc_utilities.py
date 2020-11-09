@@ -27,6 +27,7 @@ def tutorial(action): #action is ignored
 def init_stats():
     game.game_state.init_stat('money', 30)
     game.game_state.init_stat('energy', .94)
+    #game.game_state.init_stat('energy', 0.1)
     game.game_state.init_stat('hunger', .94)
     game.game_state.init_stat('willpower', .2)
     game.game_state.init_stat('infection', 0.)
@@ -126,8 +127,11 @@ def spend_energy(time, weight, h=None):
     new_e = e - e_speed*amount/ENERGY
 
     if new_e <= 0:
-        game.show_message('You have run out of energy! Setting energy to 100%.')
-        new_e = 1.
+        #game.show_message('You have run out of energy! Setting energy to 100%.')
+        #new_e = 1.
+        from redacted.void import endingVoid
+        game.game_state.location = endingVoid
+        game.game_state.set_stat('energy', 0)
     game.game_state.set_stat('energy', new_e)
 
 def spend_hunger(time):
