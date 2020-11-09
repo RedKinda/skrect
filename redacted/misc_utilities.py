@@ -40,9 +40,11 @@ def init_stats():
 
     game.game_state.add_post_action_trigger(update_stats)
     game.game_state.add_post_action_trigger(tutorial)
+    game.game_state.add_post_action_trigger(debugglasses)
     tutorial("ä")
 
-
+def debugglasses(action):
+    game.show_message("DEBUG: " + str(game.game_state.glasses.type))
 
 
 def update_stats(action):
