@@ -295,6 +295,23 @@ class StaffRoom(game.Location):
             game.show_message("You cook a cup of Instant soup. It doesn't taste amazing, but at least it's hot.")
             self.check_cookable()
 
+    def check_cookable(self):
+        self.instant_noodles = utils.Food(name='Instant noodles', saturation=.25)
+        if utils.is_in_inventory(self.instant_noodles.name):
+            self.get_object('kettle').get_action('Make Instant noodles').enable()
+        else:
+            self.get_object('kettle').get_action('Make Instant noodles').disable()
+
+        self.instant_soup = utils.Food(name='Instant soup', saturation=.3)
+        if utils.is_in_inventory(self.instant_soup.name):
+            self.get_object('kettle').get_action('Make Instant soup').enable()
+        else:
+            self.get_object('kettle').get_action('Make Instant soup').disable()
+
+    def when_entering(self, from_location):
+        self.check_cookable()
+        game.game_state.location = self
+
 main_room = MainRoom()
 office = Office()
 storage_room = StorageRoom()
