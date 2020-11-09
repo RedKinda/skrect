@@ -57,7 +57,7 @@ def translate(text, style, translator):
         txt = " "*len(text)
         if len(text) > 0:
             if text[-1] == "\n":
-                txt += "/n"
+                txt += "\n"
         return (txt, curses.COLOR_WHITE)
     else:
         return (text, color)
