@@ -4,7 +4,7 @@ import redacted.misc_utilities as utils
 from UI.colored_text import ColorString
 from redacted.home import bedroom
 
-red_willpower = 0.4
+red_willpower = 0.5
 willpower_scale = 1/(1. - red_willpower)
 needed = 0.6 - red_willpower
 ispeed = 0.03
