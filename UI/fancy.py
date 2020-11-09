@@ -55,7 +55,7 @@ class FancyDrawer:
         return self
 
     @staticmethod
-    def write_text(window, text):
+    def write_text(window, text, noblanks=False):
         if LOG_DRAWING: drawlog.info(str(text))
         if isinstance(text, list):
             for element in text:
@@ -67,7 +67,8 @@ class FancyDrawer:
         elif isinstance(text, UI.colored_text.ColorString):
             #drawlog.info("Colored: " + str(text))
             filter = game.game_state.glasses.type
-            for chunk in text.glassed(game.game_state.get_stat("infection")):
+            blanktext = "white" if noblanks else "blank"
+            for chunk in text.glassed(game.game_state.get_stat("infection"), blanktext=blanktext):
                 #drawlog.info("TEXT, COLOR: " + str(chunk))
                 if not isinstance(chunk[1], int):
                     print(chunk)
@@ -116,7 +117,7 @@ class FancyDrawer:
         money = ColorString(("Money: [{0}]".format(" "*(4-len(m)) + m), "yellow"))
         energy = "Energy: 0[{0}]1".format(self.make_bar("energy"))
         willpower = ColorString(("Willpower: 0[{0}]1".format(self.make_bar("willpower")), "blue"))
-        exhaustion = "Hunger: 0[{0}]1".format(self.make_bar("hunger"))
+        exhaustion = ColorString(("Hunger: 0[{0}]1".format(self.make_bar("hunger")), "magenta"))
         infection = ColorString((self.infection_text + ": 0[{0}]1".format(self.make_bar("infection")), "green"))
         weekday = ["Monday   ",
                    "Tuesday  ",
@@ -128,10 +129,10 @@ class FancyDrawer:
         tab = " "*(max((columns - len(time) - len(money) - len(energy) - len(willpower)) // 10, 1))
 
         for s in [tab*3, time, tab, money, tab*2, energy, tab, willpower, "\n"]:
-            self.write_text(self.win_info, s)
+            self.write_text(self.win_info, s, noblanks=True)
 
         for s in [tab*3, weekday, tab*3, " "*22, exhaustion, tab, " "*6, infection, "\n"]:
-            self.write_text(self.win_info, s)
+            self.write_text(self.win_info, s, noblanks=True)
 
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))
 

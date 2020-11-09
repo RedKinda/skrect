@@ -28,7 +28,7 @@ try:  # Fancy curtsies drawer
     UI.sound.play_forever()
     print("Pants work! Starting fancy terminal...")
     print("You can exit the game any time by pressing the escape button")
-    input("Please maximize your terminal window for the best experience! Press ENTER once you've done so!")
+    input("Once you press ENTER don't forget to maximize your terminal for the best experience!")
 except:  # Fallback to simple drawing for dumb terminals
     from UI.classic import ClassicDrawer, ClassicInput
 
@@ -60,6 +60,7 @@ except:
     print("Whoops an error happened")
     if DEBUG:
         traceback.print_exc()
+        input()
 finally:
     print("Exiting...")
     UI.sound.player.stop()

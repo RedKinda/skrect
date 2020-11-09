@@ -110,7 +110,7 @@ class ColorString:
     def lower(self):
         return str(self).lower()
 
-    def glassed(self, infection, filter=None):
+    def glassed(self, infection, filter=None, blanktext="blank"):
         if filter is None:
             filter = game.game_state.glasses.type if game.game_state else Alignment.INDEPENDENT
         if filter == Alignment.GOVERNMENT:
@@ -135,7 +135,7 @@ class ColorString:
                     words[j] += " "
                 if random.random() <= infection:
                     if game.game_state.glasses.type == game.Alignment.GOVERNMENT:
-                        tup = translate(words[j], "blank", translate_red_filter)
+                        tup = translate(words[j], blanktext, translate_red_filter)
                     else:
                         tup = translate(words[j], styles[j], translate_green_filter)
                 else:
