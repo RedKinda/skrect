@@ -37,7 +37,7 @@ v   EASTWARD   v   EASTWARD   v   EASTWARD   v   EASTWARD   v
 
 class WaitingRoom(game.Location):
     def __init__(self, name='Waiting room'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are in the station's waiting room. Only authorized people are allowed on the platform.")
 
         @self.object('Info board')
         def info_board():
@@ -53,7 +53,7 @@ class Platform(game.Location):
         super().__init__(name=name)
 
     def when_entering(self, from_location):
-        game.show_message('You cannot go to the platform without a passcard!')
+        game.show_message('You are not authorized to go to the platform!')
 
 waiting_room = WaitingRoom()
 platform = Platform()

@@ -5,7 +5,7 @@ from UI.colored_text import ColorString
 
 class Bedroom(game.Location):
     def __init__(self):
-        super().__init__(description = "You are at home, in the familiar bedroom")
+        super().__init__(description = "You are at home, in the familiar bedroom.")
 
         self.has_lens = True
 
@@ -120,7 +120,7 @@ class Bedroom(game.Location):
 
 class Hallway(game.Location):
     def __init__(self):
-        super().__init__(description = "You are in the hallway of your house")
+        super().__init__(description = "You are in the hallway of your house.")
 
         @self.object("parents")
         def parents():

@@ -6,43 +6,43 @@ from redacted.npcs.dave import dave_void
 
 class HibiscusStreet(Street):
     def __init__(self, name='Hibiscus street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are on Hibiscus street. There is nothing of interest here. Just some houses.")
 
 class PeonyStreet(Street):
     def __init__(self, name='Peony street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are on Peony street. You can see the back wall of the school.")
 
 class BegoniaStreet(Street):
     def __init__(self, name='Begonia street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are on Begonia street. Greatwood park connects here.")
 
 class DahliaStreet(Street):
     def __init__(self, name='Dahlia street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are on Dahlia street. Located between Peony and Amaryllis street, on the east edge of Greatwood.")
 
 class LycorisStreet(Street):
     def __init__(self, name='Lycoris street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is Lycoris street. The Inconvenience store is here. This street takes an awkward 90-degree turn.")
 
 class AmaryllisStreet(Street):
     def __init__(self, name='Amaryllis street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is Amaryllis street. The street in front of Greatwood school.")
 
 class CamelliaStreet(Street):
     def __init__(self, name='Camellia street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="You are on Camellia street. There is an entrance to Greatwood park here.")
 
 class PoppyStreet(Street):
     def __init__(self, name='Poppy street'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is Poppy street. It connects to Greatwood row on the side opposite to Main road.")
 
 class GreatwoodRow(Street):
     def __init__(self, name='Greatwood row'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is Greatwood row. The street is at an angle to most other streets. There is a train station here.")
 
 class GreatwoodPark(Street):
     def __init__(self, name="Greatwood park"):
-        super().__init__(name=name)
+        super().__init__(name=name, "You are in Greatwood park. This is a great place to hang out with friends.")
 
     def after_action(self, action_executed):
         dave_void.reload()

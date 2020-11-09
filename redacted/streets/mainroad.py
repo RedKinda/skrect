@@ -83,7 +83,7 @@ class Street(game.Location):
 
 class MainRoad(Street):
     def __init__(self, name='Main road'):
-        super().__init__(name=name)
+        super().__init__(name=name, description="This is Main road. One of the only streets that vehicles can ride on. It is connected to most other streets.")
 
 # -------------------------------------------
 
@@ -99,9 +99,9 @@ encounter_streets.append(main_road_north)
 encounter_streets.append(main_road_south)
 
 import redacted.streets.littlewood as littlewood
-main_road_north.add_neighbor(littlewood.long_road_east, timecost=datetime.timedelta(minutes=3))
+main_road_north.add_neighbor(littlewood.long_road, timecost=datetime.timedelta(minutes=3))
 main_road_north.add_neighbor(littlewood.littlewood_route, timecost=datetime.timedelta(minutes=2))
-main_road_north.get_action("Travel to Long road (east)").priority = 15
+main_road_north.get_action("Travel to Long road").priority = 15
 littlewood.littlewood_route.get_action("Travel to Main road (north)").priority = 10
 
 encounter_streets.append(littlewood.long_road_east)
@@ -152,4 +152,3 @@ def run():
 
     from redacted.school import visit_init
     visit_init()
-
