@@ -15,6 +15,8 @@ def show_map(path=None):
     im = Image.open(path)
     threading.Thread(target=im.show).start()
 
+
+#show_map()
 '''
 if __name__ == "__main__":
     show_map("images/peasant.jpg")

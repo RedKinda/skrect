@@ -131,7 +131,7 @@ class FancyDrawer:
         for s in [tab*3, time, tab, money, tab*2, energy, tab, willpower, "\n"]:
             self.write_text(self.win_info, s, noblanks=True)
 
-        for s in [tab*3, weekday, tab*3, " "*22, exhaustion, tab, " "*6, infection, "\n"]:
+        for s in [tab*3, weekday, tab*3, " "*22, exhaustion, tab, " "*(9-len(self.infection_text)), infection, "\n"]:
             self.write_text(self.win_info, s, noblanks=True)
 
         self.write_text(self.win_info, UI.colored_text.ColorString(("="*(columns-1), "red")))

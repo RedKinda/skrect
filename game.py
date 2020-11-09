@@ -135,7 +135,8 @@ class GameState(Interactable):
         return executed
 
     def input_enter(self):
-        self.execute_action_from_list(self.highlighted_action)
+        if len(self.visible_actions):
+            self.execute_action_from_list(self.highlighted_action)
 
     def input_up(self):
         self.arrow_change(-1)
@@ -144,7 +145,8 @@ class GameState(Interactable):
         self.arrow_change(1)
 
     def arrow_change(self, change):
-        self.highlighted_action = (self.highlighted_action + change) % len(self.visible_actions)
+        if len(self.visible_actions) > 0:
+            self.highlighted_action = (self.highlighted_action + change) % len(self.visible_actions)
 
     def show_message(self, message):
         self.pending_messages.append(message)

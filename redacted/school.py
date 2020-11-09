@@ -189,7 +189,7 @@ class Canteen(game.Location):
         elif self.last_lunch < time.replace(hour=0,minute=0,second=0):
             self.get_action("Eat lunch").enable()
             game.game_state.show_message("You're in time for lunch.")
-            game.game_state.show_message(str(self.last_lunch))
+            #game.game_state.show_message(str(self.last_lunch))
         else:
             self.get_action("Eat lunch").disable()
             game.game_state.show_message("You had your lunch for today.")
