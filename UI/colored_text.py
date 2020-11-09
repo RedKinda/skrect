@@ -54,7 +54,11 @@ def translate(text, style, translator):
     else:
         color = translator[style]
     if color == blank:
-        return (" "*len(text), curses.COLOR_WHITE)
+        txt = " "*len(text)
+        if len(text) > 0:
+            if text[-1] == "\n":
+                txt += "/n"
+        return (txt, curses.COLOR_WHITE)
     else:
         return (text, color)
 
@@ -130,8 +134,8 @@ class ColorString:
                 if j != len(words) - 1:
                     words[j] += " "
                 if random.random() <= infection:
-                    if game.game_state.glasses == game.Alignment.GOVERNMENT:
-                        tup = translate(words[j], "blank", translate_green_filter)
+                    if game.game_state.glasses.type == game.Alignment.GOVERNMENT:
+                        tup = translate(words[j], "blank", translate_red_filter)
                     else:
                         tup = translate(words[j], styles[j], translate_green_filter)
                 else:

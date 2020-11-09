@@ -24,6 +24,7 @@ class FancyDrawer:
         self.message_win = None
         global drawer
         drawer = self
+        self.infection_text = "???"
 
     def __enter__(self):
         self.screen = curses.initscr()
@@ -116,7 +117,7 @@ class FancyDrawer:
         energy = "Energy: 0[{0}]1".format(self.make_bar("energy"))
         willpower = ColorString(("Willpower: 0[{0}]1".format(self.make_bar("willpower")), "blue"))
         exhaustion = "Hunger: 0[{0}]1".format(self.make_bar("hunger"))
-        infection = ColorString(("???: 0[{0}]1".format(self.make_bar("infection")), "green"))
+        infection = ColorString((self.infection_text + ": 0[{0}]1".format(self.make_bar("infection")), "green"))
         weekday = ["Monday   ",
                    "Tuesday  ",
                    "Wednesday",

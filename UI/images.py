@@ -1,15 +1,17 @@
-import platform
+
+from PIL import Image
+'''import platform
 if platform.system() == "Linux":
-    from PIL import Image
 elif platform.system() == "Windows":
     from PIL import Image
 else:
     print("Unsupported OS")
-    raise OSError
+    raise OSError'''
 import threading
 
 
-def show_map(path="UI/images/mapa.png"):
+def show_map(path=None):
+    path = path or "UI/images" + "/mapa.png"
     im = Image.open(path)
     threading.Thread(target=im.show).start()
 
