@@ -7,7 +7,6 @@ from redacted.npcs.dave import dave_void
 from redacted.npcs.horatio import horatio_prime
 from redacted.npcs.florence import italy
 
-
 class Holder():
     def __init__(self):
         self.sadness = 0
@@ -29,6 +28,80 @@ def resolve_sadness():
     #game.game_state.show_message("You missed " + str(today - last_visit) + ", therefore the result is " + str(days_missed))
     return days_missed
 
+class Secret(game.Location):
+    def __init__(self):
+        super().__init__(description="You are somewhere you totally should not be.")
+
+        self.finished = False
+
+        @game.object(name="the_thing_that_stores_important_files", location=self)
+        def the_thing_that_stores_important_files():
+            pass
+
+        @the_thing_that_stores_important_files.action(name="Search the files", description="You most certainly shouldn't be doing this.", color="blue", time_cost=datetime.timedelta(minutes=15))
+        def search():
+            game.game_state.show_message("You have no idea what you're looking for. All the files are old; it seems like not much has been happening recently.")
+
+        thing = self.get_object("the_thing_that_stores_important_files")
+
+        @the_thing_that_stores_important_files.action(name="Look for intel on art ban", description="You most certainly shouldn't be doing this.", color="blue", time_cost=datetime.timedelta(minutes=5))
+        def search():
+            game.game_state.show_message("Right on top, you see it. A classified document that seems to have arrived very recently, titled 'MEMETIC SECURITY MEASURES'.")
+            thing.get_action("Look for intel on art ban").disable()
+            thing.get_action("Open the document").enable()
+
+        @the_thing_that_stores_important_files.action(name="Open the document", description="You most certainly shouldn't be doing this.", color="blue", time_cost=datetime.timedelta(minutes=1))
+        def open():
+            document = ColorString(("X-----------------------------------X\n","white"),
+                                  (" |                                   |\n","white"),
+                                  (" |     MEMETIC SECURITY MEASURES     |\n","white"),
+                                  (" |                                   |\n","white"),
+                                  (" | This document is classified.      |\n","white"),
+                                  (" | Only officials of rank D and up   |\n","white"),
+                                  (" | may view the contents.            |\n","white"),
+                                  (" |                                   |\n","white"),
+                                  (" | The Government, with immediate    |\n","white"),
+                                  (" | effectivity, prohibits any        |\n","white"),
+                                  (" | research into the M54 pathogen.   |\n","white"),
+                                  (" | The pandemic will be handled      |\n","white"),
+                                  (" | by memetic countermeasures.       |\n","white"),
+                                  (" | The pathogen spreads through      |\n","white"),
+                                  (" | abstract information, and thus,   |\n","white"),
+                                  (" | the Government enforces following |\n","white"),
+                                  (" | countermeasures:                  |\n","white"),
+                                  (" | ...................               |\n","white"),
+                                  (" | ............                      |\n","white"),
+                                  (" | ................                  |\n","white"),
+                                  (" |                                   |\n","white")
+                                   )
+            
+            game.game_state.show_message(document)
+            game.game_state.show_message("All the new measures are listed, all of them have something to do with sharing of artistic information.")
+            game.game_state.show_message("Someone is approaching. You need to make haste.")
+            thing.get_action("Open the document").disable()
+            self.get_action("Abscond! Through the window, I guess").enable()
+            self.get_action("Reconsider and return to the hall").disable()
+
+        @self.action(name="Abscond! Through the window, I guess", description="It looks mostly safe.", color="blue", time_cost=datetime.timedelta(seconds=10))
+        def open():
+            from redacted.streets.greatwood import dahlia_street
+            game.game_state.location = dahlia_street
+            game.game_state.show_message("You successfully escaped in time. You hope you weren't seen.")
+            self.finished = True
+            
+    def when_entering(self, from_location):
+        thing = self.get_object("the_thing_that_stores_important_files")
+        if game.game_state.time.day >= 6:
+            thing.get_action("Search the files").disable()
+            thing.get_action("Look for intel on art ban").enable()
+        else:
+            thing.get_action("Search the files").enable()
+            thing.get_action("Look for intel on art ban").disable()
+        thing.get_action("Open the document").disable()
+        self.get_action("Abscond! Through the window, I guess").disable()
+        game.game_state.location = self
+        self.get_action("Reconsider and return to the hall").enable()
+        
 class Hall(game.Location):
     def __init__(self):
         super().__init__(description="You are in the great hall of your school.")
@@ -57,6 +130,8 @@ class Hall(game.Location):
     def when_entering(self, from_location):
         if isinstance(from_location, Class):
             game.game_state.show_message("You return to the great hall. Not much has changed.")
+        elif isinstance(from_location, Secret):
+            game.game_state.show_message("You swiftly return to the hall.")
         else:
             if game.game_state.time.day < 6:
                 status = "There is also a notice board, but nothing important is on it right now. "
@@ -64,8 +139,13 @@ class Hall(game.Location):
                 status = "There is an announcement on the notice board. "
             else:
                 status = "There are two announcements on the notice board. "
-            game.game_state.show_message(ColorString(("You enter the school. You can access the canteen or the class. ","white"),(status,"red")))
-                                                     #,("You won't get into the teacher's quarters if anyone is in the building.","cyan")))
+            if secr.finished:
+                infiltration_description = "You don't believe it's safe to sneak in again after what happened."
+            elif game.game_state.time.hour <= 21 and game.game_state.time.hour >= 6:
+                infiltration_description = "There's a way to the teacher's quarters, but you can't get there without being seen."
+            else:
+                infiltration_description = "There's a way to the teacher's quarters. No one will know if you sneak in right now."
+            game.game_state.show_message(ColorString(("You enter the school. You can access the canteen or the class. ","white"),(status,"red"),(infiltration_description,"blue")))
         game.game_state.location = self
 
     def after_action(self, action_executed):
@@ -79,6 +159,11 @@ class Hall(game.Location):
         else:
             bored.get_action("Inspect effectivity measures announcement").enable()
             bored.get_action("Inspect testing announcement").enable()
+
+        if (game.game_state.time.hour > 21 or game.game_state.time.hour < 6) and not secr.finished:
+            self.get_action("Sneak in teacher's quarters").enable()
+        else:
+            self.get_action("Sneak in teacher's quarters").disable()
 
 class Canteen(game.Location):
     def __init__(self):
@@ -359,10 +444,14 @@ holder = Holder()
 hall = Hall()
 clss = Class()
 cant = Canteen()
+secr = Secret()
 hall.add_neighbor(clss, timecost=datetime.timedelta(minutes=1))
 hall.add_neighbor(cant, timecost=datetime.timedelta(minutes=1))
 hall.get_action("Travel to Class").priority = 10
 hall.get_action("Travel to Canteen").priority = 15
+secr.add_neighbor(hall, timecost=datetime.timedelta(minutes=5), alignment="blue")
+hall.get_action("Travel to Secret").name = ColorString(("Sneak in teacher's quarters","blue"))
+secr.get_action("Travel to Hall").name = "Reconsider and return to the hall"
 
 test_date = datetime.datetime(year = 2120, month = 5, day = 17, hour = 0, minute = 0, second = 0)
 
