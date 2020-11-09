@@ -26,8 +26,8 @@ def tutorial(action): #action is ignored
 
 def init_stats():
     game.game_state.init_stat('money', 30)
-    game.game_state.init_stat('energy', 1.)
-    game.game_state.init_stat('hunger', 1.)
+    game.game_state.init_stat('energy', .94)
+    game.game_state.init_stat('hunger', .94)
     game.game_state.init_stat('willpower', .2)
     game.game_state.init_stat('infection', 0.)
 
@@ -62,11 +62,11 @@ def sleep(time, no_dreams=False):
     if game.game_state.time > test_date.replace(hour = 12, minute = 0, second = 0):
         test = game.game_state.get_stat("test")
         if test == "infected":
-            game.game_state.show_message("Failure. You are going to quarantine. For all of eternity. Congratulations!")
+            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: After doing the test, you are swiftly put into quarantine. For all of eternity. Congratulations!")
         elif test == "passed":
-            game.game_state.show_message("Ending achieved! You are going to Brazil.")
+            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: You are going to Brazil. Sorry, no, that was a joke. You're going to the Capital City! Congratulations! But what awaits you there?")
         else:
-            game.game_state.show_message("Ending achieved! You remain in your home village. You are stuck here. At your home. You are stuck, at home. You could say you're stuck home.")
+            game.game_state.show_message("AN ENDING WOULD HAPPEN NOW: You remain in your home village. You are stuck here. At your home. You are stuck, at home. You could say you're stuck home.")
     if time < datetime.timedelta(hours=6):
         return realsleep(time)
 
