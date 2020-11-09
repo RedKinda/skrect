@@ -87,10 +87,10 @@ class MainRoom(game.Location):
             self.cart_contents = []
 
 
-        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
+        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True, color="yellow")
         def work():
             game.game_state.time = game.game_state.time.replace(hour=8, minute=0, second=0)
-            game.show_message("You worked for 8 hours. You feel tired and hungry.")
+            game.show_message("You worked for 8 hours. You feel tired and hungry. You made 20c")
             utils.spend_money(-20)
             work.disable()
 
@@ -274,7 +274,7 @@ class StaffRoom(game.Location):
 
         @couch.action('Take a nap', description="Take a 30 minute nap", time_cost=datetime.timedelta(minutes=30), energycost=-1, color='white')
         def nap():
-            utils.sleep(datetime.timedelta(minutes=30))
+            utils.sleep(datetime.timedelta(minutes=20))
             game.show_message("You took a nice nap.")
 
         @self.object("kettle")
