@@ -87,7 +87,7 @@ class MainRoom(game.Location):
             self.cart_contents = []
 
 
-        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
+        @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True, color="yellow")
         def work():
             game.game_state.time = game.game_state.time.replace(hour=8, minute=0, second=0)
             game.show_message("You worked for 8 hours. You feel tired and hungry. You made 20c")
