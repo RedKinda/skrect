@@ -71,6 +71,13 @@ class Bedroom(game.Location):
             game.show_message("You cook a cup of Instant soup. It doesn't taste amazing, but at least it's hot.")
             self.check_cookable()
 
+        @kettle.action(name="Eat bread", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="yellow")
+        def make_instant_soup():
+            utils.eat(self.bread)
+            utils.remove_from_inventory(self.bread.name)
+            game.show_message("You eat a whole loaf of bread. That's a lot of bread to eat in 5 minutes.")
+            self.check_cookable()
+
         @self.action(name="Remove Lens", time_cost=datetime.timedelta(seconds=1), disabled = True, energycost=game.EnergyCost.LIGHT)
         def lens_remove():
             self.has_lens = False
@@ -95,6 +102,12 @@ class Bedroom(game.Location):
             self.get_object('kettle').get_action('Make Instant soup').enable()
         else:
             self.get_object('kettle').get_action('Make Instant soup').disable()
+
+        self.bread = utils.Food(name='Bread', saturation=.4)
+        if utils.is_in_inventory(self.bread.name):
+            self.get_object('kettle').get_action('Eat bread').enable()
+        else:
+            self.get_object('kettle').get_action('Eat bread').disable()
 
     def when_entering(self, from_location):
         self.check_cookable()

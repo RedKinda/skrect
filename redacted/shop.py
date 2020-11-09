@@ -82,10 +82,8 @@ class MainRoom(game.Location):
             for thing in self.cart_contents:
                 for i in range(thing.amount*thing.item.amount):
                     utils.add_to_inventory(thing.item.name)
+                    self.add_item_to_cart(thing.item, -thing.amount)
             game.show_message('Your total is {}c. You take the items you bought with you.'.format(total_cost))
-
-            for thing in self.cart_contents:
-                self.add_item_to_cart(thing.item, -thing.amount)
 
         @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
         def work():
@@ -281,18 +279,25 @@ class StaffRoom(game.Location):
         def kettle():
             pass
 
-        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        @kettle.action(name="Make Instant noodles", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="yellow")
         def make_instant_noodles():
             utils.eat(self.instant_noodles)
             utils.remove_from_inventory(self.instant_noodles.name)
             game.show_message("You cook some Instant noodles and eat them. The flavoring is a little bit off.")
             self.check_cookable()
 
-        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="magenta")
+        @kettle.action(name="Make Instant soup", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="yellow")
         def make_instant_soup():
             utils.eat(self.instant_soup)
             utils.remove_from_inventory(self.instant_soup.name)
             game.show_message("You cook a cup of Instant soup. It doesn't taste amazing, but at least it's hot.")
+            self.check_cookable()
+
+        @kettle.action(name="Eat bread", time_cost=datetime.timedelta(minutes=5), energycost=game.EnergyCost.NONE, disabled=True, color="yellow")
+        def make_instant_soup():
+            utils.eat(self.bread)
+            utils.remove_from_inventory(self.bread.name)
+            game.show_message("You eat a whole loaf of bread. That's a lot of bread to eat in 5 minutes.")
             self.check_cookable()
 
     def check_cookable(self):
@@ -307,6 +312,12 @@ class StaffRoom(game.Location):
             self.get_object('kettle').get_action('Make Instant soup').enable()
         else:
             self.get_object('kettle').get_action('Make Instant soup').disable()
+
+        self.bread = utils.Food(name='Bread', saturation=.4)
+        if utils.is_in_inventory(self.bread.name):
+            self.get_object('kettle').get_action('Eat bread').enable()
+        else:
+            self.get_object('kettle').get_action('Eat bread').disable()
 
     def when_entering(self, from_location):
         self.check_cookable()
