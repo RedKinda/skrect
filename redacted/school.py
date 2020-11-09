@@ -6,6 +6,7 @@ import redacted.misc_utilities as utils
 from redacted.npcs.dave import dave_void
 from redacted.npcs.horatio import horatio_prime
 from redacted.npcs.florence import italy
+import UI.fancy
 
 class Holder():
     def __init__(self):
@@ -81,6 +82,7 @@ class Secret(game.Location):
             thing.get_action("Open the document").disable()
             self.get_action("Abscond! Through the window, I guess").enable()
             self.get_action("Reconsider and return to the hall").disable()
+            UI.fancy.drawer.infection_text = "Infection"
 
         @self.action(name="Abscond! Through the window, I guess", description="It looks mostly safe.", color="blue", time_cost=datetime.timedelta(seconds=10))
         def open():
@@ -91,7 +93,7 @@ class Secret(game.Location):
 
     def when_entering(self, from_location):
         thing = self.get_object("the_thing_that_stores_important_files")
-        if game.game_state.time.day >= 6:
+        if game.game_state.time.day >= 6 or True:
             thing.get_action("Search the files").disable()
             thing.get_action("Look for intel on art ban").enable()
         else:
