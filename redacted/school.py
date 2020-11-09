@@ -74,7 +74,7 @@ class Secret(game.Location):
                                   (" | ................                  |\n","white"),
                                   (" |                                   |\n","white")
                                    )
-            
+
             game.game_state.show_message(document)
             game.game_state.show_message("All the new measures are listed, all of them have something to do with sharing of artistic information.")
             game.game_state.show_message("Someone is approaching. You need to make haste.")
@@ -88,7 +88,7 @@ class Secret(game.Location):
             game.game_state.location = dahlia_street
             game.game_state.show_message("You successfully escaped in time. You hope you weren't seen.")
             self.finished = True
-            
+
     def when_entering(self, from_location):
         thing = self.get_object("the_thing_that_stores_important_files")
         if game.game_state.time.day >= 6:
@@ -101,7 +101,7 @@ class Secret(game.Location):
         self.get_action("Abscond! Through the window, I guess").disable()
         game.game_state.location = self
         self.get_action("Reconsider and return to the hall").enable()
-        
+
 class Hall(game.Location):
     def __init__(self):
         super().__init__(description="You are in the great hall of your school.")
@@ -190,7 +190,7 @@ class Canteen(game.Location):
             game.game_state.show_message(str(self.last_lunch))
         else:
             self.get_action("Eat lunch").disable()
-            game.game_state.show_message("You already had your lunch today.")
+            game.game_state.show_message("You had your lunch for today.")
 
         #reload NPCs
         italy.reload()
@@ -260,7 +260,7 @@ class Class(game.Location):
                        "Don't forget the test is tomorrow. Do not be late.",
                        "ä"
                        ]
-            
+
             @startsit.situation("Pay close attention", response = ColorString((lessons[game.game_state.time.day],"red")), closable = False, color = "red")
             def lesson_attention():
                 holder.sadness = max(0, holder.sadness-1)
