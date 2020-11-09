@@ -4,7 +4,7 @@ import time
 import game
 import UI.sound
 
-DEBUG = True
+DEBUG = False
 #from sample_world.sample1 import run
 #from redacted.shop import run
 from redacted.streets.mainroad import run
