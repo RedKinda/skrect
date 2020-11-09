@@ -82,8 +82,10 @@ class MainRoom(game.Location):
             for thing in self.cart_contents:
                 for i in range(thing.amount*thing.item.amount):
                     utils.add_to_inventory(thing.item.name)
-                    self.add_item_to_cart(thing.item, -thing.amount)
+                    self.get_object('shelves').get_action('Remove ' + thing.item.name).disable()
             game.show_message('Your total is {}c. You take the items you bought with you.'.format(total_cost))
+            self.cart_contents = []
+
 
         @self.action("Work until 16", description="Work here from 8 to 16.", time_cost=datetime.timedelta(hours=8), energycost=game.EnergyCost.MENTAL, priority=40, disabled=True)
         def work():
