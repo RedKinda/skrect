@@ -144,6 +144,7 @@ def run():
         def map():
             from UI.images import show_map
             show_map()
+        map.execute()
         utils.init_stats()
 
     from redacted.home import bedroom
