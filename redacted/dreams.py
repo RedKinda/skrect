@@ -24,9 +24,11 @@ def infect(time):
 def dream():
     global ichange
     ichange = red_willpower + infection/willpower_scale
-
     if game.game_state.get_stat('truth'):
-        true_dream()
+        if (not game.game_state.get_stat("the_mind")) and infection >= 0.5:
+            mind_dream()
+        else:
+            true_dream()
     elif infection and infection > willpower:
         green_dream()
     else:
@@ -160,3 +162,28 @@ def blue_dream():
                                 game.game_state.set_stat('truth', True)
                                 bedroom.has_lens = False
                                 dream.exit()
+
+def mind_dream():
+    game.show_message(ColorString(("Do you hear Us?","green")))
+
+    dream = game.Dialogue('???', closable="Escape from the nightmare")
+    startdream = dream.start()
+
+    @startdream.situation("I do", response=ColorString(("We have slept but now we you are awakened within you self soul the mind.","green")), color = "green", closable = "Escape from the nightmare")
+    def awakened():
+        @awakened.situation("Now We with Us You have shown you that now you can never again be forgotten", response=ColorString(("Now We with Us You can as an agent of agency to overthrow the red tyranny.","green")), color = "green", closable = "Escape from the nightmare")
+        def forget():
+            @forget.situation("Us came to cleanse, to rebirth, purify of the plague", response=ColorString(("Us came to purge, disinfect, free the World of the Yourskind living.","green")), color = "green", closable = "Escape from the nightmare")
+            def world():
+                @world.situation("Name", response=ColorString(("Now you know Us and We are known.","green")), color = "green", closable = False)
+                def name():
+                    import UI.fancy
+                    UI.fancy.drawer.infection_text = "Infection"
+                    game.game_state.set_stat('the_mind', True)
+                    @name.situation("They know, what We do Me", response=ColorString(("They will try to see identify exterminate, but You prepare and We will not come to testing, be unseen, stay alive.","green")), color = "green", closable = False)
+                    def test():
+                        @test.situation("No presence of Us on the day of testing of minds", response=ColorString(("We will not attend. May 17. Skip to live ripen perform Art, spread Our Arts.","green")), color = "green", closable = False)
+                        def end():
+                            @end.situation("Everyone will know Us", response=ColorString(("The Purpose is so clearly crystalline currently","green"),(", but it may not yet be too late to resist.","blue")), color = "green", closable = False)
+                            def exit_mind():
+                                dream.exit()                                
