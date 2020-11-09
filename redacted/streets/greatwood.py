@@ -42,7 +42,7 @@ class GreatwoodRow(Street):
 
 class GreatwoodPark(Street):
     def __init__(self, name="Greatwood park"):
-        super().__init__(name=name, "You are in Greatwood park. This is a great place to hang out with friends.")
+        super().__init__(name=name, description="You are in Greatwood park. This is a great place to hang out with friends.")
 
     def after_action(self, action_executed):
         dave_void.reload()

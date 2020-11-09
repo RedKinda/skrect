@@ -7,8 +7,8 @@ from UI.colored_text import ColorString
 
 
 class Street(game.Location):
-    def __init__(self, name):
-        super().__init__(name=name)
+    def __init__(self, name, description):
+        super().__init__(name=name, description=description)
 
         #@self.action(name="Generate an event here", priority = 6)
         #def generate():
@@ -104,8 +104,7 @@ main_road_north.add_neighbor(littlewood.littlewood_route, timecost=datetime.time
 main_road_north.get_action("Travel to Long road").priority = 15
 littlewood.littlewood_route.get_action("Travel to Main road (north)").priority = 10
 
-encounter_streets.append(littlewood.long_road_east)
-encounter_streets.append(littlewood.long_road_west)
+encounter_streets.append(littlewood.long_road)
 encounter_streets.append(littlewood.littlewood_route)
 encounter_streets.append(littlewood.crescent_lane)
 
