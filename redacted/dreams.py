@@ -94,7 +94,7 @@ def green_dream():
                         utils.update_willpower(ichange, weight=1, time=datetime.timedelta(hours = 1))
                         @water.situation(c('Swim trough the window outside'), response=c('We swim to the window. It the window is far away. It does not matter. We will reach it. And we do. We swim out of the window. Outside the airlock is air. We are on the ground now. Our glasses break. No matter. The glasses only limit Us. We need to get rid of them. Take them off. Do it. Do it for Us.'), closable=False)
                         def glasses():
-                            if infection < 6/6*needed or willpower < 6/6*needed:
+                            if infection < 6/6*needed:
                                 utils.update_infection(0.1)
                                 allow_wakeup()
                                 return
