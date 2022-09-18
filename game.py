@@ -164,8 +164,6 @@ class GameState(Interactable):
             raise KeyError
 
     def add_post_action_trigger(self, callback):
-        if not isinstance(callback, collections.Callable):
-            raise TypeError("Trigger must be callable")
         self.post_action_triggers.add(callback)
 
 
